@@ -55,11 +55,6 @@
   "Default face for pending transaction"
   :group 'ledger-faces)
 
-(defface ledger-font-xact-open-face
-  `((t :foreground "#000000" :weight normal))
-  "Default face for transaction under point"
-  :group 'ledger-faces)
-
 (defface ledger-font-payee-uncleared-face
   `((t :foreground "#dc322f" :weight bold ))
   "Default face for Ledger"
