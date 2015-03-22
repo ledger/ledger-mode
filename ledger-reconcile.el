@@ -257,11 +257,15 @@ And calculate the target-delta of the account being reconciled."
   "Force the reconciliation window to refresh.
 Return the number of uncleared xacts found."
   (interactive)
-  (let ((inhibit-read-only t))
+  (let ((inhibit-read-only t)
+        (line (count-lines (point-min) (point))))
     (erase-buffer)
     (prog1
         (ledger-do-reconcile ledger-reconcile-sort-key)
-      (set-buffer-modified-p t))))
+      (set-buffer-modified-p t)
+      (ledger-reconcile-ensure-xacts-visible)
+      (goto-char (point-min))
+      (forward-line line))))
 
 (defun ledger-reconcile-refresh-after-save ()
   "Refresh the recon-window after the ledger buffer is saved."
@@ -274,7 +278,9 @@ Return the number of uncleared xacts found."
         (set-buffer-modified-p nil))
       (when curbufwin
         (select-window  curbufwin)
-        (goto-char curpoint)))))
+        (goto-char curpoint)
+        (recenter)
+        (ledger-highlight-xact-under-point)))))
 
 (defun ledger-reconcile-add ()
   "Use ledger xact to add a new transaction."
@@ -321,13 +327,10 @@ Return the number of uncleared xacts found."
 (defun ledger-reconcile-save ()
   "Save the ledger buffer."
   (interactive)
-  (let ((cur-buf (current-buffer))
-        (cur-point (point)))
+  (with-selected-window (selected-window) ; restoring window is needed because after-save-hook will modify window and buffers
     (dolist (buf (cons ledger-buf ledger-bufs))
       (with-current-buffer buf
-        (basic-save-buffer)))
-    (switch-to-buffer-other-window cur-buf)
-    (goto-char cur-point)))
+        (basic-save-buffer)))))
 
 
 (defun ledger-reconcile-finish ()
@@ -473,7 +476,6 @@ Return a count of the uncleared transactions."
     (set-buffer-modified-p nil)
     (setq buffer-read-only t)
 
-    (ledger-reconcile-ensure-xacts-visible)
     (length xacts)))
 
 (defun ledger-reconcile-ensure-xacts-visible ()
@@ -488,8 +490,7 @@ moved and recentered.  If they aren't strange things happen."
         (add-hook 'kill-buffer-hook 'ledger-reconcile-quit nil t)
         (if (get-buffer-window ledger-buf)
             (select-window (get-buffer-window ledger-buf)))
-        (goto-char (point-max))
-        (recenter -1))
+        (recenter))
       (select-window recon-window)
       (ledger-reconcile-visit t))
     (add-hook 'post-command-hook 'ledger-reconcile-track-xact nil t)))
