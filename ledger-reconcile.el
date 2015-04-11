@@ -529,8 +529,6 @@ moved and recentered.  If they aren't strange things happen."
         (rbuf (get-buffer ledger-recon-buffer-name)))
 
     (when (ledger-reconcile-check-valid-account account)
-      (add-hook 'after-save-hook 'ledger-reconcile-refresh-after-save nil t)
-
       (if rbuf ;; *Reconcile* already exists
           (with-current-buffer rbuf
             (set 'ledger-acct account) ;; already buffer local
@@ -551,6 +549,8 @@ moved and recentered.  If they aren't strange things happen."
           (make-local-variable 'ledger-target)
           (set (make-local-variable 'ledger-buf) buf)
           (set (make-local-variable 'ledger-acct) account)))
+
+      (add-hook 'after-save-hook 'ledger-reconcile-refresh-after-save nil t)
 
       ;; Narrow the ledger buffer
       (with-current-buffer rbuf
