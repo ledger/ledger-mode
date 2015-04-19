@@ -71,10 +71,10 @@ https://groups.google.com/d/msg/ledger-cli/FcYG5cnFOpw/856tmpSFbNcJ"
 "
    '("2010/12/01"                   ledger-font-posting-date-face
      " Checking balance"            ledger-font-payee-cleared-face
-     "  Assets:Checking  "          ledger-font-posting-account-cleared-face ; FIXME should be ledger-font-posting-account-face
-     "            (1/4 * $123.00)"  ledger-font-posting-amount-cleared-face ; FIXME should be ledger-font-posting-amount-face
+     "  Assets:Checking  "          ledger-font-posting-account-face
+     "            (1/4 * $123.00)"  ledger-font-posting-amount-face
      "  Equity:Opening Balances  "  ledger-font-posting-account-face
-     "          = $500.00      "    ledger-font-posting-amount-face)))
+     "          = $500.00"          ledger-font-posting-amount-face)))
 
 
 (ert-deftest ledger-fontify/test-004 ()

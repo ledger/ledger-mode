@@ -113,7 +113,7 @@ Fontify the first line of an xact"
 
     ;; Look for a posting status flag
     (set-match-data nil 'reseat)
-    (re-search-forward " \\([*!]\\) " end t)
+    (re-search-forward "^[[:blank:]]+\\([*!]\\)[[:blank:]]" end t)
     (if (match-string 1)
         (setq state (ledger-state-from-string  (match-string 1))))
     (beginning-of-line)
