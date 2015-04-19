@@ -513,13 +513,44 @@ https://groups.google.com/d/msg/ledger-cli/tLKIzj02XZA/8f1cT5vS6DkJ"
      "    Actif:Courant:BnpCc"      ledger-font-posting-account-face)))
 
 
-;; https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ
-;; FIXME
-; Some others may have encountered the same issue I did, so I am posting
-; this. With the new fontification scheme my cleared transactions did
-; not have the posting accounts & amounts highlighted. It turns out you
-; need to set ledger-fontify-xact-state-overrides to nil to get
-; fontification of amounts & accounts with cleared transactions.
+(ert-deftest ledger-fontify/test-017 ()
+  "ledger-fontify-xact-state-overrides
+https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
+  :tags '(font regress)
+
+  (let ((str "
+2010/12/01 * Checking balance  ; note
+  Assets:Checking                   $1,000.00
+  Equity:Opening Balances
+
+2010/12/01 ! Checking balance  ; note
+  Assets:Checking                   $1,000.00
+  Equity:Opening Balances
+
+2010/12/01 Checking balance  ; note
+  Assets:Checking                   $1,000.00
+  Equity:Opening Balances
+")
+        (face-groups
+         '("2010/12/01 * Checking balance  ; note\n  Assets:Checking                   $1,000.00\n  Equity:Opening Balances" ledger-font-xact-cleared-face
+           "2010/12/01 ! Checking balance  ; note\n  Assets:Checking                   $1,000.00\n  Equity:Opening Balances" ledger-font-xact-pending-face
+           "2010/12/01"                  ledger-font-posting-date-face
+           " Checking balance  "         ledger-font-payee-uncleared-face
+           "; note"                      ledger-font-comment-face
+           "  Assets:Checking  "         ledger-font-posting-account-face
+           "                 $1,000.00"  ledger-font-posting-amount-face
+           "  Equity:Opening Balances"   ledger-font-posting-account-face)))
+
+    (with-temp-buffer
+      (ledger-mode)
+      (unwind-protect
+          (progn
+            (setq ledger-fontify-xact-state-overrides t)
+            (insert str)
+            (font-lock-fontify-buffer)
+            (should (equal (ledger-test-group-str-by-face (buffer-string))
+                           face-groups)))
+        (setq ledger-fontify-xact-state-overrides nil)))))
 
 
 (provide 'fontify-test)
