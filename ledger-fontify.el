@@ -97,6 +97,9 @@ Fontify the first line of an xact"
                                       'ledger-font-payee-cleared-face)
                                      (t
                                       'ledger-font-payee-uncleared-face))))
+    (when (match-beginning 2)
+      (ledger-fontify-set-face (list (match-beginning 2)
+                                     (match-end 2)) 'ledger-font-code-face))
     (when (match-beginning 4)
       (ledger-fontify-set-face (list (match-beginning 4)
                                      (match-end 4)) 'ledger-font-comment-face))

@@ -506,7 +506,8 @@ https://groups.google.com/d/msg/ledger-cli/tLKIzj02XZA/8f1cT5vS6DkJ"
     Actif:Courant:BnpCc
 "
    '("2013/01/03"                   ledger-font-posting-date-face
-     " Dr About"                    ledger-font-payee-cleared-face ; FIXME code to be fontified
+     " (6106152)"                   ledger-font-code-face
+     " Dr About"                    ledger-font-payee-cleared-face
      "    Dépense:Santé:Médecin  "  ledger-font-posting-account-face
      "                  23,00 €"    ledger-font-posting-amount-face
      "    Actif:Courant:BnpCc"      ledger-font-posting-account-face)))

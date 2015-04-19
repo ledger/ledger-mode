@@ -250,6 +250,11 @@
   "Default face for pending (!) transactions in the reconcile window"
   :group 'ledger-faces)
 
+(defface ledger-font-code-face
+  `((t :inherit ledger-font-default-face))
+  "Face for Ledger codes"
+  :group 'ledger-faces)
+
 (defvar ledger-font-lock-keywords
   `(("account" . ledger-font-account-directive-face)
  		("apply" . ledger-font-apply-directive-face)
