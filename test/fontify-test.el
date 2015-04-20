@@ -1714,7 +1714,7 @@ define ten_dollars(s, date, t) = market($10, date, t)
   "Command Directives: account"
   :tags '(font baseline)
 
-  (ledger-test-font-lock
+  (ledger-test-font-lock  ; FIXME automated transaction fontification does handle multiline directive, why not for account directive ? Warning, "apply account" directive should not fontify the following lines, see ledger-test-font-lock/73
    "
 account Expenses:Food
     note This account is all about the chicken!
@@ -1860,7 +1860,7 @@ check account =~ /REGEX/
   "Command Directives: comment"
   :tags '(font baseline)
 
-  (ledger-test-font-lock
+  (ledger-test-font-lock  ; FIXME 1) add comment directive and 2) why not fontifying as comment the in-between lines?
    "
 comment
     This is a block comment with
@@ -2073,7 +2073,7 @@ tag Receipt
   "Command Directives: test"
   :tags '(font baseline)
 
-  (ledger-test-font-lock
+  (ledger-test-font-lock  ; FIXME add this directive as alternative to the comment directive
    "
 test reg --now 2014-05-14 -p 'this month'
 14-May-13 Bug 1038 Test         Expenses:Some:Account          $500         $500
@@ -2129,7 +2129,7 @@ Y 2016
   "Command Directives: N"
   :tags '(font baseline)
 
-  (ledger-test-font-lock
+  (ledger-test-font-lock  ; FIXME add this directive
    "
 N SYMBOL
 "
@@ -2142,7 +2142,7 @@ N SYMBOL
   "Command Directives: D"
   :tags '(font baseline)
 
-  (ledger-test-font-lock
+  (ledger-test-font-lock  ; FIXME add this directive
    "
 D $1,000.00
 "
@@ -2155,7 +2155,7 @@ D $1,000.00
   "Command Directives: C"
   :tags '(font baseline)
 
-  (ledger-test-font-lock
+  (ledger-test-font-lock  ; FIXME add this directive
    "
 C 1.00 Kb = 1024 bytes
 "
@@ -2168,7 +2168,7 @@ C 1.00 Kb = 1024 bytes
   "Command Directives: I, i, O, o, b, h"
   :tags '(font baseline)
 
-  (ledger-test-font-lock
+  (ledger-test-font-lock  ; FIXME add this directive
    "
 h 2013/03/28 7 Account
 b 2013/03/27 3600 Account
