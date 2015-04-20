@@ -552,6 +552,1642 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
                            face-groups)))
         (setq ledger-fontify-xact-state-overrides nil)))))
 
+;; --------------------------------------------------------------------------------------------------------
+
+(ert-deftest ledger-fontify/test-018 ()
+  "Basic format"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash                 $-20.00
+"
+   '("2012-03-10"              ledger-font-posting-date-face
+     " KFC"                    ledger-font-payee-uncleared-face
+     "    Expenses:Food  "     ledger-font-posting-account-face
+     "              $20.00"    ledger-font-posting-amount-face
+     "    Assets:Cash  "       ledger-font-posting-account-face
+     "               $-20.00"  ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-019 ()
+  "A transaction can have any number of postings"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash                 $-10.00
+    Liabilities:Credit          $-10.00
+"
+   '("2012-03-10"                ledger-font-posting-date-face
+     " KFC"                      ledger-font-payee-uncleared-face
+     "    Expenses:Food  "       ledger-font-posting-account-face
+     "              $20.00"      ledger-font-posting-amount-face
+     "    Assets:Cash  "         ledger-font-posting-account-face
+     "               $-10.00"    ledger-font-posting-amount-face
+     "    Liabilities:Credit  "  ledger-font-posting-account-face
+     "        $-10.00"           ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-020 ()
+  "Eliding amounts"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash                 $-10.00
+    Liabilities:Credit                   ; same as specifying $-10
+"
+   '("2012-03-10"                 ledger-font-posting-date-face
+     " KFC"                       ledger-font-payee-uncleared-face
+     "    Expenses:Food  "        ledger-font-posting-account-face
+     "              $20.00"       ledger-font-posting-amount-face
+     "    Assets:Cash  "          ledger-font-posting-account-face
+     "               $-10.00"     ledger-font-posting-amount-face
+     "    Liabilities:Credit  "   ledger-font-posting-account-face
+     "                 "          ledger-font-posting-amount-face
+     "; same as specifying $-10"  ledger-font-comment-face)))
+
+
+
+(ert-deftest ledger-fontify/test-021 ()
+  "Eliding amounts with multiple commodities"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Expenses:Tips                 $2.00
+    Assets:Cash              EUR -10.00
+    Assets:Cash              GBP -10.00
+    Liabilities:Credit
+"
+   '("2012-03-10"              ledger-font-posting-date-face
+     " KFC"                    ledger-font-payee-uncleared-face
+     "    Expenses:Food  "     ledger-font-posting-account-face
+     "              $20.00"    ledger-font-posting-amount-face
+     "    Expenses:Tips  "     ledger-font-posting-account-face
+     "               $2.00"    ledger-font-posting-amount-face
+     "    Assets:Cash  "       ledger-font-posting-account-face
+     "            EUR -10.00"  ledger-font-posting-amount-face
+     "    Assets:Cash  "       ledger-font-posting-account-face
+     "            GBP -10.00"  ledger-font-posting-amount-face
+     "    Liabilities:Credit"  ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-022 ()
+  "Auxiliary dates"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10=2012-03-08 KFC
+    Expenses:Food                $20.00
+    Assets:Cash                 $-20.00
+"
+   '("2012-03-10=2012-03-08"   ledger-font-posting-date-face
+     " KFC"                    ledger-font-payee-uncleared-face
+     "    Expenses:Food  "     ledger-font-posting-account-face
+     "              $20.00"    ledger-font-posting-amount-face
+     "    Assets:Cash  "       ledger-font-posting-account-face
+     "               $-20.00"  ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-023 ()
+  "Codes"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 (#100) KFC
+    Expenses:Food                $20.00
+    Assets:Checking
+"
+   '("2012-03-10"            ledger-font-posting-date-face
+     " (#100)"               ledger-font-code-face
+     " KFC"                  ledger-font-payee-uncleared-face
+     "    Expenses:Food  "   ledger-font-posting-account-face
+     "              $20.00"  ledger-font-posting-amount-face
+     "    Assets:Checking"   ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-024 ()
+  "Transaction state cleared"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+"
+   '("2012-03-10"            ledger-font-posting-date-face
+     " KFC"                  ledger-font-payee-cleared-face
+     "    Expenses:Food  "   ledger-font-posting-account-face
+     "              $20.00"  ledger-font-posting-amount-face
+     "    Assets:Cash"       ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-025 ()
+  "Transaction state pending"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 ! KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+"
+   '("2012-03-10"            ledger-font-posting-date-face
+     " KFC"                  ledger-font-payee-pending-face
+     "    Expenses:Food  "   ledger-font-posting-account-face
+     "              $20.00"  ledger-font-posting-amount-face
+     "    Assets:Cash"       ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-026 ()
+  "Transaction state cleared at posting level"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 KFC
+    * Expenses:Food                $20.00
+    * Assets:Cash
+"
+   '("2012-03-10"             ledger-font-posting-date-face
+     " KFC"                   ledger-font-payee-uncleared-face
+     "    * Expenses:Food  "  ledger-font-posting-account-cleared-face
+     "              $20.00"   ledger-font-posting-amount-cleared-face
+     "    * Assets:Cash"      ledger-font-posting-account-cleared-face)))
+
+
+
+(ert-deftest ledger-fontify/test-027 ()
+  "Transaction state cleared for one posting"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 KFC
+    Liabilities:Credit            $100.00
+    * Assets:Checking
+"
+   '("2012-03-10"                ledger-font-posting-date-face
+     " KFC"                      ledger-font-payee-uncleared-face
+     "    Liabilities:Credit  "  ledger-font-posting-account-face
+     "          $100.00"         ledger-font-posting-amount-face
+     "    * Assets:Checking"     ledger-font-posting-account-cleared-face)))
+
+
+
+(ert-deftest ledger-fontify/test-028 ()
+  "Transaction notes #1"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC                ; yum, chicken...
+    Expenses:Food                $20.00
+    Assets:Cash
+"
+   '("2012-03-10"            ledger-font-posting-date-face
+     " KFC                "  ledger-font-payee-cleared-face
+     "; yum, chicken..."     ledger-font-comment-face
+     "    Expenses:Food  "   ledger-font-posting-account-face
+     "              $20.00"  ledger-font-posting-amount-face
+     "    Assets:Cash"       ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-029 ()
+  "Transaction notes #2"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC                ; yum, chicken...
+    ; and more notes...
+    Expenses:Food                $20.00
+    Assets:Cash
+"
+   '("2012-03-10"               ledger-font-posting-date-face
+     " KFC                "     ledger-font-payee-cleared-face
+     "; yum, chicken..."        ledger-font-comment-face
+     "    ; and more notes..."  ledger-font-comment-face
+     "    Expenses:Food  "      ledger-font-posting-account-face
+     "              $20.00"     ledger-font-posting-amount-face
+     "    Assets:Cash"          ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-030 ()
+  "Transaction notes #3"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC
+    ; just these notes...
+    Expenses:Food                $20.00
+    Assets:Cash
+"
+   '("2012-03-10"                 ledger-font-posting-date-face
+     " KFC"                       ledger-font-payee-cleared-face
+     "    ; just these notes..."  ledger-font-comment-face
+     "    Expenses:Food  "        ledger-font-posting-account-face
+     "              $20.00"       ledger-font-posting-amount-face
+     "    Assets:Cash"            ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-031 ()
+  "Transaction notes #4"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC
+    Expenses:Food                $20.00  ; posting #1 note
+    Assets:Cash
+      ; posting #2 note, extra indentation is optional
+"
+   '("2012-03-10"                                              ledger-font-posting-date-face
+     " KFC"                                                    ledger-font-payee-cleared-face
+     "    Expenses:Food  "                                     ledger-font-posting-account-face
+     "              $20.00  "                                  ledger-font-posting-amount-face
+     "; posting #1 note"                                       ledger-font-comment-face
+     "    Assets:Cash"                                         ledger-font-posting-account-face
+     "      ; posting #2 note, extra indentation is optional"  ledger-font-comment-face)))
+
+
+
+(ert-deftest ledger-fontify/test-032 ()
+  "Metadata tag"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+      ; :TAG:
+"
+   '("2012-03-10"            ledger-font-posting-date-face
+     " KFC"                  ledger-font-payee-cleared-face
+     "    Expenses:Food  "   ledger-font-posting-account-face
+     "              $20.00"  ledger-font-posting-amount-face
+     "    Assets:Cash"       ledger-font-posting-account-face
+     "      ; :TAG:"         ledger-font-comment-face)))
+
+
+
+(ert-deftest ledger-fontify/test-033 ()
+  "Metadata multiple tags"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+      ; :TAG1:TAG2:TAG3:
+"
+   '("2012-03-10"                ledger-font-posting-date-face
+     " KFC"                      ledger-font-payee-cleared-face
+     "    Expenses:Food  "       ledger-font-posting-account-face
+     "              $20.00"      ledger-font-posting-amount-face
+     "    Assets:Cash"           ledger-font-posting-account-face
+     "      ; :TAG1:TAG2:TAG3:"  ledger-font-comment-face)))
+
+
+
+(ert-deftest ledger-fontify/test-034 ()
+  "Payee metadata tag"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2010-06-17 Sample
+    Assets:Bank        $400.00
+    Income:Check1     $-100.00  ; Payee: Person One
+    Income:Check2     $-100.00  ; Payee: Person Two
+    Income:Check3     $-100.00  ; Payee: Person Three
+    Income:Check4     $-100.00  ; Payee: Person Four
+"
+   '("2010-06-17"             ledger-font-posting-date-face
+     " Sample"                ledger-font-payee-uncleared-face
+     "    Assets:Bank  "      ledger-font-posting-account-face
+     "      $400.00"          ledger-font-posting-amount-face
+     "    Income:Check1  "    ledger-font-posting-account-face
+     "   $-100.00  "          ledger-font-posting-amount-face
+     "; Payee: Person One"    ledger-font-comment-face
+     "    Income:Check2  "    ledger-font-posting-account-face
+     "   $-100.00  "          ledger-font-posting-amount-face
+     "; Payee: Person Two"    ledger-font-comment-face
+     "    Income:Check3  "    ledger-font-posting-account-face
+     "   $-100.00  "          ledger-font-posting-amount-face
+     "; Payee: Person Three"  ledger-font-comment-face
+     "    Income:Check4  "    ledger-font-posting-account-face
+     "   $-100.00  "          ledger-font-posting-amount-face
+     "; Payee: Person Four"   ledger-font-comment-face)))
+
+
+
+(ert-deftest ledger-fontify/test-035 ()
+  "Metadata values"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+      ; MyTag: This is just a bogus value for MyTag
+"
+   '("2012-03-10"                                           ledger-font-posting-date-face
+     " KFC"                                                 ledger-font-payee-cleared-face
+     "    Expenses:Food  "                                  ledger-font-posting-account-face
+     "              $20.00"                                 ledger-font-posting-amount-face
+     "    Assets:Cash"                                      ledger-font-posting-account-face
+     "      ; MyTag: This is just a bogus value for MyTag"  ledger-font-comment-face)))
+
+
+
+(ert-deftest ledger-fontify/test-036 ()
+  "Typed metadata: text"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+      ; AuxDate: 2012/02/30
+"
+   '("2012-03-10"                   ledger-font-posting-date-face
+     " KFC"                         ledger-font-payee-cleared-face
+     "    Expenses:Food  "          ledger-font-posting-account-face
+     "              $20.00"         ledger-font-posting-amount-face
+     "    Assets:Cash"              ledger-font-posting-account-face
+     "      ; AuxDate: 2012/02/30"  ledger-font-comment-face)))
+
+
+
+(ert-deftest ledger-fontify/test-037 ()
+  "Typed metadata: date"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+      ; AuxDate:: [2012/02/30]
+"
+   '("2012-03-10"                      ledger-font-posting-date-face
+     " KFC"                            ledger-font-payee-cleared-face
+     "    Expenses:Food  "             ledger-font-posting-account-face
+     "              $20.00"            ledger-font-posting-amount-face
+     "    Assets:Cash"                 ledger-font-posting-account-face
+     "      ; AuxDate:: [2012/02/30]"  ledger-font-comment-face)))
+
+
+
+(ert-deftest ledger-fontify/test-038 ()
+  "Virtual postings"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+    (Budget:Food)               $-20.00
+"
+   '("2012-03-10"            ledger-font-posting-date-face
+     " KFC"                  ledger-font-payee-cleared-face
+     "    Expenses:Food  "   ledger-font-posting-account-face
+     "              $20.00"  ledger-font-posting-amount-face
+     "    Assets:Cash"       ledger-font-posting-account-face
+     "    (Budget:Food)  "   ledger-font-posting-account-face
+     "             $-20.00"  ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-039 ()
+  "Virtual postings that balance"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+    [Budget:Food]               $-20.00
+    [Equity:Budgets]             $20.00
+"
+   '("2012-03-10"              ledger-font-posting-date-face
+     " KFC"                    ledger-font-payee-cleared-face
+     "    Expenses:Food  "     ledger-font-posting-account-face
+     "              $20.00"    ledger-font-posting-amount-face
+     "    Assets:Cash"         ledger-font-posting-account-face
+     "    [Budget:Food]  "     ledger-font-posting-account-face
+     "             $-20.00"    ledger-font-posting-amount-face
+     "    [Equity:Budgets]  "  ledger-font-posting-account-face
+     "           $20.00"       ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-040 ()
+  "Expression amounts"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 * KFC
+    Expenses:Food      ($10.00 + $20.00)  ; Ledger adds it up for you
+    Assets:Cash
+"
+   '("2012-03-10"                   ledger-font-posting-date-face
+     " KFC"                         ledger-font-payee-cleared-face
+     "    Expenses:Food  "          ledger-font-posting-account-face
+     "    ($10.00 + $20.00)  "      ledger-font-posting-amount-face
+     "; Ledger adds it up for you"  ledger-font-comment-face
+     "    Assets:Cash"              ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-041 ()
+  "Balance assertions"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash                 $-20.00 = $500.00
+"
+   '("2012-03-10"                        ledger-font-posting-date-face
+     " KFC"                              ledger-font-payee-uncleared-face
+     "    Expenses:Food  "               ledger-font-posting-account-face
+     "              $20.00"              ledger-font-posting-amount-face
+     "    Assets:Cash  "                 ledger-font-posting-account-face
+     "               $-20.00 = $500.00"  ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-042 ()
+  "Balance assignments"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash                         = $500.00
+"
+   '("2012-03-10"                        ledger-font-posting-date-face
+     " KFC"                              ledger-font-payee-uncleared-face
+     "    Expenses:Food  "               ledger-font-posting-account-face
+     "              $20.00"              ledger-font-posting-amount-face
+     "    Assets:Cash  "                 ledger-font-posting-account-face
+     "                       = $500.00"  ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-043 ()
+  "Resetting a balance"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 Adjustment
+    Assets:Cash                         = $500.00
+    Equity:Adjustments
+"
+   '("2012-03-10"                        ledger-font-posting-date-face
+     " Adjustment"                       ledger-font-payee-uncleared-face
+     "    Assets:Cash  "                 ledger-font-posting-account-face
+     "                       = $500.00"  ledger-font-posting-amount-face
+     "    Equity:Adjustments"            ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-044 ()
+  "Balancing transactions"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 My Broker
+    [Assets:Brokerage]            = 10 AAPL
+"
+   '("2012-03-10"                ledger-font-posting-date-face
+     " My Broker"                ledger-font-payee-uncleared-face
+     "    [Assets:Brokerage]  "  ledger-font-posting-account-face
+     "          = 10 AAPL"       ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-045 ()
+  "Posting cost"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 My Broker
+    Assets:Brokerage             10 AAPL
+    Assets:Brokerage:Cash       $-500.00
+"
+   '("2012-03-10"                   ledger-font-posting-date-face
+     " My Broker"                   ledger-font-payee-uncleared-face
+     "    Assets:Brokerage  "       ledger-font-posting-account-face
+     "           10 AAPL"           ledger-font-posting-amount-face
+     "    Assets:Brokerage:Cash  "  ledger-font-posting-account-face
+     "     $-500.00"                ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-046 ()
+  "Explicit posting costs"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 My Broker
+    Assets:Brokerage             10 AAPL @ $50.00
+    Assets:Brokerage:Cash       $-500.00
+"
+   '("2012-03-10"                   ledger-font-posting-date-face
+     " My Broker"                   ledger-font-payee-uncleared-face
+     "    Assets:Brokerage  "       ledger-font-posting-account-face
+     "           10 AAPL @ $50.00"  ledger-font-posting-amount-face
+     "    Assets:Brokerage:Cash  "  ledger-font-posting-account-face
+     "     $-500.00"                ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-047 ()
+  "Explicit posting costs: elided total"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 My Broker
+    Assets:Brokerage             10 AAPL @ $50.00
+    Assets:Brokerage:Cash
+"
+   '("2012-03-10"                   ledger-font-posting-date-face
+     " My Broker"                   ledger-font-payee-uncleared-face
+     "    Assets:Brokerage  "       ledger-font-posting-account-face
+     "           10 AAPL @ $50.00"  ledger-font-posting-amount-face
+     "    Assets:Brokerage:Cash"    ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-048 ()
+  "Posting cost expressions"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 My Broker
+    Assets:Brokerage             10 AAPL @ ($500.00 / 10)
+    Assets:Brokerage:Cash
+"
+   '("2012-03-10"                           ledger-font-posting-date-face
+     " My Broker"                           ledger-font-payee-uncleared-face
+     "    Assets:Brokerage  "               ledger-font-posting-account-face
+     "           10 AAPL @ ($500.00 / 10)"  ledger-font-posting-amount-face
+     "    Assets:Brokerage:Cash"            ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-049 ()
+  "Posting cost expressions: both"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 My Broker
+    Assets:Brokerage             (5 AAPL * 2) @ ($500.00 / 10)
+    Assets:Brokerage:Cash
+"
+   '("2012-03-10"                                ledger-font-posting-date-face
+     " My Broker"                                ledger-font-payee-uncleared-face
+     "    Assets:Brokerage  "                    ledger-font-posting-account-face
+     "           (5 AAPL * 2) @ ($500.00 / 10)"  ledger-font-posting-amount-face
+     "    Assets:Brokerage:Cash"                 ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-050 ()
+  "Total posting costs"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 My Broker
+    Assets:Brokerage             10 AAPL @@ $500.00
+    Assets:Brokerage:Cash
+"
+   '("2012-03-10"                     ledger-font-posting-date-face
+     " My Broker"                     ledger-font-payee-uncleared-face
+     "    Assets:Brokerage  "         ledger-font-posting-account-face
+     "           10 AAPL @@ $500.00"  ledger-font-posting-amount-face
+     "    Assets:Brokerage:Cash"      ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-051 ()
+  "Virtual posting costs"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-03-10 My Brother
+    Assets:Brokerage            1000 AAPL (@) $1
+    Income:Gifts Received
+"
+   '("2012-03-10"                  ledger-font-posting-date-face
+     " My Brother"                 ledger-font-payee-uncleared-face
+     "    Assets:Brokerage  "      ledger-font-posting-account-face
+     "          1000 AAPL (@) $1"  ledger-font-posting-amount-face
+     "    Income:Gifts Received"   ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-052 ()
+  "Commodity prices"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-04-10 My Broker
+    Assets:Brokerage:Cash       $750.00
+    Assets:Brokerage            -10 AAPL {$50.00} @ $75.00
+"
+   '("2012-04-10"                            ledger-font-posting-date-face
+     " My Broker"                            ledger-font-payee-uncleared-face
+     "    Assets:Brokerage:Cash  "           ledger-font-posting-account-face
+     "     $750.00"                          ledger-font-posting-amount-face
+     "    Assets:Brokerage  "                ledger-font-posting-account-face
+     "          -10 AAPL {$50.00} @ $75.00"  ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-053 ()
+  "Total commodity prices"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-04-10 My Broker
+    Assets:Brokerage:Cash       $750.00
+    Assets:Brokerage            -10 AAPL {{$500.00}} @@ $750.00
+    Income:Capital Gains       $-250.00
+"
+   '("2012-04-10"                                 ledger-font-posting-date-face
+     " My Broker"                                 ledger-font-payee-uncleared-face
+     "    Assets:Brokerage:Cash  "                ledger-font-posting-account-face
+     "     $750.00"                               ledger-font-posting-amount-face
+     "    Assets:Brokerage  "                     ledger-font-posting-account-face
+     "          -10 AAPL {{$500.00}} @@ $750.00"  ledger-font-posting-amount-face
+     "    Income:Capital Gains  "                 ledger-font-posting-account-face
+     "     $-250.00"                              ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-054 ()
+  "Prices versus costs"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-04-10 My Broker
+    Assets:Brokerage            10 AAPL {$50.00}
+    Assets:Brokerage:Cash       $750.00
+"
+   '("2012-04-10"                   ledger-font-posting-date-face
+     " My Broker"                   ledger-font-payee-uncleared-face
+     "    Assets:Brokerage  "       ledger-font-posting-account-face
+     "          10 AAPL {$50.00}"   ledger-font-posting-amount-face
+     "    Assets:Brokerage:Cash  "  ledger-font-posting-account-face
+     "     $750.00"                 ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-055 ()
+  "Fixated prices and costs #1"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-04-10 My Broker
+    Assets:Brokerage            10 AAPL {=$50.00}
+    Assets:Brokerage:Cash       $750.00
+"
+   '("2012-04-10"                   ledger-font-posting-date-face
+     " My Broker"                   ledger-font-payee-uncleared-face
+     "    Assets:Brokerage  "       ledger-font-posting-account-face
+     "          10 AAPL {=$50.00}"  ledger-font-posting-amount-face
+     "    Assets:Brokerage:Cash  "  ledger-font-posting-account-face
+     "     $750.00"                 ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-056 ()
+  "Fixated prices and costs #2"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-04-10 My Broker
+    Assets:Brokerage            10 AAPL @ =$50.00
+    Assets:Brokerage:Cash       $750.00
+"
+   '("2012-04-10"                   ledger-font-posting-date-face
+     " My Broker"                   ledger-font-payee-uncleared-face
+     "    Assets:Brokerage  "       ledger-font-posting-account-face
+     "          10 AAPL @ =$50.00"  ledger-font-posting-amount-face
+     "    Assets:Brokerage:Cash  "  ledger-font-posting-account-face
+     "     $750.00"                 ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-057 ()
+  "Lot dates"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-04-10 My Broker
+    Assets:Brokerage:Cash       $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} [2012-04-10] @ $375.00
+    Income:Capital Gains       $-125.00
+"
+   '("2012-04-10"                                         ledger-font-posting-date-face
+     " My Broker"                                         ledger-font-payee-uncleared-face
+     "    Assets:Brokerage:Cash  "                        ledger-font-posting-account-face
+     "     $375.00"                                       ledger-font-posting-amount-face
+     "    Assets:Brokerage  "                             ledger-font-posting-account-face
+     "          -5 AAPL {$50.00} [2012-04-10] @ $375.00"  ledger-font-posting-amount-face
+     "    Income:Capital Gains  "                         ledger-font-posting-account-face
+     "     $-125.00"                                      ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-058 ()
+  "Lot notes"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-04-10 My Broker
+    Assets:Brokerage:Cash       $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} [2012-04-10] (Oh my!) @ $375.00
+    Income:Capital Gains       $-125.00
+"
+   '("2012-04-10"                                                  ledger-font-posting-date-face
+     " My Broker"                                                  ledger-font-payee-uncleared-face
+     "    Assets:Brokerage:Cash  "                                 ledger-font-posting-account-face
+     "     $375.00"                                                ledger-font-posting-amount-face
+     "    Assets:Brokerage  "                                      ledger-font-posting-account-face
+     "          -5 AAPL {$50.00} [2012-04-10] (Oh my!) @ $375.00"  ledger-font-posting-amount-face
+     "    Income:Capital Gains  "                                  ledger-font-posting-account-face
+     "     $-125.00"                                               ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-059 ()
+  "Lot value expressions #1"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+define ten_dollars(s, date, t) = market($10, date, t)
+
+2012-04-10 My Broker
+    Assets:Brokerage:Cash       $375.00
+    Assets:Brokerage            -5 AAPL {$50.00} ((ten_dollars)) @@ $375.00
+    Income:Capital Gains       $-125.00
+"
+   '("define ten_dollars(s, date, t) = market($10, date, t)
+"                                                        ledger-font-define-directive-face
+"2012-04-10"                                             ledger-font-posting-date-face
+" My Broker"                                             ledger-font-payee-uncleared-face
+"    Assets:Brokerage:Cash  "                            ledger-font-posting-account-face
+"     $375.00"                                           ledger-font-posting-amount-face
+"    Assets:Brokerage  "                                 ledger-font-posting-account-face
+"          -5 AAPL {$50.00} ((ten_dollars)) @@ $375.00"  ledger-font-posting-amount-face
+"    Income:Capital Gains  "                             ledger-font-posting-account-face
+"     $-125.00"                                          ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-060 ()
+  "Lot value expressions #2"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2012-04-10 My Broker
+    A:B:Cash       $375.00
+    A:B     -5 AAPL {$50.00} ((s, d, t -> market($10, date, t))) @@ $375.00
+    Income:Capital Gains       $-125.00
+"
+   '("2012-04-10"                                                          ledger-font-posting-date-face
+     " My Broker"                                                          ledger-font-payee-uncleared-face
+     "    A:B:Cash  "                                                      ledger-font-posting-account-face
+     "     $375.00"                                                        ledger-font-posting-amount-face
+     "    A:B  "                                                           ledger-font-posting-account-face
+     "   -5 AAPL {$50.00} ((s, d, t -> market($10, date, t))) @@ $375.00"  ledger-font-posting-amount-face
+     "    Income:Capital Gains  "                                          ledger-font-posting-account-face
+     "     $-125.00"                                                       ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-061 ()
+  "Automated Transactions"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+= expr true
+    Foo                          $50.00
+    Bar                         $-50.00
+
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+"
+   '("= expr true
+    Foo                          $50.00
+    Bar                         $-50.00"  ledger-font-auto-xact-face
+    "2012-03-10"                          ledger-font-posting-date-face
+    " KFC"                                ledger-font-payee-uncleared-face
+    "    Expenses:Food  "                 ledger-font-posting-account-face
+    "              $20.00"                ledger-font-posting-amount-face
+    "    Assets:Cash"                     ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-062 ()
+  "Amount multipliers"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+= expr true
+    Foo                           50.00
+    Bar                          -50.00
+
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+"
+   '("= expr true
+    Foo                           50.00
+    Bar                          -50.00"  ledger-font-auto-xact-face
+    "2012-03-10"                          ledger-font-posting-date-face
+    " KFC"                                ledger-font-payee-uncleared-face
+    "    Expenses:Food  "                 ledger-font-posting-account-face
+    "              $20.00"                ledger-font-posting-amount-face
+    "    Assets:Cash"                     ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-063 ()
+  "Accessing the matching posting’s amount"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+= expr true
+    (Foo)                  (amount * 2)  ; same as just 2 in this case
+
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+"
+   '("= expr true
+    (Foo)                  (amount * 2)  ; same as just 2 in this case"  ledger-font-auto-xact-face
+    "2012-03-10"                                                         ledger-font-posting-date-face
+    " KFC"                                                               ledger-font-payee-uncleared-face
+    "    Expenses:Food  "                                                ledger-font-posting-account-face
+    "              $20.00"                                               ledger-font-posting-amount-face
+    "    Assets:Cash"                                                    ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-064 ()
+  "Referring to the matching posting’s account"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+= food
+    (Budget:$account)                10
+
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+"
+   '("= food
+    (Budget:$account)                10"  ledger-font-auto-xact-face
+    "2012-03-10"                          ledger-font-posting-date-face
+    " KFC"                                ledger-font-payee-uncleared-face
+    "    Expenses:Food  "                 ledger-font-posting-account-face
+    "              $20.00"                ledger-font-posting-amount-face
+    "    Assets:Cash"                     ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-065 ()
+  "Applying metadata to every matched posting"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+= food
+    ; Foo: Bar
+    (Budget:$account)                10
+
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+"
+   '("= food
+    ; Foo: Bar
+    (Budget:$account)                10"  ledger-font-auto-xact-face
+    "2012-03-10"                          ledger-font-posting-date-face
+    " KFC"                                ledger-font-payee-uncleared-face
+    "    Expenses:Food  "                 ledger-font-posting-account-face
+    "              $20.00"                ledger-font-posting-amount-face
+    "    Assets:Cash"                     ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-066 ()
+  "Applying metadata to the generated posting"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+= food
+    (Budget:$account)                10
+      ; Foo: Bar
+
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash
+"
+   '("= food
+    (Budget:$account)                10
+      ; Foo: Bar"                        ledger-font-auto-xact-face
+     "2012-03-10"                        ledger-font-posting-date-face
+     " KFC"                              ledger-font-payee-uncleared-face
+     "    Expenses:Food  "               ledger-font-posting-account-face
+     "              $20.00"              ledger-font-posting-amount-face
+     "    Assets:Cash"                   ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-067 ()
+  "Effective Dates on postings"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+2008/10/16 * (2090) Bountiful Blessings Farm
+    Expenses:Food:Groceries                  $ 37.50  ; [=2008/10/01]
+    Expenses:Food:Groceries                  $ 37.50  ; [=2008/11/01]
+    Expenses:Food:Groceries                  $ 37.50  ; [=2008/12/01]
+    Expenses:Food:Groceries                  $ 37.50  ; [=2009/01/01]
+    Expenses:Food:Groceries                  $ 37.50  ; [=2009/02/01]
+    Expenses:Food:Groceries                  $ 37.50  ; [=2009/03/01]
+    Assets:Checking
+"
+   '("2008/10/16"                     ledger-font-posting-date-face
+     " (2090)"                        ledger-font-code-face
+     " Bountiful Blessings Farm"      ledger-font-payee-cleared-face
+     "    Expenses:Food:Groceries  "  ledger-font-posting-account-face
+     "                $ 37.50  "      ledger-font-posting-amount-face
+     "; [=2008/10/01]"                ledger-font-comment-face
+     "    Expenses:Food:Groceries  "  ledger-font-posting-account-face
+     "                $ 37.50  "      ledger-font-posting-amount-face
+     "; [=2008/11/01]"                ledger-font-comment-face
+     "    Expenses:Food:Groceries  "  ledger-font-posting-account-face
+     "                $ 37.50  "      ledger-font-posting-amount-face
+     "; [=2008/12/01]"                ledger-font-comment-face
+     "    Expenses:Food:Groceries  "  ledger-font-posting-account-face
+     "                $ 37.50  "      ledger-font-posting-amount-face
+     "; [=2009/01/01]"                ledger-font-comment-face
+     "    Expenses:Food:Groceries  "  ledger-font-posting-account-face
+     "                $ 37.50  "      ledger-font-posting-amount-face
+     "; [=2009/02/01]"                ledger-font-comment-face
+     "    Expenses:Food:Groceries  "  ledger-font-posting-account-face
+     "                $ 37.50  "      ledger-font-posting-amount-face
+     "; [=2009/03/01]"                ledger-font-comment-face
+     "    Assets:Checking"            ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-068 ()
+  "Periodic Transactions"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+~ Monthly
+    Expenses:Rent               $500.00
+    Expenses:Food               $450.00
+    Expenses:Auto:Gas           $120.00
+    Expenses:Insurance          $150.00
+    Expenses:Phone              $125.00
+    Expenses:Utilities          $100.00
+    Expenses:Movies              $50.00
+    Expenses                    $200.00  ; all other expenses
+    Assets
+
+~ Yearly
+    Expenses:Auto:Repair        $500.00
+    Assets
+"
+   '("~ Monthly
+    Expenses:Rent               $500.00
+    Expenses:Food               $450.00
+    Expenses:Auto:Gas           $120.00
+    Expenses:Insurance          $150.00
+    Expenses:Phone              $125.00
+    Expenses:Utilities          $100.00
+    Expenses:Movies              $50.00
+    Expenses                    $200.00  ; all other expenses
+    Assets"  ledger-font-periodic-xact-face
+    "~ Yearly
+    Expenses:Auto:Repair        $500.00
+    Assets"  ledger-font-periodic-xact-face)))
+
+
+
+(ert-deftest ledger-fontify/test-069 ()
+  "Concrete Example of Automated Transactions"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+= /^(?:Income:|Expenses:(?:Business|Rent$|Furnishings|Taxes|Insurance))/
+  (Liabilities:Huququ'llah)               0.19
+
+2003/01/01 (99) Salary
+  Income:Salary  -$1000
+  Assets:Checking
+"
+   '("= /^(?:Income:|Expenses:(?:Business|Rent$|Furnishings|Taxes|Insurance))/
+  (Liabilities:Huququ'llah)               0.19"  ledger-font-auto-xact-face
+  "2003/01/01"                                   ledger-font-posting-date-face
+  " (99)"                                        ledger-font-code-face
+  " Salary"                                      ledger-font-payee-uncleared-face
+  "  Income:Salary  "                            ledger-font-posting-account-face
+  "-$1000"                                       ledger-font-posting-amount-face
+  "  Assets:Checking"                            ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-070 ()
+  "Commenting on your Journal"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+; This is a single line comment,
+#  and this,
+%   and this,
+|    and this,
+*     and this.
+"
+   '("
+; This is a single line comment,
+#  and this,
+%   and this,
+|    and this,
+*     and this.
+"  ledger-font-comment-face)))
+
+
+
+(ert-deftest ledger-fontify/test-071 ()
+  "Commodity names with white-space or numeric characters"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+1999/06/09 ! Achat
+    Actif:SG PEE STK         49.957 \"Arcancia Équilibre 454\"
+    Actif:SG PEE STK      $-234.90
+"
+   '("1999/06/09"                                ledger-font-posting-date-face
+     " Achat"                                    ledger-font-payee-pending-face
+     "    Actif:SG PEE STK  "                    ledger-font-posting-account-face
+     "       49.957 \"Arcancia Équilibre 454\""  ledger-font-posting-amount-face
+     "    Actif:SG PEE STK  "                    ledger-font-posting-account-face
+     "    $-234.90"                              ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-072 ()
+  "Command Directives: account"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+account Expenses:Food
+    note This account is all about the chicken!
+    alias food
+    payee ^(KFC|Popeyes)$
+    check commodity == \"$\"
+    assert commodity == \"$\"
+    eval print(\"Hello!\")
+    default
+"
+   '("account Expenses:Food
+"  ledger-font-account-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-073 ()
+  "Command Directives: apply account"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+apply account Personal
+2011/11/15  Supermarket
+    Expenses:Groceries      $ 50.00
+    Assets:Checking
+end apply account
+"
+   '("apply account Personal
+"                           ledger-font-apply-directive-face
+"2011/11/15"                ledger-font-posting-date-face
+"  Supermarket"             ledger-font-payee-uncleared-face
+"    Expenses:Groceries  "  ledger-font-posting-account-face
+"    $ 50.00"               ledger-font-posting-amount-face
+"    Assets:Checking"       ledger-font-posting-account-face
+"end apply account
+"                           ledger-font-end-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-074 ()
+  "Command Directives: alias"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+alias Entertainment=Expenses:Entertainment
+alias Dining=Entertainment:Dining
+alias Checking=Assets:Credit Union:Joint Checking Account
+
+2011/11/30 ChopChop
+  Dining          $10.00
+  Checking
+"
+   '("alias Entertainment=Expenses:Entertainment
+alias Dining=Entertainment:Dining
+alias Checking=Assets:Credit Union:Joint Checking Account
+"                 ledger-font-alias-directive-face
+"2011/11/30"      ledger-font-posting-date-face
+" ChopChop"       ledger-font-payee-uncleared-face
+"  Dining  "      ledger-font-posting-account-face
+"        $10.00"  ledger-font-posting-amount-face
+"  Checking"      ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-075 ()
+  "Command Directives: assert"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+assert commodity == 'VIFSX'
+assert comment =~ /REGEX/
+"
+   '("assert commodity == 'VIFSX'
+assert comment =~ /REGEX/
+"  ledger-font-assert-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-076 ()
+  "Command Directives: bucket"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+bucket Assets:Checking
+2011/01/25 Tom's Used Cars
+    Expenses:Auto                    $ 5,500.00
+
+2011/01/27 Book Store
+    Expenses:Books                       $20.00
+
+2011/12/01 Sale
+    Assets:Checking:Business            $ 30.00
+"
+   '("bucket Assets:Checking
+"                                 ledger-font-bucket-directive-face
+"2011/01/25"                      ledger-font-posting-date-face
+" Tom's Used Cars"                ledger-font-payee-uncleared-face
+"    Expenses:Auto  "             ledger-font-posting-account-face
+"                  $ 5,500.00"    ledger-font-posting-amount-face
+"2011/01/27"                      ledger-font-posting-date-face
+" Book Store"                     ledger-font-payee-uncleared-face
+"    Expenses:Books  "            ledger-font-posting-account-face
+"                     $20.00"     ledger-font-posting-amount-face
+"2011/12/01"                      ledger-font-posting-date-face
+" Sale"                           ledger-font-payee-uncleared-face
+"    Assets:Checking:Business  "  ledger-font-posting-account-face
+"          $ 30.00"               ledger-font-posting-amount-face)))
+
+
+
+(ert-deftest ledger-fontify/test-077 ()
+  "Command Directives: capture"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+capture  Expenses:Deductible:Medical  Medical
+"
+   '("capture  Expenses:Deductible:Medical  Medical
+"  ledger-font-capture-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-078 ()
+  "Command Directives: check"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+check amount == $20
+check account =~ /REGEX/
+"
+   '("check amount == $20
+check account =~ /REGEX/
+"  ledger-font-check-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-079 ()
+  "Command Directives: comment"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+comment
+    This is a block comment with
+    multiple lines
+end comment
+"
+   '("comment
+"  ledger-font-default-face
+"end comment
+"  ledger-font-end-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-080 ()
+  "Command Directives: commodity"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+commodity $
+   note American Dollars
+   format $1,000.00
+   nomarket
+   default
+"
+   '("commodity $
+"  ledger-font-commodity-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-081 ()
+  "Command Directives: define"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+define var_name=$100
+
+2011/12/01 Test
+    Expenses  (var_name*4)
+    Assets
+"
+   '("define var_name=$100
+"                 ledger-font-define-directive-face
+"2011/12/01"      ledger-font-posting-date-face
+" Test"           ledger-font-payee-uncleared-face
+"    Expenses  "  ledger-font-posting-account-face
+"(var_name*4)"    ledger-font-posting-amount-face
+"    Assets"      ledger-font-posting-account-face)))
+
+
+
+(ert-deftest ledger-fontify/test-082 ()
+  "Command Directives: end"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+end
+"
+   '("end
+"  ledger-font-end-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-083 ()
+  "Command Directives: expr"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+expr
+"
+   '("expr
+"  ledger-font-expr-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-084 ()
+  "Command Directives: fixed"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+fixed CAD $0.90
+2012-04-10 Lunch in Canada
+    Assets:Wallet            -15.50 CAD
+    Expenses:Food            15.50 CAD
+
+2012-04-11 Second day Dinner in Canada
+    Assets:Wallet            -25.75 CAD
+    Expenses:Food            25.75 CAD
+endfixed CAD
+"
+   '("fixed CAD $0.90
+"                               ledger-font-fixed-directive-face
+"2012-04-10"                    ledger-font-posting-date-face
+" Lunch in Canada"              ledger-font-payee-uncleared-face
+"    Assets:Wallet  "           ledger-font-posting-account-face
+"          -15.50 CAD"          ledger-font-posting-amount-face
+"    Expenses:Food  "           ledger-font-posting-account-face
+"          15.50 CAD"           ledger-font-posting-amount-face
+"2012-04-11"                    ledger-font-posting-date-face
+" Second day Dinner in Canada"  ledger-font-payee-uncleared-face
+"    Assets:Wallet  "           ledger-font-posting-account-face
+"          -25.75 CAD"          ledger-font-posting-amount-face
+"    Expenses:Food  "           ledger-font-posting-account-face
+"          25.75 CAD"           ledger-font-posting-amount-face
+"endfixed CAD
+"                               ledger-font-end-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-085 ()
+  "Command Directives: include"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+include file.ledger
+"
+   '("include file.ledger
+"  ledger-font-include-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-086 ()
+  "Command Directives: payee"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+payee KFC
+    alias KENTUCKY FRIED CHICKEN
+    uuid 2a2e21d434356f886c84371eebac6e44f1337fda
+"
+   '("payee KFC
+"  ledger-font-payee-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-087 ()
+  "Command Directives: apply tag"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+apply tag hastag
+apply tag nestedtag: true
+
+2011/01/25 Tom's Used Cars
+    Expenses:Auto                    $ 5,500.00
+    ; :nobudget:
+    Assets:Checking
+
+2011/01/27 Book Store
+    Expenses:Books                       $20.00
+    Liabilities:MasterCard
+
+end apply tag
+
+2011/12/01 Sale
+    Assets:Checking:Business            $ 30.00
+    Income:Sales
+
+end apply tag
+"
+   '("apply tag hastag
+apply tag nestedtag: true
+"                                 ledger-font-apply-directive-face
+"2011/01/25"                      ledger-font-posting-date-face
+" Tom's Used Cars"                ledger-font-payee-uncleared-face
+"    Expenses:Auto  "             ledger-font-posting-account-face
+"                  $ 5,500.00"    ledger-font-posting-amount-face
+"    ; :nobudget:"                ledger-font-comment-face
+"    Assets:Checking"             ledger-font-posting-account-face
+"2011/01/27"                      ledger-font-posting-date-face
+" Book Store"                     ledger-font-payee-uncleared-face
+"    Expenses:Books  "            ledger-font-posting-account-face
+"                     $20.00"     ledger-font-posting-amount-face
+"    Liabilities:MasterCard"      ledger-font-posting-account-face
+"end apply tag
+"                                 ledger-font-end-directive-face
+"2011/12/01"                      ledger-font-posting-date-face
+" Sale"                           ledger-font-payee-uncleared-face
+"    Assets:Checking:Business  "  ledger-font-posting-account-face
+"          $ 30.00"               ledger-font-posting-amount-face
+"    Income:Sales"                ledger-font-posting-account-face
+"end apply tag
+"                                 ledger-font-end-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-088 ()
+  "Command Directives: tag"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+tag Receipt
+  check value =~ /pattern/
+  assert value != 'foobar'
+"
+   '("tag Receipt
+"  ledger-font-tag-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-089 ()
+  "Command Directives: test"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+test reg --now 2014-05-14 -p 'this month'
+14-May-13 Bug 1038 Test         Expenses:Some:Account          $500         $500
+                                Assets:Cash                   $-500            0
+end test
+"
+   '("test reg --now 2014-05-14 -p 'this month'
+" ledger-font-default-face "end test
+" ledger-font-end-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-090 ()
+  "Command Directives: year"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+year 2004
+"
+   '("year 2004
+"  ledger-font-year-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-091 ()
+  "Command Directives: A"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+A Assets:Checking
+"
+   '("A Assets:Checking
+"  ledger-font-bucket-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-092 ()
+  "Command Directives: Y"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+Y 2016
+"
+   '("Y 2016
+"  ledger-font-year-directive-face)))
+
+
+
+(ert-deftest ledger-fontify/test-093 ()
+  "Command Directives: N"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+N SYMBOL
+"
+   '("N SYMBOL
+"  ledger-font-default-face)))
+
+
+
+(ert-deftest ledger-fontify/test-094 ()
+  "Command Directives: D"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+D $1,000.00
+"
+   '("D $1,000.00
+"  ledger-font-default-face)))
+
+
+
+(ert-deftest ledger-fontify/test-095 ()
+  "Command Directives: C"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+C 1.00 Kb = 1024 bytes
+"
+   '("C 1.00 Kb = 1024 bytes
+"  ledger-font-default-face)))
+
+
+
+(ert-deftest ledger-fontify/test-096 ()
+  "Command Directives: I, i, O, o, b, h"
+  :tags '(font baseline)
+
+  (ledger-test-font-lock
+   "
+h 2013/03/28 7 Account
+b 2013/03/27 3600 Account
+I 2013/03/28 17:01:30 Account  PAYEE
+O 2013/03/29 18:39:00
+i 2013/03/28 22:13:00
+o 2013/03/29 03:39:00
+"
+   '("h 2013/03/28 7 Account
+b 2013/03/27 3600 Account
+I 2013/03/28 17:01:30 Account  PAYEE
+O 2013/03/29 18:39:00
+i 2013/03/28 22:13:00
+o 2013/03/29 03:39:00
+" ledger-font-default-face)))
+
+
+
+
 
 (provide 'fontify-test)
 
