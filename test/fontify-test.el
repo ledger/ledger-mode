@@ -1860,7 +1860,7 @@ check account =~ /REGEX/
   "Command Directives: comment"
   :tags '(font baseline)
 
-  (ledger-test-font-lock  ; FIXME 1) add comment directive and 2) why not fontifying as comment the in-between lines?
+  (ledger-test-font-lock  ; FIXME why not fontifying as comment the in-between lines?
    "
 comment
     This is a block comment with
@@ -1868,7 +1868,7 @@ comment
 end comment
 "
    '("comment
-"  ledger-font-default-face
+"  ledger-font-comment-face
 "end comment
 "  ledger-font-end-directive-face)))
 

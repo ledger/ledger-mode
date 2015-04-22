@@ -174,6 +174,8 @@ Fontify the first line of an xact"
            (setq face 'ledger-font-capture-directive-face))
           ((looking-at "check")
            (setq face 'ledger-font-check-directive-face))
+          ((looking-at "comment")
+           (setq face 'ledger-font-comment-face))
           ((looking-at "commodity")
            (setq face 'ledger-font-commodity-directive-face))
           ((looking-at "define")

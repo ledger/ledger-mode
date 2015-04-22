@@ -263,6 +263,7 @@
  		("bucket" . ledger-font-bucket-directive-face)
  		("capture" . ledger-font-capture-directive-face)
  		("check" . ledger-font-check-directive-face)
+    ("comment" . ledger-font-comment-face)
  		("commodity" . ledger-font-commodity-directive-face)
  		("define" . ledger-font-define-directive-face)
  		("end" . ledger-font-end-directive-face)
