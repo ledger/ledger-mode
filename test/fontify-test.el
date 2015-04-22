@@ -2073,7 +2073,7 @@ tag Receipt
   "Command Directives: test"
   :tags '(font baseline)
 
-  (ledger-test-font-lock  ; FIXME add this directive as alternative to the comment directive
+  (ledger-test-font-lock
    "
 test reg --now 2014-05-14 -p 'this month'
 14-May-13 Bug 1038 Test         Expenses:Some:Account          $500         $500
@@ -2081,7 +2081,7 @@ test reg --now 2014-05-14 -p 'this month'
 end test
 "
    '("test reg --now 2014-05-14 -p 'this month'
-" ledger-font-default-face "end test
+" ledger-font-comment-face "end test
 " ledger-font-end-directive-face)))
 
 

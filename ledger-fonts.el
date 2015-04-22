@@ -272,6 +272,7 @@
  		("include" . ledger-font-include-directive-face)
  		("payee" . ledger-font-payee-directive-face)
  		("tag" . ledger-font-tag-directive-face)
+    ("test" . ledger-font-comment-face)
  		("year" . ledger-font-year-directive-face))
    "Expressions to highlight in Ledger mode.")
 
