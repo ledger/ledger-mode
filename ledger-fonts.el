@@ -125,6 +125,11 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-C-directive-face
+  `((t :inherit ledger-font-directive-face))
+  "Default face for C directive"
+  :group 'ledger-faces)
+
 (defface ledger-font-capture-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -138,6 +143,11 @@
 (defface ledger-font-commodity-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
+  :group 'ledger-faces)
+
+(defface ledger-font-D-directive-face
+  `((t :inherit ledger-font-directive-face))
+  "Default face for D directive"
   :group 'ledger-faces)
 
 (defface ledger-font-define-directive-face
@@ -165,6 +175,11 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-N-directive-face
+  `((t :inherit ledger-font-directive-face))
+  "Default face for N directive"
+  :group 'ledger-faces)
+
 (defface ledger-font-payee-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -173,6 +188,11 @@
 (defface ledger-font-tag-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
+  :group 'ledger-faces)
+
+(defface ledger-font-timeclock-directive-face
+  `((t :inherit ledger-font-directive-face))
+  "Default face for timeclock I,i,O,o,b,h directives"
   :group 'ledger-faces)
 
 (defface ledger-font-year-directive-face

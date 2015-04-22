@@ -2129,12 +2129,12 @@ Y 2016
   "Command Directives: N"
   :tags '(font baseline)
 
-  (ledger-test-font-lock  ; FIXME add this directive
+  (ledger-test-font-lock
    "
 N SYMBOL
 "
    '("N SYMBOL
-"  ledger-font-default-face)))
+"  ledger-font-N-directive-face)))
 
 
 
@@ -2142,12 +2142,12 @@ N SYMBOL
   "Command Directives: D"
   :tags '(font baseline)
 
-  (ledger-test-font-lock  ; FIXME add this directive
+  (ledger-test-font-lock
    "
 D $1,000.00
 "
    '("D $1,000.00
-"  ledger-font-default-face)))
+"  ledger-font-D-directive-face)))
 
 
 
@@ -2155,12 +2155,12 @@ D $1,000.00
   "Command Directives: C"
   :tags '(font baseline)
 
-  (ledger-test-font-lock  ; FIXME add this directive
+  (ledger-test-font-lock
    "
 C 1.00 Kb = 1024 bytes
 "
    '("C 1.00 Kb = 1024 bytes
-"  ledger-font-default-face)))
+"  ledger-font-C-directive-face)))
 
 
 
@@ -2168,7 +2168,7 @@ C 1.00 Kb = 1024 bytes
   "Command Directives: I, i, O, o, b, h"
   :tags '(font baseline)
 
-  (ledger-test-font-lock  ; FIXME add this directive
+  (ledger-test-font-lock
    "
 h 2013/03/28 7 Account
 b 2013/03/27 3600 Account
@@ -2183,7 +2183,7 @@ I 2013/03/28 17:01:30 Account  PAYEE
 O 2013/03/29 18:39:00
 i 2013/03/28 22:13:00
 o 2013/03/29 03:39:00
-" ledger-font-default-face)))
+" ledger-font-timeclock-directive-face)))
 
 
 
