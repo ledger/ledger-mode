@@ -1927,14 +1927,16 @@ end
 
 
 (ert-deftest ledger-fontify/test-083 ()
-  "Command Directives: expr"
+  "Command Directives: expr "
   :tags '(font baseline)
 
+  ;; WARNING: do NOT remove the space after expr
   (ledger-test-font-lock
    "
-expr
+expr 
 "
-   '("expr
+   ;; WARNING: do NOT remove the space after expr
+   '("expr 
 "  ledger-font-expr-directive-face)))
 
 
@@ -2186,7 +2188,28 @@ o 2013/03/29 03:39:00
 " ledger-font-timeclock-directive-face)))
 
 
+(ert-deftest ledger-fontify/test-097 ()
+  "double Y directive"
+  :tags '(font regress)
 
+  (ledger-test-font-lock
+   "
+YY 2015
+"
+   '("YY 2015
+"  ledger-font-default-face)))
+
+
+(ert-deftest ledger-fontify/test-098 ()
+  "space after directive"
+  :tags '(font regress)
+
+  (ledger-test-font-lock
+   "
+payeee Charity
+"
+   '("payeee Charity
+"  ledger-font-default-face)))
 
 
 (provide 'fontify-test)
