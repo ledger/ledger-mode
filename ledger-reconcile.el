@@ -521,10 +521,10 @@ moved and recentered.  If they aren't strange things happen."
         (goto-char (point-min))
         (search-forward account nil t))))
 
-(defun ledger-reconcile ()
+(defun ledger-reconcile (&optional account target)
   "Start reconciling, prompt for account."
   (interactive)
-  (let ((account (ledger-read-account-with-prompt "Account to reconcile"))
+  (let ((account (or account (ledger-read-account-with-prompt "Account to reconcile")))
         (buf (current-buffer))
         (rbuf (get-buffer ledger-recon-buffer-name)))
 
@@ -558,15 +558,15 @@ moved and recentered.  If they aren't strange things happen."
           (if ledger-narrow-on-reconcile
               (ledger-occur account)))
         (if (> (ledger-reconcile-refresh) 0)
-            (ledger-reconcile-change-target))
+            (ledger-reconcile-change-target target))
         (ledger-display-balance)))))
 
 (defvar ledger-reconcile-mode-abbrev-table)
 
-(defun ledger-reconcile-change-target ()
+(defun ledger-reconcile-change-target (&optional target)
   "Change the target amount for the reconciliation process."
   (interactive)
-  (setq ledger-target (ledger-read-commodity-string ledger-reconcile-target-prompt-string)))
+  (setq ledger-target (or target (ledger-read-commodity-string ledger-reconcile-target-prompt-string))))
 
 (defmacro ledger-reconcile-change-sort-key-and-refresh (sort-by)
   "Set the sort-key to SORT-BY."
