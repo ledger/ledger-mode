@@ -67,6 +67,27 @@ If `ledger-reconcile-finish-force-quit' is set, recon window is killed"
      (equal nil (get-buffer-window ledger-recon-buffer-name)))))
 
 
+(ert-deftest ledger-reconcile/test-004 ()
+  "Regress test for Bug 1108
+http://bugs.ledger-cli.org/show_bug.cgi?id=1108"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+"2014/11/10  EDF
+    Dépense:Maison:Service:Électricité    36,23 €
+    Actif:Courant:BnpCc
+
+2014/11/14  Banque Accord Retrait
+    Passif:Crédit:BanqueAccord              60,00 €
+    Actif:Courant:BnpCc
+"
+    (goto-char 150)                 ; line 6, before A of BanqueAccord
+    (let ((context (ledger-context-at-point)))
+      (should (eq (ledger-context-current-field context) 'account))
+      (should (equal "Passif:Crédit:BanqueAccord"
+                     (ledger-context-field-value context 'account))))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
