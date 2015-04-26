@@ -68,8 +68,9 @@ If `ledger-reconcile-finish-force-quit' is set, recon window is killed"
 
 
 (ert-deftest ledger-reconcile/test-004 ()
-  "Regress test for Bug 1108
-http://bugs.ledger-cli.org/show_bug.cgi?id=1108"
+  "Regress test for Bug 1108 and Bug 1061
+http://bugs.ledger-cli.org/show_bug.cgi?id=1108
+http://bugs.ledger-cli.org/show_bug.cgi?id=1061"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
