@@ -28,6 +28,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1107"
      (equal (buffer-name)           ; current buffer name
             (buffer-name ledger-buffer)))))
 
+
 (ert-deftest ledger-reconcile/test-002 ()
   "Regress test for Bug 1060
 http://bugs.ledger-cli.org/show_bug.cgi?id=1060"
@@ -44,6 +45,26 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1060"
     (should ;; Expected: buffer recon must still exist and be selected
      (equal ledger-recon-buffer-name
             (buffer-name (window-buffer (selected-window)))))))
+
+
+(ert-deftest ledger-reconcile/test-003 ()
+  "Regress test for Bug 1060
+http://bugs.ledger-cli.org/show_bug.cgi?id=1060
+
+If `ledger-reconcile-finish-force-quit' is set, recon window is killed"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (setq ledger-reconcile-finish-force-quit t)
+    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (forward-line 2)                    ; because of ledger-reconcile-buffer-header
+    (ledger-reconcile-toggle)                     ; mark pending
+    (ledger-reconcile-toggle)                     ; mark pending
+    (ledger-reconcile-finish)                     ; C-c C-c
+    (should ;; Expected: recon buffer has been killed
+     (equal nil (get-buffer-window ledger-recon-buffer-name)))))
 
 
 (provide 'reconcile-test)
