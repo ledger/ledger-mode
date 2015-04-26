@@ -78,6 +78,16 @@
 ")
 
 
+(defun ledger-tests-reset-custom-values (group)
+  "Reset custom variables from GROUP to standard value."
+  (let ((members (custom-group-members group nil)))
+    (dolist (member members)
+      (cond ((eq (cadr member) 'custom-group)
+             (ledger-tests-reset-custom-values (car member)))
+            ((eq (cadr member) 'custom-variable)
+             (custom-reevaluate-setting (car member)))))))
+
+
 (defmacro ledger-tests-with-temp-file (contents &rest body)
   ;; from python-tests-with-temp-file
   "Create a `ledger-mode' enabled file with CONTENTS.
