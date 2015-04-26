@@ -135,6 +135,34 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1104"
      (equal nil (get-buffer-window ledger-recon-buffer-name)))))
 
 
+(ert-deftest ledger-reconcile/test-007 ()
+  "Regress test for Bug 1059
+http://bugs.ledger-cli.org/show_bug.cgi?id=1059"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+"2014/03/03 * Retrait
+    Dépense:Alimentation:Épicerie            20,00 €
+    Dépense:Alimentation:Restaurant          23,80 €
+    Dépense:Alimentation:Restaurant          11,50 €
+    Actif:Remboursement:Cie  1,50 €
+    Dépense:Liquide
+    Passif:Crédit:BanqueAccord              -60,00 €
+"
+    (goto-char 206)
+    (ledger-toggle-current)             ; C-c C-c
+    (should
+     (equal
+      "2014/03/03 Retrait
+    * Dépense:Alimentation:Épicerie          20,00 €
+    * Dépense:Alimentation:Restaurant        23,80 €
+    * Dépense:Alimentation:Restaurant        11,50 €
+    Actif:Remboursement:Cie    1,50 €
+    * Dépense:Liquide
+    * Passif:Crédit:BanqueAccord            -60,00 €
+"
+             (buffer-string)))))
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
