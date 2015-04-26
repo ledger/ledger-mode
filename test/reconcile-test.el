@@ -121,6 +121,19 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=875"
              (buffer-string)))))
 
 
+(ert-deftest ledger-reconcile/test-006 ()
+  "Regress test for Bug 1104
+http://bugs.ledger-cli.org/show_bug.cgi?id=1104"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (setq ledger-reconcile-buffer-header "")
+    (ledger-reconcile "Expenses:Books" '(0 "$"))
+    (should-not
+     (equal nil (get-buffer-window ledger-recon-buffer-name)))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
