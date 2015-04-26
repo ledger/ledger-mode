@@ -88,6 +88,39 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1108"
                      (ledger-context-field-value context 'account))))))
 
 
+(ert-deftest ledger-reconcile/test-005 ()
+  "Regress test for Bug 1105+875
+http://bugs.ledger-cli.org/show_bug.cgi?id=1105
+http://bugs.ledger-cli.org/show_bug.cgi?id=875"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+"2008/10/16 (2090) Bountiful Blessings Farm Williamsport
+    Expenses:Food:Groceries                  $ 37.50  ; [=2008/10/01]
+    Expenses:Food:Groceries                  $ 37.50  ; [=2008/11/01]
+    Expenses:Food:Groceries                  $ 37.50  ; [=2008/12/01]
+    Expenses:Food:Groceries                  $ 37.50  ; [=2009/01/01]
+    Expenses:Food:Groceries                  $ 37.50  ; [=2009/02/01]
+    Expenses:Food:Groceries                  $ 37.50  ; [=2009/03/01]
+    Assets:Checking
+"
+
+    (setq ledger-reconcile-buffer-header ""
+          ledger-reconcile-buffer-line-format "%(date)s %-30(payee)s %-22(account)s %10(amount)s\n"
+          ledger-reconcile-buffer-payee-max-chars 30
+          ledger-reconcile-buffer-account-max-chars 22)
+    (ledger-reconcile "Expenses:Food:Groceries" '(0 "$"))
+    (switch-to-buffer ledger-recon-buffer-name)
+    (should (equal
+             "2008/10/16 Bountiful Blessings Farm Will… …penses:Food:Groceries    $ 37.50
+2008/10/16 Bountiful Blessings Farm Will… …penses:Food:Groceries    $ 37.50
+2008/10/16 Bountiful Blessings Farm Will… …penses:Food:Groceries    $ 37.50
+2008/10/16 Bountiful Blessings Farm Will… …penses:Food:Groceries    $ 37.50
+2008/10/16 Bountiful Blessings Farm Will… …penses:Food:Groceries    $ 37.50
+2008/10/16 Bountiful Blessings Farm Will… …penses:Food:Groceries    $ 37.50"
+             (buffer-string)))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
