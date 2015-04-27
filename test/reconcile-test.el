@@ -163,6 +163,24 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1059"
 "
              (buffer-string)))))
 
+
+(ert-deftest ledger-reconcile/test-008 ()
+  "Regress test for Bug 1056
+http://bugs.ledger-cli.org/show_bug.cgi?id=1056"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+"2014/04/03 www.amazon.fr
+    Dépense:Loisir:Ordi:Matériel            101,50 €  ; disque dur portable 2,5\" 2000 Go
+    Dépense:Maison:Service:Poste
+    * Passif:Crédit:BanqueAccord           -171,63 €
+"
+    (setq ledger-reconcile-default-commodity "€") ; FIXME This must be set even if below call (ledger-reconcile "Dépense" '(0 "€")) is using "€". Is this a bug?
+    (ledger-reconcile "Dépense" '(0 "€"))
+    (should-not ;; ledger recon must exists and no error prevented to go to this point
+     (equal nil (get-buffer-window ledger-recon-buffer-name)))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
