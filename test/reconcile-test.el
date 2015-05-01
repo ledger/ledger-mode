@@ -319,6 +319,70 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=967"
        (eq left-window-before-save (window-in-direction 'left))))))
 
 
+(ert-deftest ledger-reconcile/test-012 ()
+  "Regress test for Bug 957
+http://bugs.ledger-cli.org/show_bug.cgi?id=957"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+      "2013/04/20 Petit Casino
+    Dépense:Alimentation:Alcool               6,49 €
+    Dépense:Alimentation:Épicerie
+    Passif:Crédit:BanqueAccord              -14,94 €
+
+2013/04/20 Les Tilleuls
+    Dépense:Alimentation:Restaurant          18,40 €
+    Passif:Crédit:BanqueAccord
+"
+    (setq ledger-reconcile-default-commodity "€")
+    (ledger-reconcile "BanqueAccord" '(0 "€"))
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (forward-line 2)
+    (ledger-reconcile-visit)
+    (forward-line -1)
+    (goto-char (line-beginning-position)) ; beginning-of-line
+    (insert "    Dépense:Alimentation:Alcool    1,00 €
+    Dépense:Alimentation:Alcool    1,00 €
+    Dépense:Alimentation:Alcool    1,00 €
+")
+    (save-buffer)
+    (switch-to-buffer-other-window ledger-recon-buffer-name)
+    (ledger-reconcile-toggle)
+    (switch-to-buffer-other-window ledger-buffer)
+    (should
+     (equal (buffer-string)
+            "2013/04/20 Petit Casino
+    Dépense:Alimentation:Alcool               6,49 €
+    Dépense:Alimentation:Alcool    1,00 €
+    Dépense:Alimentation:Alcool    1,00 €
+    Dépense:Alimentation:Alcool    1,00 €
+    Dépense:Alimentation:Épicerie
+    ! Passif:Crédit:BanqueAccord            -14,94 €
+
+2013/04/20 Les Tilleuls
+    Dépense:Alimentation:Restaurant          18,40 €
+    Passif:Crédit:BanqueAccord
+"))
+    (goto-char (point-min))  ; beginning-of-buffer
+    (forward-line 1)
+    (kill-line 4)
+    (save-buffer)
+    (switch-to-buffer-other-window ledger-recon-buffer-name)
+    (forward-line -1)
+    (ledger-reconcile-toggle)
+    (switch-to-buffer-other-window ledger-buffer)
+    (should
+     (equal (buffer-string)
+            "2013/04/20 Petit Casino
+    Dépense:Alimentation:Épicerie
+    Passif:Crédit:BanqueAccord              -14,94 €
+
+2013/04/20 Les Tilleuls
+    Dépense:Alimentation:Restaurant          18,40 €
+    Passif:Crédit:BanqueAccord
+"))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
