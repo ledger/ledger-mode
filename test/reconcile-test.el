@@ -30,8 +30,9 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1107"
 
 
 (ert-deftest ledger-reconcile/test-002 ()
-  "Regress test for Bug 1060
-http://bugs.ledger-cli.org/show_bug.cgi?id=1060"
+  "Regress test for Bug 1060 + Bug 1039
+http://bugs.ledger-cli.org/show_bug.cgi?id=1060
+http://bugs.ledger-cli.org/show_bug.cgi?id=1039"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
