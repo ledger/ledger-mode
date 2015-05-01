@@ -181,6 +181,27 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1056"
      (equal nil (get-buffer-window ledger-recon-buffer-name)))))
 
 
+(ert-deftest ledger-reconcile/test-009 ()
+  "Regress test for Bug 1040
+http://bugs.ledger-cli.org/show_bug.cgi?id=1040"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (forward-line 6)
+    (ledger-reconcile-toggle)
+    (ledger-reconcile-toggle)
+    (let ((line-before-save (line-number-at-pos)))
+      (ledger-reconcile-save)             ; key 's'
+      (should ;; Expected: line position is kept
+       (eq line-before-save (line-number-at-pos)))
+      (should ;; current buffer should be *recon* buffer
+       (equal (buffer-name)           ; current buffer name
+              ledger-recon-buffer-name)))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
