@@ -203,6 +203,94 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1040"
               ledger-recon-buffer-name)))))
 
 
+(ert-deftest ledger-reconcile/test-010 ()
+  "Regress test for Bug 986
+http://bugs.ledger-cli.org/show_bug.cgi?id=986"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+
+    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (should
+     (equal (buffer-string)     ; default sort is by ledger file order
+      "Reconciling account Assets:Checking
+
+2011/01/14      Bank                                               Assets:Checking                      $ -300.00
+2011/01/19      Grocery Store                                      Assets:Checking                       $ -44.00
+2011/01/25      Bank                                               Assets:Checking                     $ 5,500.00
+2011/01/25      Tom's Used Cars                                    Assets:Checking                    $ -5,500.00
+2011/04/25      Tom's Used Cars                                    Assets:Checking                    $ -5,500.00
+2011/04/27      Bookstore                                          Assets:Checking                       $ -20.00
+2011/12/01      Sale                                               Assets:Checking                        $ 30.00" ) )
+    (ledger-reconcile-quit)
+
+    (setq ledger-reconcile-sort-key "(date)") ; sort by date
+    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (should
+     (equal (buffer-string)
+      "Reconciling account Assets:Checking
+
+2011/01/14      Bank                                               Assets:Checking                      $ -300.00
+2011/01/19      Grocery Store                                      Assets:Checking                       $ -44.00
+2011/01/25      Bank                                               Assets:Checking                     $ 5,500.00
+2011/01/25      Tom's Used Cars                                    Assets:Checking                    $ -5,500.00
+2011/04/25      Tom's Used Cars                                    Assets:Checking                    $ -5,500.00
+2011/04/27      Bookstore                                          Assets:Checking                       $ -20.00
+2011/12/01      Sale                                               Assets:Checking                        $ 30.00"))
+    (ledger-reconcile-quit)
+
+    (setq ledger-reconcile-sort-key "(amount)") ; sort by amount
+    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (should
+     (equal (buffer-string)             ; sort by ledger file order
+      "Reconciling account Assets:Checking
+
+2011/01/25      Tom's Used Cars                                    Assets:Checking                    $ -5,500.00
+2011/04/25      Tom's Used Cars                                    Assets:Checking                    $ -5,500.00
+2011/01/14      Bank                                               Assets:Checking                      $ -300.00
+2011/01/19      Grocery Store                                      Assets:Checking                       $ -44.00
+2011/04/27      Bookstore                                          Assets:Checking                       $ -20.00
+2011/12/01      Sale                                               Assets:Checking                        $ 30.00
+2011/01/25      Bank                                               Assets:Checking                     $ 5,500.00"))
+    (ledger-reconcile-quit)
+
+    (setq ledger-reconcile-sort-key "(payee)") ; sort by payee
+    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (should
+     (equal (buffer-string)
+      "Reconciling account Assets:Checking
+
+2011/01/14      Bank                                               Assets:Checking                      $ -300.00
+2011/01/25      Bank                                               Assets:Checking                     $ 5,500.00
+2011/04/27      Bookstore                                          Assets:Checking                       $ -20.00
+2011/01/19      Grocery Store                                      Assets:Checking                       $ -44.00
+2011/12/01      Sale                                               Assets:Checking                        $ 30.00
+2011/01/25      Tom's Used Cars                                    Assets:Checking                    $ -5,500.00
+2011/04/25      Tom's Used Cars                                    Assets:Checking                    $ -5,500.00"))
+    (ledger-reconcile-quit)
+
+    (setq ledger-reconcile-sort-key "(0)") ; sort by ledger file order
+    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (should
+     (equal (buffer-string)
+      "Reconciling account Assets:Checking
+
+2011/01/14      Bank                                               Assets:Checking                      $ -300.00
+2011/01/19      Grocery Store                                      Assets:Checking                       $ -44.00
+2011/01/25      Bank                                               Assets:Checking                     $ 5,500.00
+2011/01/25      Tom's Used Cars                                    Assets:Checking                    $ -5,500.00
+2011/04/25      Tom's Used Cars                                    Assets:Checking                    $ -5,500.00
+2011/04/27      Bookstore                                          Assets:Checking                       $ -20.00
+2011/12/01      Sale                                               Assets:Checking                        $ 30.00"))
+    (ledger-reconcile-quit)))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
