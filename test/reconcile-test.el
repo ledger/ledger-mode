@@ -291,6 +291,34 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=986"
     (ledger-reconcile-quit)))
 
 
+(ert-deftest ledger-reconcile/test-011 ()
+  "Regress test for Bug 967
+http://bugs.ledger-cli.org/show_bug.cgi?id=967"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (other-window 1)                ; go to *ledger* buffer
+    (remove-hook 'kill-buffer-hook 'ledger-reconcile-quit t) ; needed for delete-other-windows
+    (delete-other-windows)          ; C-x 1
+    (set-frame-width (selected-frame) 100) ; needed for split-window-right
+    (split-window-right)            ; C-x 3
+    (switch-to-buffer-other-window ledger-recon-buffer-name) ; C-x 4 b
+
+    (forward-line 2)
+    (ledger-reconcile-toggle)
+
+    (let ((right-window-before-save (window-in-direction 'right))
+          (left-window-before-save (window-in-direction 'left)))
+      (ledger-reconcile-save)             ; key 's'
+      (should ;; Expected: window config is unchanged
+       (eq right-window-before-save (window-in-direction 'right)))
+      (should ;; Expected: window config is unchanged
+       (eq left-window-before-save (window-in-direction 'left))))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
