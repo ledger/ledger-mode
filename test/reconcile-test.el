@@ -384,6 +384,26 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=957"
 "))))
 
 
+(ert-deftest ledger-reconcile/test-013 ()
+  "Regress test for Bug 906
+http://bugs.ledger-cli.org/show_bug.cgi?id=906"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (goto-char 1040)
+    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (switch-to-buffer-other-window ledger-buffer)
+    (should (= 1040 (point)))
+
+    (goto-char 1265)
+    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (switch-to-buffer-other-window ledger-buffer)
+    (should (= 1265 (point)))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
