@@ -203,6 +203,25 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=927"
 " ))))
 
 
+(ert-deftest ledger-post/test-010 ()
+  "Regress test for Bug 925
+http://bugs.ledger-cli.org/show_bug.cgi?id=925"
+  :tags '(post regress)
+
+  (ledger-tests-with-temp-file
+      "
+; isolated comment (nothing before and after)
+
+"
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+            "
+; isolated comment (nothing before and after)
+
+" ))))
+
+
 (provide 'post-test)
 
 ;;; post-test.el ends here
