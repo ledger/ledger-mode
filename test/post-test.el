@@ -83,6 +83,105 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=933"
 " ))))                                  ; FIXME amount after a ';' should not be aligned. Introduced with f89c348
 
 
+(ert-deftest ledger-post/test-004 ()
+  "Regress test for Bug 932
+http://bugs.ledger-cli.org/show_bug.cgi?id=932"
+  :tags '(post regress)
+
+  (ledger-tests-with-temp-file
+"2000/10/24 * Action France Telecom
+    Actif:Courant:BnpCc       50 France_Telecom @@ 10000,00 F
+    Actif:Courant:BnpCc
+"
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+      "2000/10/24 * Action France Telecom
+    Actif:Courant:BnpCc                           50 France_Telecom @@ 10000,00 F
+    Actif:Courant:BnpCc
+" ))))
+
+
+(ert-deftest ledger-post/test-005 ()
+  "Regress test for Bug 932
+http://bugs.ledger-cli.org/show_bug.cgi?id=932"
+  :tags '(post regress)
+
+  (ledger-tests-with-temp-file
+"1994/01/01 * Solde initial
+    Actif:Courant:CeLivretJeune    10000,00 F = 10000,00 F
+    Equity:SoldeInitial
+"
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+      "1994/01/01 * Solde initial
+    Actif:Courant:CeLivretJeune             10000,00 F = 10000,00 F
+    Equity:SoldeInitial
+" ))))
+
+
+(ert-deftest ledger-post/test-006 ()
+  "Regress test for Bug 932
+http://bugs.ledger-cli.org/show_bug.cgi?id=932"
+  :tags '(post regress)
+
+  (ledger-tests-with-temp-file
+"2000/07/14 * Salomon Smith Barney
+    Actif:Invest:SalomonSmithBarney             1,20 $
+    Revenu:Invest:Intérêt               -1,20 $ {=1,0702 €}
+    Revenu:Devise                              -1,20 $
+    Revenu:Devise                       1,20 $ {=1,0702 €}
+"
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+      "2000/07/14 * Salomon Smith Barney
+    Actif:Invest:SalomonSmithBarney             1,20 $
+    Revenu:Invest:Intérêt                      -1,20 $ {=1,0702 €}
+    Revenu:Devise                              -1,20 $
+    Revenu:Devise                               1,20 $ {=1,0702 €}
+" ))))
+
+
+(ert-deftest ledger-post/test-007 ()
+  "Regress test for Bug 932
+http://bugs.ledger-cli.org/show_bug.cgi?id=932"
+  :tags '(post regress)
+
+  (ledger-tests-with-temp-file
+"2006/06/30 * Employer
+    Actif:Invest:Peg         54,7328 Pacteo_Monétaire @@ 1817,13 €
+    Revenu:Salaire:Intéressement
+"
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+      "2006/06/30 * Employer
+    Actif:Invest:Peg                         54,7328 Pacteo_Monétaire @@ 1817,13 €
+    Revenu:Salaire:Intéressement
+" ))))
+
+
+(ert-deftest ledger-post/test-008 ()
+  "Regress test for Bug 932
+http://bugs.ledger-cli.org/show_bug.cgi?id=932"
+  :tags '(post regress)
+
+  (ledger-tests-with-temp-file
+"1999/05/22 * PEE
+    Actif:Invest:Pee        198,064 \"Arcancia_Securite_254\" @@ 670,05 €
+    Actif:Invest:Pee
+"
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+            "1999/05/22 * PEE
+    Actif:Invest:Pee                         198,064 \"Arcancia_Securite_254\" @@ 670,05 €
+    Actif:Invest:Pee
+" ))))
+
+
 (provide 'post-test)
 
 ;;; post-test.el ends here
