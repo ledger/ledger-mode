@@ -223,7 +223,8 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=925"
 
 
 (ert-deftest ledger-post/test-011 ()
-  "Regress test for Bug 924
+  "Regress test for Bug 923+924
+http://bugs.ledger-cli.org/show_bug.cgi?id=923
 http://bugs.ledger-cli.org/show_bug.cgi?id=924"
   :tags '(post regress)
 
@@ -233,7 +234,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=924"
     Revenu:Autre:CadeauReçu
 
 "
-    (ledger-post-align-postings (point-min) (point-max))
+    (indent-region (point-min) (point-max))
     (should
      (equal (buffer-string)
             "1994/01/10 * Mother
