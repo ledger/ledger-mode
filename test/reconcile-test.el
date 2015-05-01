@@ -404,6 +404,25 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=906"
     (should (= 1265 (point)))))
 
 
+(ert-deftest ledger-reconcile/test-014 ()
+  "Regress test for Bug 900
+http://bugs.ledger-cli.org/show_bug.cgi?id=900"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (ledger-reconcile "Assets:Checking" '(0 "$"))
+    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (switch-to-buffer-other-window ledger-buffer)
+    (save-buffer)
+    (let ((ledger-buffer-name (buffer-name ledger-buffer)))
+      (find-alternate-file temp-file)
+      (ledger-reconcile "Expenses:Books" '(0 "$"))
+      (should ;; Expected: buffer with same name
+       (equal (buffer-name (current-buffer))
+              ledger-buffer-name)))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
