@@ -182,6 +182,27 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=932"
 " ))))
 
 
+(ert-deftest ledger-post/test-009 ()
+  "Regress test for Bug 927
+http://bugs.ledger-cli.org/show_bug.cgi?id=927"
+  :tags '(post regress)
+
+  (ledger-tests-with-temp-file
+      "~ Quarterly
+    Dépense:Maison:Maintenance                232,48 €
+    Actif:Courant:BnpCc
+
+"
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+            "~ Quarterly
+    Dépense:Maison:Maintenance                232,48 €
+    Actif:Courant:BnpCc
+
+" ))))
+
+
 (provide 'post-test)
 
 ;;; post-test.el ends here
