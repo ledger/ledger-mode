@@ -222,6 +222,27 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=925"
 " ))))
 
 
+(ert-deftest ledger-post/test-011 ()
+  "Regress test for Bug 924
+http://bugs.ledger-cli.org/show_bug.cgi?id=924"
+  :tags '(post regress)
+
+  (ledger-tests-with-temp-file
+      "1994/01/10 * Mother
+    Actif:Courant:BnpCc                       500,00 F  ; Étrennes
+    Revenu:Autre:CadeauReçu
+
+"
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+            "1994/01/10 * Mother
+    Actif:Courant:BnpCc                       500,00 F  ; Étrennes
+    Revenu:Autre:CadeauReçu
+
+" ))))
+
+
 (provide 'post-test)
 
 ;;; post-test.el ends here
