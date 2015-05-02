@@ -475,6 +475,27 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=895"
 2011/01/19      Grocery Store                                      Expenses:Food:Groceries                $ 44.00" ))))
 
 
+(ert-deftest ledger-reconcile/test-018 ()
+  "Regress test for Bug 886
+http://bugs.ledger-cli.org/show_bug.cgi?id=886"
+  :tags '(reconcile baseline)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (ledger-reconcile "Assets:Checking" '(0 "$"))
+    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (goto-char (point-max))  ; end-of-buffer
+    (let ((line-before-toggle (line-number-at-pos)))
+      (ledger-reconcile-toggle)           ; mark pending
+      (should (eq line-before-toggle (line-number-at-pos)))
+      (should (eq 'ledger-font-reconciler-pending-face
+                (get-text-property (point) 'font-lock-face)))
+      (ledger-reconcile-toggle)           ; mark pending
+      (should (eq line-before-toggle (line-number-at-pos)))
+      (should (eq 'ledger-font-reconciler-uncleared-face
+                (get-text-property (point) 'font-lock-face))))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
