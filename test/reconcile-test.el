@@ -423,6 +423,24 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=900"
               ledger-buffer-name)))))
 
 
+(ert-deftest ledger-reconcile/test-015 ()
+  "Regress test for Bug 245
+http://bugs.ledger-cli.org/show_bug.cgi?id=245"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file          ; Faces in *Reconcile* buffer
+      demo-ledger
+    (ledger-reconcile "Assets:Checking" '(0 "$"))
+    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (forward-line 2)       ; because of ledger-reconcile-buffer-header
+    (should (eq 'ledger-font-reconciler-uncleared-face
+                (get-text-property (point) 'font-lock-face)))
+    (ledger-reconcile-toggle)           ; mark pending
+    (forward-line -1)                   ; go back on pending line
+    (should (eq 'ledger-font-reconciler-pending-face
+                (get-text-property (point) 'font-lock-face)))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
