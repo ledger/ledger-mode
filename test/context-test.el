@@ -39,6 +39,16 @@
                      (ledger-context-field-value context 'amount))))))
 
 
+(ert-deftest ledger-context/test-003 ()
+  "number in comments"
+  :tags '(context regress)
+
+  (ledger-tests-with-temp-file
+   "    Dépense:Impôt:Local                      48,00 €  ; TH 2013"
+   (should (equal (ledger-context-at-point)
+                  '(acct-transaction indent ((indent "    " 1) (status nil nil) (account "Dépense:Impôt:Local" 5) (separator "                      " 24) (amount "48,00" 46) (commodity "€" 52) (comment "TH 2013" 57)))))))
+
+
 (provide 'context-test)
 
 ;;; context-test.el ends here
