@@ -441,6 +441,23 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=245"
                 (get-text-property (point) 'font-lock-face)))))
 
 
+(ert-deftest ledger-reconcile/test-016 ()
+  "Keep line in *Reconcile* buffer"
+  :tags '(reconcile baseline)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (ledger-reconcile "Assets:Checking" '(0 "$"))
+    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (forward-line 2)       ; because of ledger-reconcile-buffer-header
+    (ledger-reconcile-toggle)           ; mark pending
+    (forward-line 1)
+    (let ((line-before-finish (line-number-at-pos)))
+      (ledger-reconcile-finish)                     ; C-c C-c
+      (should ;; Expected: line position is kept
+       (eq line-before-finish (line-number-at-pos))))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
