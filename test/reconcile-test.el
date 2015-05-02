@@ -458,6 +458,23 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=245"
        (eq line-before-finish (line-number-at-pos))))))
 
 
+(ert-deftest ledger-reconcile/test-017 ()
+  "Regress test for Bug 895
+http://bugs.ledger-cli.org/show_bug.cgi?id=895"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (ledger-reconcile "Food" '(0 "$")) ; launch reconciliation
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (should
+     (equal (buffer-string)
+      "Reconciling account Food
+
+2011/01/02      Grocery Store                                      Expenses:Food:Groceries                $ 65.00
+2011/01/19      Grocery Store                                      Expenses:Food:Groceries                $ 44.00" ))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
