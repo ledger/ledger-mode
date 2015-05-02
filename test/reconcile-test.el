@@ -496,6 +496,27 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=886"
                 (get-text-property (point) 'font-lock-face))))))
 
 
+(ert-deftest ledger-reconcile/test-019 ()
+  "Regress test for Bug 879
+http://bugs.ledger-cli.org/show_bug.cgi?id=879"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (switch-to-buffer-other-window ledger-buffer)
+    (ledger-reconcile "Food" '(0 "$")) ; launch a *second* time on *another* account
+    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (should ;; current buffer should be *recon* buffer
+     (equal (buffer-name)           ; current buffer name
+            ledger-recon-buffer-name))
+    (other-window 1)                ; switch to *other* window
+    (should ;; Expected: this must be ledger buffer
+     (equal (buffer-name)           ; current buffer name
+            (buffer-name ledger-buffer)))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
