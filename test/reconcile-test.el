@@ -557,6 +557,24 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=922"
             "2012/01/02 03DIZ3Q Bilip                                              Nyu:sto                                  -12 B"))))
 
 
+(ert-deftest ledger-reconcile/test-022 ()
+  "Regress test for Bug 951
+http://bugs.ledger-cli.org/show_bug.cgi?id=951"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+   "2012-03-10 (#100) KFC
+    Expenses:Food                $3,877.78
+    Assets:Checking
+"
+   (ledger-reconcile "Expenses:Food" '(0 "$"))
+   (switch-to-buffer ledger-recon-buffer-name)
+   (should (equal (buffer-string)
+            "Reconciling account Expenses:Food
+
+2012/03/10 #100 KFC                                                Expenses:Food                        $3,877.78"))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
