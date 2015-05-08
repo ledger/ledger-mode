@@ -536,6 +536,27 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=527"
             (buffer-string)))))
 
 
+(ert-deftest ledger-reconcile/test-021 ()
+  "Regress test for Bug 922
+http://bugs.ledger-cli.org/show_bug.cgi?id=922"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+   "2012/01/02 (03DIZ3Q) Bilip
+    Nyu:sto                                      -12  B
+    Foo:bar
+
+2012/01/02 (03DIZ3Q) Bilip
+    * Nyu:sto                                    -12  B
+    Foo:bar
+"
+   (setq ledger-reconcile-buffer-header "")
+   (ledger-reconcile "Nyu" '(0 "B"))
+   (switch-to-buffer ledger-recon-buffer-name)
+   (should (equal (buffer-string)
+            "2012/01/02 03DIZ3Q Bilip                                              Nyu:sto                                  -12 B"))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
