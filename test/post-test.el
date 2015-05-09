@@ -244,6 +244,30 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=924"
 " ))))
 
 
+(ert-deftest ledger-post/test-012 ()
+  "Regress test for Bug 1007
+http://bugs.ledger-cli.org/show_bug.cgi?id=1007"
+  :tags '(post regress)
+
+  (ledger-tests-with-temp-file
+   "2014-06-10 * (POS) Walgreen's
+	   ; Withdrawal Visa Checking
+	   ; TransID: 991332
+	   Assets:GTCU:Checking			$-1.000,00
+	   Expenses:Entertainment
+"
+   (goto-char 76)
+   (ledger-post-align-xact (point))
+   (should
+    (equal (buffer-string)
+           "2014-06-10 * (POS) Walgreen's
+    ; Withdrawal Visa Checking
+    ; TransID: 991332
+    Assets:GTCU:Checking                  $-1.000,00
+    Expenses:Entertainment
+" ))))
+
+
 (provide 'post-test)
 
 ;;; post-test.el ends here
