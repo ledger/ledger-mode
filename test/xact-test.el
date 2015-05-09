@@ -8,8 +8,9 @@
 
 
 (ert-deftest ledger-xact/test-001 ()
-  "Regress test for Bug 952
-http://bugs.ledger-cli.org/show_bug.cgi?id=952"
+  "Regress test for Bug 952+936
+http://bugs.ledger-cli.org/show_bug.cgi?id=952
+http://bugs.ledger-cli.org/show_bug.cgi?id=936"
   :tags '(xact regress)
 
   (ledger-tests-with-temp-file
@@ -21,7 +22,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=952"
     Expenses:Foo                            $10.00
     Assets:Bar
 "
-   (end-of-buffer)
+   (goto-char (point-max))              ; end-of-buffer
    (ledger-add-transaction "2013/05/02 foo")
    (should
     (equal (buffer-string)
