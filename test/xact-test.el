@@ -8,9 +8,10 @@
 
 
 (ert-deftest ledger-xact/test-001 ()
-  "Regress test for Bug 952+936
+  "Regress test for Bug 952+936+183
 http://bugs.ledger-cli.org/show_bug.cgi?id=952
-http://bugs.ledger-cli.org/show_bug.cgi?id=936"
+http://bugs.ledger-cli.org/show_bug.cgi?id=936
+http://bugs.ledger-cli.org/show_bug.cgi?id=183"
   :tags '(xact regress)
 
   (ledger-tests-with-temp-file
