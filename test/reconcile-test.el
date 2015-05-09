@@ -575,6 +575,25 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=951"
 2012/03/10 #100 KFC                                                Expenses:Food                        $3,877.78"))))
 
 
+(ert-deftest ledger-reconcile/test-023 ()
+  "Regress test for Bug 897
+http://bugs.ledger-cli.org/show_bug.cgi?id=897"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+   "2012-03-10 (#100) KFC  ; comment
+    Expenses:Food                $3,877.78  ; comment
+    * Assets:Checking                         ; comment
+"
+   (forward-line 1)                     ; go to posting not cleared
+   (ledger-toggle-current)              ; C-c C-c
+   (should (equal (buffer-string)
+            "2012-03-10 * (#100) KFC  ; comment
+    Expenses:Food                $3,877.78  ; comment
+    Assets:Checking                           ; comment
+"))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
