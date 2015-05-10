@@ -613,6 +613,66 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=396"
 2012/03/10 #100 Kentucky Fried Chicken aka 'KFC'                   Expenses:Food                        $3,877.78"))))
 
 
+(ert-deftest ledger-reconcile/test-025 ()
+  "Regress test for Bug 262
+http://bugs.ledger-cli.org/show_bug.cgi?id=262"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+   "2011/11/16 Amazon.com
+    Expenses:Entertainment:Misc               $32.64
+    Assets:VWCU:Joint Checking
+"
+   (forward-line 2)
+   (ledger-toggle-current-transaction)  ; C-c C-e
+   (should
+    (equal
+     (buffer-string)
+     "2011/11/16 * Amazon.com
+    Expenses:Entertainment:Misc               $32.64
+    Assets:VWCU:Joint Checking
+"))
+   (goto-char (point-min))  ; beginning-of-buffer
+   (forward-line 1)
+   (ledger-toggle-current)             ; C-c C-c
+   (should
+    (equal
+     (buffer-string)
+     "2011/11/16 Amazon.com
+    Expenses:Entertainment:Misc               $32.64
+    * Assets:VWCU:Joint Checking
+"))
+   (ledger-toggle-current)             ; C-c C-c
+   (should
+    (equal
+     (buffer-string)
+     "2011/11/16 * Amazon.com
+    Expenses:Entertainment:Misc               $32.64
+    Assets:VWCU:Joint Checking
+"))))
+
+
+(ert-deftest ledger-reconcile/test-026 ()
+  "Regress test for Bug 262
+http://bugs.ledger-cli.org/show_bug.cgi?id=262"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+   "2011/11/16 Amazon.com
+    Expenses:Entertainment:Misc               $32.64
+    Assets:VWCU:Joint Checking
+"
+   (forward-line 1)
+   (ledger-toggle-current)             ; C-c C-c
+   (should
+    (equal
+     (buffer-string)
+     "2011/11/16 Amazon.com
+    * Expenses:Entertainment:Misc             $32.64
+    Assets:VWCU:Joint Checking
+"))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
