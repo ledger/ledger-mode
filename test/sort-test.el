@@ -61,6 +61,54 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=937"
 " ))))
 
 
+(ert-deftest ledger-sort/test-003 ()
+  "Regress test for Bug 260
+http://bugs.ledger-cli.org/show_bug.cgi?id=260"
+  :tags '(sort regress)
+
+  (ledger-tests-with-temp-file
+   "2013/05/03 foo
+    Expenses:Foo                             3,00 €
+    Assets:Bar
+
+2013/05/02 foo
+    Expenses:Foo                               2,00 €
+    Assets:Bar
+
+2013/05/01 foo
+    Expenses:Foo                             1,00 €
+    Assets:Bar
+"
+   (ledger-sort-region (point-min) 168) ; first two transactions
+   (should (equal (buffer-string)
+                  "2013/05/02 foo
+    Expenses:Foo                               2,00 €
+    Assets:Bar
+
+2013/05/03 foo
+    Expenses:Foo                             3,00 €
+    Assets:Bar
+
+2013/05/01 foo
+    Expenses:Foo                             1,00 €
+    Assets:Bar
+"))
+   (ledger-sort-region 85 (point-max))  ; last two transactions
+   (should (equal (buffer-string)
+                  "2013/05/02 foo
+    Expenses:Foo                               2,00 €
+    Assets:Bar
+
+2013/05/01 foo
+    Expenses:Foo                             1,00 €
+    Assets:Bar
+
+2013/05/03 foo
+    Expenses:Foo                             3,00 €
+    Assets:Bar
+"))))
+
+
 (provide 'sort-test)
 
 ;;; sort-test.el ends here
