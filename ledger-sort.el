@@ -79,8 +79,9 @@
     (save-excursion
       (save-restriction
         (goto-char beg)
+        ;; make sure beg of region is at the beginning of a line
+        (beginning-of-line)
         ;; make sure point is at the beginning of a xact
-        (ledger-navigate-next-xact)
         (unless (looking-at ledger-payee-any-status-regex)
           (ledger-navigate-next-xact))
         (setq new-beg (point))
