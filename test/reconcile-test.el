@@ -594,6 +594,25 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=897"
 "))))
 
 
+(ert-deftest ledger-reconcile/test-024 ()
+  "Regress test for Bug 396
+http://bugs.ledger-cli.org/show_bug.cgi?id=396"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+   ;; FIXME "KFC" surrounded with double quotes should work too
+   "2012-03-10 (#100) Kentucky Fried Chicken aka 'KFC'
+    Expenses:Food                $3,877.78
+    Assets:Checking
+"
+   (ledger-reconcile "Expenses:Food" '(0 "$"))
+   (switch-to-buffer ledger-recon-buffer-name)
+   (should (equal (buffer-string)
+                  "Reconciling account Expenses:Food
+
+2012/03/10 #100 Kentucky Fried Chicken aka 'KFC'                   Expenses:Food                        $3,877.78"))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
