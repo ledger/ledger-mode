@@ -673,6 +673,30 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=262"
 "))))
 
 
+(ert-deftest ledger-reconcile/test-027 ()
+  "Keep position in ledger buffer after delete in *Reconcile* buffer"
+  :tags '(reconcile baseline)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (ledger-reconcile "Expenses" '(0 "$"))
+    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (forward-line 2)       ; because of ledger-reconcile-buffer-header
+    (forward-line 4)       ; move to not be on first line of recon
+    (let ((line-before-delete (line-number-at-pos)))
+      (ledger-reconcile-delete)             ; key 'd'
+      (should ;; Expected: line position is kept
+       (eq line-before-delete (line-number-at-pos)))
+      (should ;; current buffer should be *recon* buffer
+       (equal (buffer-name)           ; current buffer name
+              ledger-recon-buffer-name))
+      (other-window 1)                ; switch to *other* window
+      (should ;; Expected: this must be ledger buffer
+       (equal (buffer-name)           ; current buffer name
+              (buffer-name ledger-buffer)))
+      (should (= 1323 (point))))))    ; expected on "Book Store" xact
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
