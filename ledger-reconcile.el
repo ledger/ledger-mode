@@ -301,7 +301,8 @@ Return the number of uncleared xacts found."
         (goto-char (line-beginning-position))
         (delete-region (point) (1+ (line-end-position)))
         (set-buffer-modified-p t))
-      (ledger-reconcile-refresh))))
+      (ledger-reconcile-refresh)
+      (ledger-reconcile-visit t))))
 
 (defun ledger-reconcile-visit (&optional come-back)
   "Recenter ledger buffer on transaction and COME-BACK if non-nil."
