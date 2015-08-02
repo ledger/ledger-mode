@@ -697,6 +697,22 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=262"
       (should (= 1323 (point))))))    ; expected on "Book Store" xact
 
 
+(ert-deftest ledger-reconcile/test-028 ()
+  "Keep position in ledger buffer after delete in *Reconcile* buffer"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (ledger-reconcile "Expenses" '(0 "$"))
+    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (goto-char (point-max))             ; end-of-buffer
+    (goto-char (line-beginning-position)) ; beginning-of-line
+    (let ((line-before-delete (line-number-at-pos)))
+      (ledger-reconcile-delete)             ; key 'd'
+      (should ;; Expected: previous line
+       (eq (1- line-before-delete) (line-number-at-pos))))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
