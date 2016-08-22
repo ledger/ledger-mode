@@ -56,9 +56,9 @@
   `(list (ledger-line-regex (quote ,elements)) (quote ,elements)))
 
 (defconst ledger-line-config
-  (list (list 'xact (list (ledger-single-line-config date nil status nil code nil payee nil comment)
-                          (ledger-single-line-config date nil status nil code nil payee)
-                          (ledger-single-line-config date nil status nil payee)))
+  (list (list 'xact (list (ledger-single-line-config date nil status code nil payee nil comment)
+                          (ledger-single-line-config date nil status code nil payee)
+                          (ledger-single-line-config date nil status payee)))
         (list 'acct-transaction (list (ledger-single-line-config indent comment)
                                       (ledger-single-line-config indent status account separator commodity amount nil comment)
                                       (ledger-single-line-config indent status account separator commodity amount)
