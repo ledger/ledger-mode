@@ -268,6 +268,95 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1007"
 " ))))
 
 
+(ert-deftest ledger-post/test-013 ()
+  "Baseline test for ledger-post-amount-alignment-at
+Introduced by commit e9f16a1"
+  :tags '(post baseline)
+
+  (ledger-tests-with-temp-file
+"2010/12/20 * Organic Co-op
+  Expenses:Food:Groceries	   1,1 €
+  Expenses:Food:Groceries	   1,02 €
+  Expenses:Food:Groceries	   1,003 €
+  Expenses:Food:Groceries	   1,0004 €
+  Assets:Checking		   -4,1234 €
+"
+    ; ledger-post-amount-alignment-at is kept as default
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+      "2010/12/20 * Organic Co-op
+    Expenses:Food:Groceries                      1,1 €
+    Expenses:Food:Groceries                     1,02 €
+    Expenses:Food:Groceries                    1,003 €
+    Expenses:Food:Groceries                   1,0004 €
+    Assets:Checking                          -4,1234 €
+" )))
+
+  (ledger-tests-with-temp-file
+"2010/12/20 * Organic Co-op
+  Expenses:Food:Groceries	   1,1 €
+  Expenses:Food:Groceries	   1,02 €
+  Expenses:Food:Groceries	   1,003 €
+  Expenses:Food:Groceries	   1,0004 €
+  Assets:Checking		   -4,1234 €
+"
+    (setq ledger-post-amount-alignment-at :decimal)
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+      "2010/12/20 * Organic Co-op
+    Expenses:Food:Groceries                        1,1 €
+    Expenses:Food:Groceries                        1,02 €
+    Expenses:Food:Groceries                        1,003 €
+    Expenses:Food:Groceries                        1,0004 €
+    Assets:Checking                               -4,1234 €
+" )))
+
+  (ledger-tests-with-temp-file
+"2010/12/20 * Organic Co-op
+  Expenses:Food:Groceries	   1,1 €
+  Expenses:Food:Groceries	   1,02 €
+  Expenses:Food:Groceries	   1,003 €
+  Expenses:Food:Groceries	   1,0004 €
+  Assets:Checking		   -4,1234 €
+"
+    (setq ledger-post-amount-alignment-at :end)
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+      "2010/12/20 * Organic Co-op
+    Expenses:Food:Groceries                      1,1 €
+    Expenses:Food:Groceries                     1,02 €
+    Expenses:Food:Groceries                    1,003 €
+    Expenses:Food:Groceries                   1,0004 €
+    Assets:Checking                          -4,1234 €
+" )))
+
+ (ledger-tests-with-temp-file
+"2015/09/28 Foo
+    Expenses:IT                                  100.00 Kc
+    Expenses:Travel                                 $10
+    Expenses:Travel                                  27 Kc
+    Expenses:Books                               213.54 Kc
+    Expenses:Groceries                            1.123 Kc
+    Assets:Checking:CS                           $10.10
+"
+    (setq ledger-post-amount-alignment-at :decimal)
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+      "2015/09/28 Foo
+    Expenses:IT                                  100.00 Kc
+    Expenses:Travel                              $10
+    Expenses:Travel                               27 Kc
+    Expenses:Books                               213.54 Kc
+    Expenses:Groceries                             1.123 Kc
+    Assets:Checking:CS                           $10.10
+" )))
+  )
+
+
 (provide 'post-test)
 
 ;;; post-test.el ends here
