@@ -34,6 +34,32 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=582"
     * Passif:Crédit:BanqueAccord              -60,00 €"))))
 
 
+(ert-deftest ledger-complete/test-002 ()
+  "Regress test for Bug 252
+http://bugs.ledger-cli.org/show_bug.cgi?id=252"
+  :tags '(complete regress)
+
+  (ledger-tests-with-temp-file
+   "2010/04/08 payee
+    account1                1 €
+    account2
+"
+   (goto-char (point-max))
+   (newline)
+   (insert "2016/09/01 payee")
+   (ledger-fully-complete-xact)
+   (should
+    (equal (buffer-string)
+           "2010/04/08 payee
+    account1                1 €
+    account2
+
+2016/09/01 payee
+    account1                1 €
+    account2
+"))))
+
+
 (provide 'complete-test)
 
 ;;; complete-test.el ends here
