@@ -35,6 +35,19 @@
    ))
 
 
+(ert-deftest ledger-mode/test-002 ()
+  "Regress test for Bug 256
+http://bugs.ledger-cli.org/show_bug.cgi?id=256"
+  :tags '(mode regress)
+
+  (ledger-tests-with-temp-file
+   ""
+
+   (comment-dwim nil)
+   (should (equal (buffer-string) "; ")) ; Expected: no space before ';'
+   ))
+
+
 (provide 'mode-test)
 
 ;;; mode-test.el ends here
