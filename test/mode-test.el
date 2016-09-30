@@ -48,6 +48,19 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
    ))
 
 
+(ert-deftest ledger-mode/test-003 ()
+  "Baseline test for comment-start"
+  :tags '(mode baseline)
+
+  (ledger-tests-with-temp-file
+   ""
+
+   (setq comment-start "#")
+   (comment-dwim nil)
+   (should (equal (buffer-string) "# "))
+   ))
+
+
 (provide 'mode-test)
 
 ;;; mode-test.el ends here
