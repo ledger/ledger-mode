@@ -4,16 +4,16 @@ language: generic
 
 env:
   matrix:
-    - EMACS=emacs24
-    - EMACS=emacs-snapshot
+    - EMACS=emacs24        LEDGER_BRANCH=master
+    - EMACS=emacs-snapshot LEDGER_BRANCH=next
 
 matrix:
   allow_failures:
-    - env: EMACS=emacs-snapshot
+    - env: EMACS=emacs-snapshot LEDGER_BRANCH=next
 
 before_install:
-  - ./tools/travis-install-ledger.sh master
-  - export PATH=$TRAVIS_BUILD_DIR/ledger-master:$PATH
+  - ./tools/travis-install-ledger.sh $LEDGER_BRANCH
+  - export PATH=$TRAVIS_BUILD_DIR/ledger-$LEDGER_BRANCH:$PATH
 
 install:
   - if [ "$EMACS" = 'emacs24' ]; then
