@@ -107,6 +107,23 @@ always located at the beginning of buffer."
        (ledger-tests-reset-custom-values 'ledger))))
 
 
+(defun ledger-test-visible-buffer-string ()
+  "Same as `buffer-string', but excludes invisible text."
+  (ledger-test-visible-buffer-substring (point-min) (point-max)))
+
+
+(defun ledger-test-visible-buffer-substring (start end)
+  "Same as `buffer-substring', but excludes invisible text.
+The two arguments START and END are character positions."
+  (let (str)
+    (while (< start end)
+      (let ((next-pos (next-char-property-change start end)))
+        (when (not (invisible-p start))
+          (setq str (concat str (buffer-substring start next-pos))))
+        (setq start next-pos)))
+    str))
+
+
 (provide 'test-helper)
 
 ;;; test-helper.el ends here
