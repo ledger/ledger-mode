@@ -12,7 +12,7 @@ matrix:
     - env: EMACS=emacs-snapshot
 
 before_install:
-  - ./tools/travis-install-ledger.sh
+  - ./tools/travis-install-ledger.sh master
   - export PATH=$TRAVIS_BUILD_DIR/ledger-master:$PATH
 
 install:
