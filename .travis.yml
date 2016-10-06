@@ -13,6 +13,7 @@ matrix:
 
 before_install:
   - ./tools/travis-install-ledger.sh
+  - export PATH=$TRAVIS_BUILD_DIR/ledger-master:$PATH
 
 install:
   - if [ "$EMACS" = 'emacs24' ]; then
@@ -28,6 +29,7 @@ install:
 
 script:
   - $EMACS --version
+  - ledger --version
   - cd test && make test EMACS="$EMACS"
 
 notifications:
