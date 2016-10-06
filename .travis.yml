@@ -1,3 +1,5 @@
+sudo: required
+
 language: generic
 
 env:
@@ -8,6 +10,9 @@ env:
 matrix:
   allow_failures:
     - env: EMACS=emacs-snapshot
+
+before_install:
+  - ./tools/travis-install-ledger.sh
 
 install:
   - if [ "$EMACS" = 'emacs24' ]; then
