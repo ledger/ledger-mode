@@ -357,6 +357,81 @@ Introduced by commit e9f16a1"
   )
 
 
+(ert-deftest ledger-post/test-014 ()
+  "Regress test for Bug 946
+http://bugs.ledger-cli.org/show_bug.cgi?id=946"
+  :tags '(post regress)
+
+  (ledger-tests-with-temp-file
+"2013-05-01 foo
+    Expenses:Foo                      $10
+    Assets:Bar
+
+2013-05-03 foo
+    Expenses:Foo                      $10.00
+    Assets:Bar
+
+2013-05-01 foo
+    Expenses:Foo                      10 €
+    Assets:Bar
+
+2013-05-03 foo
+    Expenses:Foo                      10.00 €
+    Assets:Bar
+
+2013-05-01 foo
+    Expenses:Foo                      $-10
+    Assets:Bar
+
+2013-05-03 foo
+    Expenses:Foo                      $-10.00
+    Assets:Bar
+
+2013-05-01 foo
+    Expenses:Foo                      -10 €
+    Assets:Bar
+
+2013-05-03 foo
+    Expenses:Foo                      -10.00 €
+    Assets:Bar
+"
+    (ledger-post-align-postings (point-min) (point-max))
+    (should
+     (equal (buffer-string)
+      "2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar
+
+2013-05-03 foo
+    Expenses:Foo                              $10.00
+    Assets:Bar
+
+2013-05-01 foo
+    Expenses:Foo                                  10 €
+    Assets:Bar
+
+2013-05-03 foo
+    Expenses:Foo                               10.00 €
+    Assets:Bar
+
+2013-05-01 foo
+    Expenses:Foo                                $-10
+    Assets:Bar
+
+2013-05-03 foo
+    Expenses:Foo                             $-10.00
+    Assets:Bar
+
+2013-05-01 foo
+    Expenses:Foo                                 -10 €
+    Assets:Bar
+
+2013-05-03 foo
+    Expenses:Foo                              -10.00 €
+    Assets:Bar
+" ))))
+
+
 (provide 'post-test)
 
 ;;; post-test.el ends here
