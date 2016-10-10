@@ -3,8 +3,11 @@ EMACS_FLAGS = --quick --directory . --directory ..
 EMACS_BATCH = $(EMACS) --batch $(EMACS_FLAGS)
 EMACS_INTERACTIVE = $(EMACS) $(EMACS_FLAGS)
 
-ELC := $(patsubst %.el,%.elc,$(wildcard *.el))
-ERT := $(filter-out test-helper.el,$(wildcard *.el))
+EL  := $(wildcard *.el)
+ELC := $(patsubst %.el,%.elc,$(EL))
+ERT := $(filter-out test-helper.el,$(EL))
+
+CHECKDOC_BATCH_EL := ../tools/checkdoc-batch.el
 
 .PHONY: all
 all: compile test
@@ -29,3 +32,14 @@ compile: $(ELC)
 .PHONY: clean
 clean:
 	rm -f $(ELC)
+
+.PHONY: distclean
+distclean: clean
+	rm -f $(CHECKDOC_BATCH_EL)
+
+$(CHECKDOC_BATCH_EL):
+	wget --no-verbose ftp://download.tuxfamily.org/user42/checkdoc-batch.el --output-document=$(CHECKDOC_BATCH_EL)
+
+.PHONY: checkdoc
+checkdoc: $(CHECKDOC_BATCH_EL)
+	$(EMACS_BATCH) --load $(CHECKDOC_BATCH_EL) --funcall checkdoc-batch-commandline $(EL) | grep -E "el:[0-9]+:[0-9]+:" && exit 1 || exit 0

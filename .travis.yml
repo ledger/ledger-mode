@@ -32,5 +32,8 @@ script:
   - ledger --version
   - cd test && make test-batch EMACS="$EMACS"
 
+after_script:
+  - make checkdoc
+
 notifications:
   email: false
