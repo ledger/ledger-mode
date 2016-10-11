@@ -128,12 +128,18 @@ The two arguments START and END are character positions."
 ;; Font lock test helpers
 ;; --------------------------------------------------------------------
 
+(defalias 'ledger-test-font-lock-fontify-buffer
+  (if (fboundp 'font-lock-ensure)
+      'font-lock-ensure                 ; Emacs >= 25
+    'font-lock-fontify-buffer))         ; Emacs <= 24
+
+
 (defun ledger-test-fontify-string (str)
   "Fontify `STR' in ledger mode."
   (with-temp-buffer
     (ledger-mode)
     (insert str)
-    (font-lock-fontify-buffer)
+    (ledger-test-font-lock-fontify-buffer)
     (buffer-string)))
 
 
