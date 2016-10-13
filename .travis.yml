@@ -30,7 +30,7 @@ install:
 script:
   - $EMACS --version
   - ledger --version
-  - cd test && make test EMACS="$EMACS"
+  - cd test && make test-batch EMACS="$EMACS"
 
 notifications:
   email: false
