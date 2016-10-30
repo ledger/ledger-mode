@@ -1,0 +1,57 @@
+sudo: required
+
+language: generic
+
+os:
+    - linux
+    - osx
+
+env:
+  matrix:
+    - EMACS_VERSION=emacs24 LEDGER_BRANCH=master
+    - EMACS_VERSION=emacs25 LEDGER_BRANCH=next
+
+matrix:
+  allow_failures:
+    - env: EMACS=emacs25 LEDGER_BRANCH=next
+
+before_install:
+  - ./tools/travis-install-ledger.sh $LEDGER_BRANCH
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+        export PATH=$TRAVIS_BUILD_DIR/ledger-$LEDGER_BRANCH:$PATH;
+    fi
+
+install:
+  - if [ "$TRAVIS_OS_NAME-$EMACS_VERSION" = "linux-emacs24" ]; then
+        sudo add-apt-repository -y ppa:cassou/emacs &&
+        sudo apt-get -qq update &&
+        sudo apt-get -qq install emacs24 emacs24-el &&
+        export EMACS=/usr/bin/emacs;
+    fi
+  - if [ "$TRAVIS_OS_NAME-$EMACS_VERSION" = "linux-emacs25" ]; then
+        sudo add-apt-repository -y ppa:ubuntu-elisp/ppa &&
+        sudo apt-get -qq update &&
+        sudo apt-get -qq install emacs-snapshot &&
+        export EMACS=/usr/bin/emacs-snapshot;
+    fi
+  - if [ "$TRAVIS_OS_NAME-$EMACS_VERSION" = "osx-emacs24" ]; then
+        wget https://emacsformacosx.com/emacs-builds/Emacs-24.4-universal.dmg &&
+        hdiutil attach Emacs-24.4-universal.dmg &&
+        export EMACS=/Volumes/Emacs/Emacs.app/Contents/MacOS/Emacs;
+    fi
+  - if [ "$TRAVIS_OS_NAME-$EMACS_VERSION" = "osx-emacs25" ]; then
+        wget https://emacsformacosx.com/emacs-builds/Emacs-25.1-universal.dmg &&
+        hdiutil attach Emacs-25.1-universal.dmg &&
+        export EMACS=/Volumes/Emacs/Emacs.app/Contents/MacOS/Emacs;
+    fi
+
+script:
+  - $EMACS --version
+  - ledger --version
+  - cd test && make test-batch EMACS="$EMACS"
+
+after_script:
+  - make checkdoc
+
+notifications:
+  email: false
