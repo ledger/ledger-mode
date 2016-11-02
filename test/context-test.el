@@ -15,9 +15,9 @@
    "    Actif:Courant:BnpCc  25,17 €  ; Rembt tissus"
    (goto-char 26)                       ; on the '2' of 25,17
    (let ((context (ledger-context-at-point)))
-      (should (eq (ledger-context-current-field context) 'amount))
-      (should (equal "25,17"
-                     (ledger-context-field-value context 'amount))))))
+      (should (eq (ledger-context-current-field context) 'commoditized-amount))
+      (should (equal "25,17 €"
+                     (ledger-context-field-value context 'commoditized-amount))))))
 
 
 (ert-deftest ledger-context/test-002 ()
@@ -34,9 +34,9 @@
 
    (goto-char 26)                       ; on the '2' of 25
    (let ((context (ledger-context-at-point)))
-      (should (eq (ledger-context-current-field context) 'amount))
-      (should (equal "25"
-                     (ledger-context-field-value context 'amount))))))
+      (should (eq (ledger-context-current-field context) 'commoditized-amount))
+      (should (equal "25 €"
+                     (ledger-context-field-value context 'commoditized-amount))))))
 
 
 (ert-deftest ledger-context/test-003 ()
@@ -211,6 +211,40 @@ https://github.com/ledger/ledger-mode/issues/1"
    (should (equal (ledger-context-at-point)
                   '(acct-transaction indent ((indent "	" 49) (account "b" 50)))))
    ))
+
+
+(ert-deftest ledger-context/test-007 ()
+  "Regress test for Bug 257
+http://bugs.ledger-cli.org/show_bug.cgi?id=257"
+  :tags '(context regress)
+
+  (ledger-tests-with-temp-file
+   "2004/05/01 * Checking balance
+  Assets:Bank:Checking        1000.00
+  Equity:Opening Balances
+"
+   (goto-char 63)                      ; on the amount 1000.00
+   (let ((context (ledger-context-at-point)))
+     (should (eq (ledger-context-current-field context) 'amount))
+     (should (equal "1000.00"
+                    (ledger-context-field-value context 'amount))))))
+
+
+(ert-deftest ledger-context/test-008 ()
+  "Regress test for Bug 257
+http://bugs.ledger-cli.org/show_bug.cgi?id=257"
+  :tags '(context regress)
+
+  (ledger-tests-with-temp-file
+   "2004/05/01 * Checking balance
+  Assets:Bank:Checking        $1,000.00
+  Equity:Opening Balances
+"
+   (goto-char 65)                      ; on the amount 1,000.00
+   (let ((context (ledger-context-at-point)))
+     (should (eq (ledger-context-current-field context) 'commoditized-amount))
+     (should (equal "$1,000.00"
+                    (ledger-context-field-value context 'commoditized-amount))))))
 
 
 (provide 'context-test)
