@@ -100,10 +100,11 @@
 
 (defun ledger-read-account-with-prompt (prompt)
   "Read an account from the minibuffer with PROMPT."
-  (let ((context (ledger-context-at-point)))
+  (let* ((context (ledger-context-at-point))
+         (account (ledger-context-field-value context 'account)))
     (ledger-read-string-with-default prompt
-                                     (if (eq (ledger-context-current-field context) 'account)
-                                         (regexp-quote (ledger-context-field-value context 'account))
+                                     (if account
+                                         (regexp-quote account)
                                        nil))))
 
 (defun ledger-read-date (prompt)
