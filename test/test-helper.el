@@ -124,6 +124,44 @@ The two arguments START and END are character positions."
     str))
 
 
+;; --------------------------------------------------------------------
+;; Font lock test helpers
+;; --------------------------------------------------------------------
+
+(defalias 'ledger-test-font-lock-fontify-buffer
+  (if (fboundp 'font-lock-ensure)
+      'font-lock-ensure                 ; Emacs >= 25
+    'font-lock-fontify-buffer))         ; Emacs <= 24
+
+
+(defun ledger-test-fontify-string (str)
+  "Fontify `STR' in ledger mode."
+  (with-temp-buffer
+    (ledger-mode)
+    (insert str)
+    (ledger-test-font-lock-fontify-buffer)
+    (buffer-string)))
+
+
+(defun ledger-test-group-str-by-face (str)
+  "Fontify STR in ledger mode and group it by font-lock-face.
+Return a list of substrings each followed by its font-lock-face."
+  (cl-loop with fontified = (ledger-test-fontify-string str)
+           for start = 0 then end
+           while start
+           for end   = (next-single-property-change start 'font-lock-face fontified)
+           for prop  = (get-text-property start 'font-lock-face fontified)
+           for text  = (substring-no-properties fontified start end)
+           if prop
+           append (list text prop)))
+
+
+(defun ledger-test-font-lock (source face-groups)
+  "Test that `SOURCE' fontifies to the expected `FACE-GROUPS'."
+  (should (equal (ledger-test-group-str-by-face source)
+                 face-groups)))
+
+
 (provide 'test-helper)
 
 ;;; test-helper.el ends here
