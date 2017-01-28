@@ -45,7 +45,7 @@
 (easy-menu-define ledger-check-mode-menu ledger-check-mode-map
   "Ledger check menu"
   '("Check"
-;    ["Re-run Check" ledger-check-redo]
+    ;; ["Re-run Check" ledger-check-redo]
     "---"
     ["Visit Source" ledger-report-visit-source]
     "---"

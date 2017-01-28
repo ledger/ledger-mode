@@ -31,19 +31,19 @@
 (defgroup ledger-faces nil "Ledger mode highlighting" :group 'ledger)
 
 (defface ledger-font-default-face
-	`((t :inherit default))
-	"Default face"
-	:group 'ledger-faces)
+  `((t :inherit default))
+  "Default face"
+  :group 'ledger-faces)
 
 (defface ledger-font-auto-xact-face
-	`((t :foreground "orange" :weight normal))
-	"Default face for automatic transactions"
-	:group 'ledger-faces)
+  `((t :foreground "orange" :weight normal))
+  "Default face for automatic transactions"
+  :group 'ledger-faces)
 
 (defface ledger-font-periodic-xact-face
-	`((t :foreground "green" :weight normal))
-	"Default face for automatic transactions"
-	:group 'ledger-faces)
+  `((t :foreground "green" :weight normal))
+  "Default face for automatic transactions"
+  :group 'ledger-faces)
 
 (defface ledger-font-xact-cleared-face
   `((t :foreground "#AAAAAA" :weight normal))
@@ -272,24 +272,24 @@
 
 (defvar ledger-font-lock-keywords
   `(("account" . ledger-font-account-directive-face)
- 		("apply" . ledger-font-apply-directive-face)
- 		("alias" . ledger-font-alias-directive-face)
- 		("assert" . ledger-font-assert-directive-face)
- 		("bucket" . ledger-font-bucket-directive-face)
- 		("capture" . ledger-font-capture-directive-face)
- 		("check" . ledger-font-check-directive-face)
+    ("apply" . ledger-font-apply-directive-face)
+    ("alias" . ledger-font-alias-directive-face)
+    ("assert" . ledger-font-assert-directive-face)
+    ("bucket" . ledger-font-bucket-directive-face)
+    ("capture" . ledger-font-capture-directive-face)
+    ("check" . ledger-font-check-directive-face)
     ("comment" . ledger-font-comment-face)
- 		("commodity" . ledger-font-commodity-directive-face)
- 		("define" . ledger-font-define-directive-face)
- 		("end" . ledger-font-end-directive-face)
- 		("expr" . ledger-font-expr-directive-face)
- 		("fixed" . ledger-font-fixed-directive-face)
- 		("include" . ledger-font-include-directive-face)
- 		("payee" . ledger-font-payee-directive-face)
- 		("tag" . ledger-font-tag-directive-face)
+    ("commodity" . ledger-font-commodity-directive-face)
+    ("define" . ledger-font-define-directive-face)
+    ("end" . ledger-font-end-directive-face)
+    ("expr" . ledger-font-expr-directive-face)
+    ("fixed" . ledger-font-fixed-directive-face)
+    ("include" . ledger-font-include-directive-face)
+    ("payee" . ledger-font-payee-directive-face)
+    ("tag" . ledger-font-tag-directive-face)
     ("test" . ledger-font-comment-face)
- 		("year" . ledger-font-year-directive-face))
-   "Expressions to highlight in Ledger mode.")
+    ("year" . ledger-font-year-directive-face))
+  "Expressions to highlight in Ledger mode.")
 
 
 
