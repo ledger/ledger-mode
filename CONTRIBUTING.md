@@ -1,7 +1,14 @@
 Tips for contributors
 ---------------------
 
-* Please **make pull requests against `master`**.
+* In your local repository, ensure that everything compiles by **running
+  `make`** (this will launch byte compilation of lisp files and regression
+  tests).
+* You are then ready to make a **pull request**. Please make pull requests
+  **against `master`**.
+* When pull request arrives in [github], this will triger continuous integration
+  on [Travis CI]. Please check that you pull request is successfully compiled
+  and tested on all Emacs and Ledger versions configured.
 * If you're making **changes to files for which the Travis build is not
   relevant**, please **add `[ci skip]` to the end of the commit message**.
 
@@ -50,3 +57,4 @@ CI] integration.
 [README.md]: https://github.com/ledger/ledger-mode/blob/master/README.md
 [Emacs]: http://www.gnu.org/software/emacs/
 [GPLv2]: http://www.gnu.org/licenses/gpl-2.0.html
+[github]: https://github.com/ledger/ledger-mode/
