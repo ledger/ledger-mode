@@ -464,8 +464,8 @@ Return a count of the uncleared transactions."
          (fmt (ledger-reconcile-compile-format-string ledger-reconcile-buffer-line-format)))
     (if (and ledger-success (> (length xacts) 0))
         (progn
-					(if ledger-reconcile-buffer-header
-							(insert (format ledger-reconcile-buffer-header account)))
+          (if ledger-reconcile-buffer-header
+              (insert (format ledger-reconcile-buffer-header account)))
           (dolist (xact xacts)
             (ledger-reconcile-format-xact xact fmt))
           (goto-char (point-max))

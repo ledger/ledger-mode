@@ -141,7 +141,7 @@ the balance into that."
          (buffer (current-buffer))
          (balance (with-temp-buffer
                     (apply 'ledger-exec-ledger buffer (current-buffer) "cleared" account
-                            (when target-commodity (list "-X" target-commodity)))
+                           (when target-commodity (list "-X" target-commodity)))
                     (if (> (buffer-size) 0)
                         (buffer-substring-no-properties (point-min) (1- (point-max)))
                       (concat account " is empty.")))))

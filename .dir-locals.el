@@ -3,5 +3,4 @@
 
 ((nil
   (indent-tabs-mode . nil)
-  (fill-column . 80)
-  (emacs-lisp-docstring-fill-column . 75)))
+  (fill-column . 80)))

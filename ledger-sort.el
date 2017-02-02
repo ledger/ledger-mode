@@ -30,17 +30,17 @@
 (declare-function ledger-navigate-next-xact "ledger-navigate" nil)
 
 (defun ledger-sort-find-start ()
-	"Find the beginning of a sort region."
+  "Find the beginning of a sort region."
   (if (re-search-forward ";.*Ledger-mode:.*Start sort" nil t)
       (match-end 0)))
 
 (defun ledger-sort-find-end ()
-	"Find the end of a sort region."
+  "Find the end of a sort region."
   (if (re-search-forward ";.*Ledger-mode:.*End sort" nil t)
       (match-end 0)))
 
 (defun ledger-sort-insert-start-mark ()
-	"Insert a marker to start a sort region."
+  "Insert a marker to start a sort region."
   (interactive)
   (save-excursion
     (goto-char (point-min))
@@ -50,7 +50,7 @@
   (insert "\n; Ledger-mode: Start sort\n\n"))
 
 (defun ledger-sort-insert-end-mark ()
-	"Insert a marker to end a sort region."
+  "Insert a marker to end a sort region."
   (interactive)
   (save-excursion
     (goto-char (point-min))
