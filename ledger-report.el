@@ -88,6 +88,18 @@ reports to their location in the currrent ledger file buffer."
   :type 'boolean
   :group 'ledger-report)
 
+(defcustom ledger-report-use-header-line nil
+  "When non-nil, indicate the report name and command in the `header-line'
+instead of in the buffer."
+  :type 'boolean
+  :group 'ledger-report)
+
+(defcustom ledger-report-header-line-fn #'ledger-report--header-function
+  "When `ledger-report-use-header-line' is non-nil, evaluate this function
+in the `header-line'."
+  :type 'function
+  :group 'ledger-report)
+
 (defvar ledger-report-buffer-name "*Ledger Report*")
 
 (defvar ledger-report-name nil)
@@ -224,6 +236,14 @@ used to generate the buffer, navigating the buffer, etc."
       (setq buffer-read-only t)
       (message "q to quit; r to redo; e to edit; k to kill; s to save; SPC and DEL to scroll"))))
 
+(defun ledger-report--header-function ()
+  "Computes the string to be used as the header in the
+`ledger-report' buffer."
+  (format "Ledger Report: %s -- Buffer: %s -- Command: %s"
+          (propertize ledger-report-name 'face 'font-lock-constant-face)
+          (propertize (buffer-name ledger-buf) 'face 'font-lock-string-face)
+          (propertize ledger-report-cmd 'face 'font-lock-comment-face)))
+
 (defun ledger-report-string-empty-p (s)
   "Check S for the empty string."
   (string-equal "" s))
@@ -334,10 +354,13 @@ Optional EDIT the command."
 (defun ledger-do-report (cmd)
   "Run a report command line CMD."
   (goto-char (point-min))
-  (insert (format "Report: %s\n" ledger-report-name)
-          (format "Command: %s\n" cmd)
-          (make-string (- (window-width) 1) ?=)
-          "\n\n")
+  (setq header-line-format (when ledger-report-use-header-line
+                             '(:eval (funcall ledger-report-header-line-fn))))
+  (unless ledger-report-use-header-line
+    (insert (format "Report: %s\n" ledger-report-name)
+            (format "Command: %s\n" cmd)
+            (make-string (- (window-width) 1) ?=)
+            "\n\n"))
   (let ((data-pos (point))
         (register-report (string-match " reg\\(ister\\)? " cmd))
         files-in-report)
