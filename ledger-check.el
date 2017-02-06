@@ -32,6 +32,7 @@
   (require 'cl))
 
 (defvar ledger-check-buffer-name "*Ledger Check*")
+(defvar ledger-original-window-cfg nil)
 
 
 
