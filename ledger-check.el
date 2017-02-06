@@ -27,6 +27,7 @@
 ;;; Code:
 
 (require 'easymenu)
+(require 'ledger-navigate)
 (eval-when-compile
   (require 'cl))
 
