@@ -119,7 +119,7 @@ commands for navigating the buffer to the errors found, etc."
      (when (and (buffer-modified-p)
                 (y-or-n-p "Buffer modified, save it? "))
        (save-buffer))))
-  (let ((buf (current-buffer))
+  (let ((buf (find-file-noselect (ledger-master-file)))
         (cbuf (get-buffer ledger-check-buffer-name))
         (wcfg (current-window-configuration)))
     (if cbuf

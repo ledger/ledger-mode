@@ -66,7 +66,7 @@
   "Run Ledger using INPUT-BUFFER and optionally capturing output in OUTPUT-BUFFER with ARGS."
   (if (null ledger-binary-path)
       (error "The variable `ledger-binary-path' has not been set")
-    (let ((buf (or input-buffer (current-buffer)))
+    (let ((buf (or input-buffer (find-file-noselect (ledger-master-file))))
           (outbuf (or output-buffer
                       (generate-new-buffer " *ledger-tmp*"))))
       (with-current-buffer buf
