@@ -1,4 +1,5 @@
 set(EMACS_LISP_SOURCES
+  ledger-check.el
   ledger-commodities.el
   ledger-complete.el
   ledger-exec.el
