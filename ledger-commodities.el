@@ -112,7 +112,7 @@ Returns a list with (value commodity)."
   "improve builtin string-to-number by handling internationalization, and return nil if number can't be parsed"
   (let ((nstr (if (or decimal-comma
                       (assoc "decimal-comma" ledger-environment-alist))
-                  (ledger-strip str ".")
+                  (ledger-strip str "[.]")
                 (ledger-strip str ","))))
     (while (string-match "," nstr)  ;if there is a comma now, it is a thousands separator
       (setq nstr (replace-match "." nil nil nstr)))
