@@ -138,7 +138,7 @@ the balance into that."
   (interactive "P")
   (let* ((account (ledger-read-account-with-prompt "Account balance to show"))
          (target-commodity (when arg (ledger-read-commodity-with-prompt "Target commodity: ")))
-         (buffer (current-buffer))
+         (buffer (find-file-noselect (ledger-master-file)))
          (balance (with-temp-buffer
                     (apply 'ledger-exec-ledger buffer (current-buffer) "cleared" account
                            (when target-commodity (list "-X" target-commodity)))
