@@ -81,9 +81,9 @@ Returns a list with (value commodity)."
            ((re-search-forward "0" nil t)
             ;; couldn't find a decimal number, look for a single 0,
             ;; indicating account with zero balance
-            (list 0 ledger-reconcile-default-commodity))))
-      ;; nothing found, return 0
-      (list 0 ledger-reconcile-default-commodity))))
+            (list 0 ledger-reconcile-default-commodity))
+           ;; nothing found, return 0
+           (t (list 0 ledger-reconcile-default-commodity)))))))
 
 (defun ledger-string-balance-to-commoditized-amount (str)
   "Return a commoditized amount (val, 'comm') from STR."
