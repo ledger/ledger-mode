@@ -30,7 +30,11 @@
   "Location of the ledger initialization file.  nil if you don't have one."
   :group 'ledger-exec)
 
-(defvar ledger-environment-alist nil)
+(defvar ledger-environment-alist nil
+  "Variable to hold details about ledger-mode's environment.
+
+Adding the dotted pair (\"decimal-comma\" . t) will tell ledger
+to treat commas as decimal separator.")
 
 (defvar ledger-default-date-format "%Y/%m/%d")
 

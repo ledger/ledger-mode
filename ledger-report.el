@@ -217,7 +217,7 @@ used to generate the buffer, navigating the buffer, etc."
      (let ((rname (ledger-report-read-name))
            (edit (not (null current-prefix-arg))))
        (list rname edit))))
-  (let ((buf (current-buffer))
+  (let ((buf (find-file-noselect (ledger-master-file)))
         (rbuf (get-buffer ledger-report-buffer-name))
         (wcfg (current-window-configuration)))
     (if rbuf
