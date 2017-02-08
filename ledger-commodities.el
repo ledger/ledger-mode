@@ -81,9 +81,9 @@ Returns a list with (value commodity)."
            ((re-search-forward "0" nil t)
             ;; couldn't find a decimal number, look for a single 0,
             ;; indicating account with zero balance
-            (list 0 ledger-reconcile-default-commodity))))
-      ;; nothing found, return 0
-      (list 0 ledger-reconcile-default-commodity))))
+            (list 0 ledger-reconcile-default-commodity))
+           ;; nothing found, return 0
+           (t (list 0 ledger-reconcile-default-commodity)))))))
 
 (defun ledger-string-balance-to-commoditized-amount (str)
   "Return a commoditized amount (val, 'comm') from STR."
@@ -112,7 +112,7 @@ Returns a list with (value commodity)."
   "improve builtin string-to-number by handling internationalization, and return nil if number can't be parsed"
   (let ((nstr (if (or decimal-comma
                       (assoc "decimal-comma" ledger-environment-alist))
-                  (ledger-strip str ".")
+                  (ledger-strip str "[.]")
                 (ledger-strip str ","))))
     (while (string-match "," nstr)  ;if there is a comma now, it is a thousands separator
       (setq nstr (replace-match "." nil nil nstr)))
