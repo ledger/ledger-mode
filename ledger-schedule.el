@@ -67,7 +67,7 @@
                                        ("Th" 4)
                                        ("Fr" 5)
                                        ("Sa" 6)
-                                       ("Su" 7))
+                                       ("Su" 0))
   "List of weekday abbreviations.  There must be exactly seven
 entries each with a two character abbreviation for a day and the
 number of that day in the week. "
