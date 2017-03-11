@@ -186,12 +186,14 @@ regular text."
           (let ((val-string (match-string 0)))
             (goto-char (match-beginning 0))
             (delete-region (match-beginning 0) (match-end 0))
+            (push-mark)
             (calc)
             (calc-eval val-string 'push)) ;; edit the amount
         (progn ;;make sure there are two spaces after the account name and go to calc
           (if (search-backward "  " (- (point) 3) t)
               (goto-char (line-end-position))
             (insert "  "))
+          (push-mark)
           (calc))))))
 
 (provide 'ledger-post)
