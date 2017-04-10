@@ -357,7 +357,7 @@ With a prefix argument, remove the effective date."
   (add-hook 'post-command-hook 'ledger-highlight-xact-under-point nil t)
 
   (ledger-init-load-init-file)
-  (setq comment-start ";")
+  (set (make-local-variable 'comment-start) ";")
 
   (set (make-local-variable 'indent-region-function) 'ledger-post-align-postings))
 
