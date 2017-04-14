@@ -28,8 +28,8 @@
 
 (require 'easymenu)
 (require 'ledger-navigate)
-(eval-when-compile
-  (require 'cl))
+(require 'ledger-report) ; for ledger-master-file
+
 
 (defvar ledger-check-buffer-name "*Ledger Check*")
 (defvar ledger-original-window-cfg nil)

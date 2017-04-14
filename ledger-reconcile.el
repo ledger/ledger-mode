@@ -399,7 +399,7 @@ POSTING is used in `ledger-clear-whole-transactions' is nil."
     (while (string-match "(\\(.*?\\))" fstr start)
       (setq fields (cons (intern (match-string 1 fstr)) fields))
       (setq start (match-end 0)))
-    (setq fields (list* 'format (replace-regexp-in-string "(.*?)" "" fstr) (nreverse fields)))
+    (setq fields (cl-list* 'format (replace-regexp-in-string "(.*?)" "" fstr) (nreverse fields)))
     `(lambda (date code status payee account amount)
        ,fields)))
 

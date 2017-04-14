@@ -20,9 +20,7 @@
 ;; MA 02110-1301 USA.
 
 (require 'rx)
-
-(eval-when-compile
-  (require 'cl))
+(require 'cl-lib)
 
 (defconst ledger-amount-regex
   (concat "\\(  \\|\t\\| \t\\)[ \t]*-?"
@@ -126,21 +124,21 @@
         (let (var grouping target)
           (if (symbolp arg)
               (setq var arg target arg)
-            (assert (listp arg))
+            (cl-assert (listp arg))
             (if (= 2 (length arg))
                 (setq var (car arg)
                       target (cadr arg))
               (setq var (car arg)
                     grouping (cadr arg)
-                    target (caddr arg))))
+                    target (cl-caddr arg))))
 
           (if (and last-group
                    (not (eq last-group (or grouping target))))
-              (incf addend
-                    (symbol-value
-                     (intern-soft (concat "ledger-regex-"
-                                          (symbol-name last-group)
-                                          "-group--count")))))
+              (cl-incf addend
+                       (symbol-value
+                        (intern-soft (concat "ledger-regex-"
+                                             (symbol-name last-group)
+                                             "-group--count")))))
           (nconc
            defs
            (list
