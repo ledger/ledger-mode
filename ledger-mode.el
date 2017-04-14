@@ -152,7 +152,7 @@ the balance into that."
   "Display the cleared-or-pending balance.
 And calculate the target-delta of the account being reconciled."
   (interactive)
-  (let* ((buffer (find-file-no-select (ledger-master-file)))
+  (let* ((buffer (find-file-noselect (ledger-master-file)))
          (balance (with-temp-buffer
                     (ledger-exec-ledger buffer (current-buffer) "stats")
                     (buffer-substring-no-properties (point-min) (1- (point-max))))))
