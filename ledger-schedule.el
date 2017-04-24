@@ -32,7 +32,7 @@
 
 
 (require 'ledger-init)
-(require 'cl-macs)
+(require 'cl-lib)
 
 (declare-function ledger-mode "ledger-mode")
 ;;; Code:
@@ -278,11 +278,11 @@ date descriptor."
   "Search CANDIDATE-ITEMS for xacts that occur within the period today - EARLY  to today + HORIZON."
   (let ((start-date (time-subtract (current-time) (days-to-time early)))
         test-date items)
-    (loop for day from 0 to (+ early horizon) by 1 do
-          (setq test-date (time-add start-date (days-to-time day)))
-          (dolist (candidate candidate-items items)
-            (if (funcall (car candidate) test-date)
-                (setq items (append items (list (list test-date (cadr candidate))))))))
+    (cl-loop for day from 0 to (+ early horizon) by 1 do
+             (setq test-date (time-add start-date (days-to-time day)))
+             (dolist (candidate candidate-items items)
+               (if (funcall (car candidate) test-date)
+                   (setq items (append items (list (list test-date (cadr candidate))))))))
     items))
 
 (defun ledger-schedule-create-auto-buffer (candidate-items early horizon ledger-buf)

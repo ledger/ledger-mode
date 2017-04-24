@@ -25,9 +25,6 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 ;; ledger-*-string constants are assembled in the
 ;; `ledger-single-line-config' macro to form the regex and list of
 ;; elements

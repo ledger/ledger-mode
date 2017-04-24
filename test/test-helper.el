@@ -28,7 +28,7 @@
 ;;; Code:
 (require 'ledger-mode)
 (require 'ert)
-(require 'cl-macs) ; Common Lisp Macros
+(require 'cl-lib)
 
 (defvar demo-ledger)
 
