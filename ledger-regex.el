@@ -279,12 +279,12 @@
 
 (ledger-define-regexp commodity
                       (rx (group
-                           (or (and ?\" (+ (not (any ?\"))) ?\")
-                               (not (any blank ?\n
-                                         digit
-                                         ?- ?\[ ?\]
-                                         ?. ?, ?\; ?+ ?* ?/ ?^ ?? ?: ?& ?| ?! ?=
-                                         ?\< ?\> ?\{ ?\} ?\( ?\) ?@)))))
+                           (or (and ?\" (+ (not (any ?\"))) ?\")  ; anything between double-quotes
+                               (any blank ?\n
+                                    digit
+                                    ?- ?\[ ?\]
+                                    ?. ?, ?\; ?+ ?* ?/ ?^ ?? ?: ?& ?| ?! ?=
+                                    ?\< ?\> ?\{ ?\} ?\( ?\) ?@))))
                       "")
 
 (ledger-define-regexp amount
@@ -297,13 +297,10 @@
 
 (ledger-define-regexp commoditized-amount
                       (macroexpand
-                       `(rx (group
-                             (or (and (regexp ,ledger-commodity-regexp)
-                                      (*? blank)
-                                      (regexp ,ledger-amount-regexp))
-                                 (and (regexp ,ledger-amount-regexp)
-                                      (*? blank)
-                                      (regexp ,ledger-commodity-regexp))))))
+                       `(rx (group (and blank blank
+                                        (or (and (+ graph) (zero-or-more blank) (zero-or-one ?\-) digit (+ graph))
+                                            (and (zero-or-one ?\-) digit (+ graph) (one-or-more blank) (+ graph)
+                                             ))))))
                       "")
 
 (ledger-define-regexp commodity-annotations
