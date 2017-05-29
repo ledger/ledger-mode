@@ -242,12 +242,12 @@ With a prefix argument, remove the effective date."
   (interactive)
   (let ((start (point-min-marker))
         (end (point-max-marker)))
-    (goto-char start)
     (ledger-navigate-beginning-of-xact)
     (beginning-of-line)
     (let ((target (buffer-substring (point) (progn
                                               (end-of-line)
                                               (point)))))
+      (goto-char start)
       (untabify start end)
       (ledger-sort-buffer)
       (ledger-post-align-postings start end)
