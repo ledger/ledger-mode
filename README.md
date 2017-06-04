@@ -36,6 +36,15 @@ Related packages
 In-buffer checking of formatting and balancing of transactions is
 available using [`flycheck-ledger`][flycheck-ledger].
 
+Basic usage
+===========
+
+- `C-c C-a` add a new transaction
+- `C-c C-k` copy the transaction at point, 
+- `C-c C-d` delete the transaction at point
+
+Dates will be inserted with the format `YYYY/MM/DD`. This can be changed to
+`YYYY-MM-DD` by setting `ledger-use-iso-dates` to true.
 
 
 
