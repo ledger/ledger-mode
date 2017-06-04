@@ -21,6 +21,15 @@ packages in [MELPA][melpa] or [MELPA Stable][melpa-stable], you'll need to
 add the directory containing `ledger-mode.el` to your `load-path`, and
 then `(require 'ledger-mode)`.
 
+Getting started
+===============
+
+`ledger-mode` will automatically associate itself with `.ledger` files when
+installed as a package. We don't have a full guide to using `ledger-mode`,
+sorry, but we suggest starting with the general Emacs tricks of
+<kbd>C-h m</kbd> (`describe-mode`) and browsing the `ledger` customization
+group with `M-x customize-group`.
+
 Related packages
 ================
 
