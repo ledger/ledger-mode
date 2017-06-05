@@ -91,9 +91,8 @@
   (let* ((context (ledger-context-at-point))
          (account (ledger-context-field-value context 'account)))
     (ledger-read-string-with-default prompt
-                                     (if account
-                                         (regexp-quote account)
-                                       nil))))
+                                     (when account
+                                       (regexp-quote account)))))
 
 (defun ledger-read-date (prompt)
   "Return user-supplied date after `PROMPT', defaults to today."
