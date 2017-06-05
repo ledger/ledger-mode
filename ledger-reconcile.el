@@ -424,24 +424,22 @@ POSTING is used in `ledger-clear-whole-transactions' is nil."
 
 (defun ledger-reconcile-format-xact (xact fmt)
   "Format XACT using FMT."
-  (let ((date-format (or (cdr (assoc "date-format" ledger-environment-alist))
-                         ledger-default-date-format)))
-    (dolist (posting (nthcdr 5 xact))
-      (let ((beg (point))
-            (where (ledger-marker-where-xact-is xact posting)))
-        (ledger-reconcile-format-posting beg
-                                         where
-                                         fmt
-                                         (format-time-string date-format (nth 2 xact))  ; date
-                                         (if (nth 3 xact) (nth 3 xact) "")  ; code
-                                         (nth 3 posting)  ; status
-                                         (ledger-reconcile-truncate-right
-                                          (nth 4 xact)  ; payee
-                                          ledger-reconcile-buffer-payee-max-chars)
-                                         (ledger-reconcile-truncate-left
-                                          (nth 1 posting)  ; account
-                                          ledger-reconcile-buffer-account-max-chars)
-                                         (nth 2 posting))))))  ; amount
+  (dolist (posting (nthcdr 5 xact))
+    (let ((beg (point))
+          (where (ledger-marker-where-xact-is xact posting)))
+      (ledger-reconcile-format-posting beg
+                                       where
+                                       fmt
+                                       (ledger-format-date (nth 2 xact))  ; date
+                                       (if (nth 3 xact) (nth 3 xact) "")  ; code
+                                       (nth 3 posting)  ; status
+                                       (ledger-reconcile-truncate-right
+                                        (nth 4 xact)  ; payee
+                                        ledger-reconcile-buffer-payee-max-chars)
+                                       (ledger-reconcile-truncate-left
+                                        (nth 1 posting)  ; account
+                                        ledger-reconcile-buffer-account-max-chars)
+                                       (nth 2 posting)))))  ; amount
 
 (defun ledger-do-reconcile (&optional sort)
   "SORT the uncleared transactions in the account and display them in the *Reconcile* buffer.

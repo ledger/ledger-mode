@@ -33,6 +33,7 @@
 (require 'esh-util)
 (require 'esh-arg)
 (require 'easymenu)
+(require 'org)
 (require 'ledger-commodities)
 (require 'ledger-complete)
 (require 'ledger-context)
@@ -85,21 +86,6 @@
   (find-file "ledger-mode-dump")
   (ledger-mode-dump-group 'ledger))
 
-
-(defun ledger-current-year ()
-  "The default current year for adding transactions."
-  (format-time-string "%Y"))
-
-(defun ledger-current-month ()
-  "The default current month for adding transactions."
-  (format-time-string "%m"))
-
-(defvar ledger-year (ledger-current-year)
-  "Start a ledger session with the current year, but make it customizable to ease retro-entry.")
-
-(defvar ledger-month (ledger-current-month)
-  "Start a ledger session with the current month, but make it customizable to ease retro-entry.")
-
 (defun ledger-read-account-with-prompt (prompt)
   "Read an account from the minibuffer with PROMPT."
   (let* ((context (ledger-context-at-point))
@@ -111,17 +97,8 @@
 
 (defun ledger-read-date (prompt)
   "Return user-supplied date after `PROMPT', defaults to today."
-  (let* ((default (ledger-year-and-month))
-         (date (read-string prompt default
-                            'ledger-minibuffer-history)))
-    (if (or (string= date default)
-            (string= "" date))
-        (format-time-string
-         (or (cdr (assoc "date-format" ledger-environment-alist))
-             (if ledger-use-iso-dates
-                 ledger-iso-date-format
-               ledger-default-date-format)))
-      date)))
+  (ledger-format-date (let ((org-read-date-prefer-future nil))
+                        (org-read-date nil t nil prompt))))
 
 (defun ledger-read-string-with-default (prompt default)
   "Return user supplied string after PROMPT, or DEFAULT."
@@ -174,10 +151,7 @@ Can indent, complete or align depending on context."
 
 (defvar ledger-mode-abbrev-table)
 
-(defvar ledger-date-string-today
-  (format-time-string (or
-                       (cdr (assoc "date-format" ledger-environment-alist))
-                       ledger-default-date-format)))
+(defvar ledger-date-string-today (ledger-format-date))
 
 (defun ledger-remove-effective-date ()
   "Remove the effective date from a transaction or posting."
@@ -362,24 +336,6 @@ With a prefix argument, remove the effective date."
   (set (make-local-variable 'comment-start) ";")
 
   (set (make-local-variable 'indent-region-function) 'ledger-post-align-postings))
-
-
-
-(defun ledger-set-year (newyear)
-  "Set ledger's idea of the current year to the prefix argument NEWYEAR."
-  (interactive "p")
-  (setq ledger-year
-        (if (= newyear 1)
-            (read-string "Year: " (ledger-current-year))
-          (number-to-string newyear))))
-
-(defun ledger-set-month (newmonth)
-  "Set ledger's idea of the current month to the prefix argument NEWMONTH."
-  (interactive "p")
-  (setq ledger-month
-        (if (= newmonth 1)
-            (read-string "Month: " (ledger-current-month))
-          (format "%02d" newmonth))))
 
 
 

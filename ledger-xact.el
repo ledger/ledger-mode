@@ -29,8 +29,6 @@
 (require 'ledger-regex)
 (require 'ledger-navigate)
 
-(defvar ledger-year)
-(defvar ledger-month)
 (declare-function ledger-read-date "ledger-mode" (prompt))
 (declare-function ledger-next-amount "ledger-post" (&optional end))
 (declare-function ledger-exec-ledger "ledger-exec" (input-buffer &optional output-buffer &rest args))
@@ -42,12 +40,6 @@
   "If t highlight xact under point."
   :type 'boolean
   :group 'ledger)
-
-(defcustom ledger-use-iso-dates nil
-  "If non-nil, use the iso-8601 format for dates (YYYY-MM-DD)."
-  :type 'boolean
-  :group 'ledger
-  :safe t)
 
 (defvar ledger-xact-highlight-overlay (list))
 (make-variable-buffer-local 'ledger-xact-highlight-overlay)
@@ -129,13 +121,6 @@ MOMENT is an encoded date"
                                     (or year current-year))
                        mark desc)))))
       (forward-line))))
-
-(defun ledger-year-and-month ()
-  "Return the current year and month, separated by / (or -, depending on LEDGER-USE-ISO-DATES)."
-  (let ((sep (if ledger-use-iso-dates
-                 "-"
-               "/")))
-    (concat ledger-year sep ledger-month sep)))
 
 (defun ledger-copy-transaction-at-point (date)
   "Ask for a new DATE and copy the transaction under point to that date.  Leave point on the first amount."

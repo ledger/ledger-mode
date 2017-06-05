@@ -288,13 +288,11 @@ date descriptor."
 (defun ledger-schedule-create-auto-buffer (candidate-items early horizon ledger-buf)
   "Format CANDIDATE-ITEMS for display."
   (let ((candidates (ledger-schedule-list-upcoming-xacts candidate-items early horizon))
-        (schedule-buf (get-buffer-create ledger-schedule-buffer-name))
-        (date-format (or (cdr (assoc "date-format" ledger-environment-alist))
-                         ledger-default-date-format)))
+        (schedule-buf (get-buffer-create ledger-schedule-buffer-name)))
     (with-current-buffer schedule-buf
       (erase-buffer)
       (dolist (candidate candidates)
-        (insert (format-time-string date-format (car candidate) ) " " (cadr candidate) "\n"))
+        (insert (ledger-format-date (car candidate) ) " " (cadr candidate) "\n"))
       (ledger-mode))
     (length candidates)))
 
