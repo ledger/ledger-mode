@@ -244,12 +244,10 @@ With a prefix argument, remove the effective date."
     (define-key map [(control ?c) (control ?e)] 'ledger-toggle-current-transaction)
     (define-key map [(control ?c) (control ?f)] 'ledger-occur)
     (define-key map [(control ?c) (control ?k)] 'ledger-copy-transaction-at-point)
-    (define-key map [(control ?c) (control ?m)] 'ledger-set-month)
     (define-key map [(control ?c) (control ?r)] 'ledger-reconcile)
     (define-key map [(control ?c) (control ?s)] 'ledger-sort-region)
     (define-key map [(control ?c) (control ?t)] 'ledger-insert-effective-date)
     (define-key map [(control ?c) (control ?u)] 'ledger-schedule-upcoming)
-    (define-key map [(control ?c) (control ?y)] 'ledger-set-year)
     (define-key map [(control ?c) (control ?p)] 'ledger-display-balance-at-point)
     (define-key map [(control ?c) (control ?l)] 'ledger-display-ledger-stats)
     (define-key map [(control ?c) (control ?q)] 'ledger-post-align-xact)
@@ -305,8 +303,6 @@ With a prefix argument, remove the effective date."
     ["Set effective date" ledger-insert-effective-date]
     "---"
     ["Customize Ledger Mode" (lambda () (interactive) (customize-group 'ledger))]
-    ["Set Year" ledger-set-year ledger-works]
-    ["Set Month" ledger-set-month ledger-works]
     "---"
     ["Run Report" ledger-report ledger-works]
     ["Goto Report" ledger-report-goto ledger-works]
