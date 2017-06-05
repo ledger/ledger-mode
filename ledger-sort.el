@@ -25,9 +25,8 @@
 ;;
 
 ;;; Code:
-(defvar ledger-payee-any-status-regex)
-(declare-function ledger-navigate-find-xact-extents "ledger-navigate" (pos))
-(declare-function ledger-navigate-next-xact "ledger-navigate" nil)
+(require 'ledger-regex)
+(require 'ledger-navigate)
 
 (defun ledger-sort-find-start ()
   "Find the beginning of a sort region."
