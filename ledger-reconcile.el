@@ -23,7 +23,7 @@
 
 
 ;;; Commentary:
-;; Code to handle reconciling Ledger files wiht outside sources
+;; Code to handle reconciling Ledger files with outside sources
 
 ;;; Code:
 
