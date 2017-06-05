@@ -320,17 +320,17 @@ With a prefix argument, remove the effective date."
           '(ledger-font-lock-keywords t t nil nil
                                       (font-lock-fontify-region-function . ledger-fontify-buffer-part))))
 
-  (set (make-local-variable 'pcomplete-parse-arguments-function) 'ledger-parse-arguments)
-  (set (make-local-variable 'pcomplete-command-completion-function) 'ledger-complete-at-point)
+  (setq-local pcomplete-parse-arguments-function 'ledger-parse-arguments)
+  (setq-local pcomplete-command-completion-function 'ledger-complete-at-point)
   (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t)
   (add-hook 'after-save-hook 'ledger-report-redo nil t)
 
   (add-hook 'post-command-hook 'ledger-highlight-xact-under-point nil t)
 
   (ledger-init-load-init-file)
-  (set (make-local-variable 'comment-start) ";")
+  (setq-local comment-start ";")
 
-  (set (make-local-variable 'indent-region-function) 'ledger-post-align-postings))
+  (setq-local indent-region-function 'ledger-post-align-postings))
 
 
 
