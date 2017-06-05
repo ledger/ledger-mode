@@ -41,8 +41,7 @@
   :type 'boolean
   :group 'ledger)
 
-(defvar ledger-xact-highlight-overlay (list))
-(make-variable-buffer-local 'ledger-xact-highlight-overlay)
+(defvar-local ledger-xact-highlight-overlay (list))
 
 (defun ledger-highlight-make-overlay ()
   (let ((ovl (make-overlay 1 1)))
