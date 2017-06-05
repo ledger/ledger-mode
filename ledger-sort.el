@@ -1,4 +1,4 @@
-;;; ledger-xact.el --- Helper code for use with the "ledger" command-line tool
+;;; ledger-sort.el --- Helper code for use with the "ledger" command-line tool
 
 ;; Copyright (C) 2003-2016 John Wiegley (johnw AT gnu DOT org)
 
