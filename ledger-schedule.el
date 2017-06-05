@@ -74,14 +74,14 @@ number of that day in the week. "
   :type '(alist :value-type (group integer))
   :group 'ledger-schedule)
 
-(defsubst between (val low high)
+(defsubst ledger-between (val low high)
   "Return TRUE if VAL > LOW and < HIGH."
   (and (>= val low) (<= val high)))
 
 (defun ledger-schedule-days-in-month (month year)
   "Return number of days in the MONTH, MONTH is from 1 to 12.
 If YEAR is nil, assume it is not a leap year"
-  (if (between month 1 12)
+  (if (ledger-between month 1 12)
       (if (and year (date-leap-year-p year) (= 2 month))
           29
         (nth (1- month) '(31 28 31 30 31 30 31 31 30 31 30 31)))
@@ -98,16 +98,16 @@ If YEAR is nil, assume it is not a leap year"
 For example, return true if date is the 3rd Thursday of the
 month.  Negative COUNT starts from the end of the month. (EQ
 COUNT 0) means EVERY day-of-week (eg. every Saturday)"
-  (if (and (between count -6 6) (between day-of-week 0 6))
+  (if (and (ledger-between count -6 6) (ledger-between day-of-week 0 6))
       (cond ((zerop count) ;; Return true if day-of-week matches
              `(eq (nth 6 (decode-time date)) ,day-of-week))
             ((> count 0) ;; Positive count
              (let ((decoded (cl-gensym)))
                `(let ((,decoded (decode-time date)))
                   (and (eq (nth 6 ,decoded) ,day-of-week)
-                       (between  (nth 3 ,decoded)
-                                 ,(* (1- count) 7)
-                                 ,(* count 7))))))
+                       (ledger-between  (nth 3 ,decoded)
+                                        ,(* (1- count) 7)
+                                        ,(* count 7))))))
             ((< count 0)
              (let ((days-in-month (cl-gensym))
                    (decoded (cl-gensym)))
@@ -116,9 +116,9 @@ COUNT 0) means EVERY day-of-week (eg. every Saturday)"
                                         (nth 4 ,decoded)
                                         (nth 5 ,decoded))))
                   (and (eq (nth 6 ,decoded) ,day-of-week)
-                       (between  (nth 3 ,decoded)
-                                 (+ ,days-in-month ,(* count 7))
-                                 (+ ,days-in-month ,(* (1+ count) 7)))))))
+                       (ledger-between  (nth 3 ,decoded)
+                                        (+ ,days-in-month ,(* count 7))
+                                        (+ ,days-in-month ,(* (1+ count) 7)))))))
             (t
              (error "COUNT out of range, COUNT=%S" count)))
     (error "Invalid argument to ledger-schedule-day-in-month-macro %S %S"

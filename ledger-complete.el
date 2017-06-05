@@ -30,7 +30,7 @@
 
 (declare-function ledger-thing-at-point "ledger-context" nil)
 (declare-function ledger-add-transaction "ledger-xact" (transaction-text &optional insert-at-point))
-(declare-function between "ledger-schedule" (val low high))
+(declare-function ledger-between "ledger-schedule" (val low high))
 
 (defun ledger-parse-arguments ()
   "Parse whitespace separated arguments in the current region."
@@ -89,7 +89,7 @@
                (delete-dups
                 (progn
                   (while (re-search-forward seed-regex nil t)
-                    (unless (between origin (match-beginning 0) (match-end 0))
+                    (unless (ledger-between origin (match-beginning 0) (match-end 0))
                       (setq accounts (cons (match-string-no-properties 2) accounts))))
                   accounts)))
         (let ((root account-tree))
