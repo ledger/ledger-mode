@@ -315,10 +315,9 @@ With a prefix argument, remove the effective date."
 (define-derived-mode ledger-mode text-mode "Ledger"
   "A mode for editing ledger data files."
   (ledger-check-version)
-  (when (boundp 'font-lock-defaults)
-    (setq font-lock-defaults
-          '(ledger-font-lock-keywords t t nil nil
-                                      (font-lock-fontify-region-function . ledger-fontify-buffer-part))))
+  (setq font-lock-defaults
+        '(ledger-font-lock-keywords t t nil nil
+                                    (font-lock-fontify-region-function . ledger-fontify-buffer-part)))
 
   (setq-local pcomplete-parse-arguments-function 'ledger-parse-arguments)
   (setq-local pcomplete-command-completion-function 'ledger-complete-at-point)
