@@ -24,8 +24,8 @@
 ;; Utilities for dealing with transaction and posting status.
 
 ;;; Code:
-(declare-function ledger-navigate-find-xact-extents "ledger-navigate" (pos))
-(declare-function ledger-thing-at-point "ledger-context" ())
+(require 'ledger-navigate)
+(require 'ledger-context)
 
 (defcustom ledger-clear-whole-transactions nil
   "If non-nil, clear whole transactions, not individual postings."

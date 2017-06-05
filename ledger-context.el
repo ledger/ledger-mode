@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(require 'ledger-regex)
+
 ;; ledger-*-string constants are assembled in the
 ;; `ledger-single-line-config' macro to form the regex and list of
 ;; elements

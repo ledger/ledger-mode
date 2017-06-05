@@ -25,10 +25,10 @@
 
 ;;; Code:
 
+(require 'ledger-xact)
+(require 'ledger-navigate)
 (declare-function ledger-read-string-with-default "ledger-mode" (prompt default))
-(declare-function ledger-xact-payee "ledger-xact" nil)
 (declare-function ledger-read-account-with-prompt "ledger-mode" (prompt))
-(declare-function ledger-navigate-to-line "ledger-navigate" (line-number))
 
 (require 'easymenu)
 
