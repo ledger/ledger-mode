@@ -194,7 +194,7 @@ And calculate the target-delta of the account being reconciled."
       (if ledger-target
           (message "Cleared and Pending balance: %s,   Difference from target: %s"
                    (ledger-commodity-to-string pending)
-                   (ledger-commodity-to-string (-commodity ledger-target pending)))
+                   (ledger-commodity-to-string (ledger-subtract-commodity ledger-target pending)))
         (message "Pending balance: %s"
                  (ledger-commodity-to-string pending))))))
 

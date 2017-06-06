@@ -92,13 +92,13 @@ Returns a list with (value commodity)."
               (ledger-split-commodity-string st))
           (split-string str "[\n\r]")))
 
-(defun -commodity (c1 c2)
+(defun ledger-subtract-commodity (c1 c2)
   "Subtract C2 from C1, ensuring their commodities match."
   (if (string= (cadr c1) (cadr c2))
       (list (-(car c1) (car c2)) (cadr c1))
     (error "Can't subtract different commodities %S from %S" c2 c1)))
 
-(defun +commodity (c1 c2)
+(defun ledger-add-commodity (c1 c2)
   "Add C1 and C2, ensuring their commodities match."
   (if (string= (cadr c1) (cadr c2))
       (list (+ (car c1) (car c2)) (cadr c1))
