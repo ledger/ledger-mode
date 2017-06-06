@@ -126,12 +126,7 @@ MOMENT is an encoded date"
   (let* ((here (point))
          (extents (ledger-navigate-find-xact-extents (point)))
          (transaction (buffer-substring-no-properties (car extents) (cadr extents)))
-         encoded-date)
-    (if (string-match ledger-iso-date-regexp date)
-        (setq encoded-date
-              (encode-time 0 0 0 (string-to-number (match-string 4 date))
-                           (string-to-number (match-string 3 date))
-                           (string-to-number (match-string 2 date)))))
+         encoded-date (ledger-parse-iso-date date))
     (ledger-xact-find-slot encoded-date)
     (insert transaction "\n")
     (beginning-of-line -1)
@@ -160,6 +155,14 @@ MOMENT is an encoded date"
      (replace-regexp-in-string "[0-9]+$" "" (ledger-format-date reference-date))
      'ledger-minibuffer-history)))
 
+(defun ledger-parse-iso-date (date)
+  "Try to parse DATE using `ledger-iso-date-regexp' and return a time value or nil."
+  (save-match-data
+    (when (string-match ledger-iso-date-regexp date)
+      (encode-time 0 0 0 (string-to-number (match-string 4 date))
+                   (string-to-number (match-string 3 date))
+                   (string-to-number (match-string 2 date))))))
+
 (defun ledger-add-transaction (transaction-text &optional insert-at-point)
   "Use ledger xact TRANSACTION-TEXT to add a transaction to the buffer.
 If INSERT-AT-POINT is non-nil insert the transaction there,
@@ -172,14 +175,10 @@ correct chronological place in the buffer."
          (ledger-buf (current-buffer))
          exit-code)
     (unless insert-at-point
-      (let ((date (car args)))
-        (if (string-match ledger-iso-date-regexp date)
-            (let ((encoded (encode-time 0 0 0 (string-to-number (match-string 4 date))
-                                        (string-to-number (match-string 3 date))
-                                        (string-to-number (match-string 2 date)))))
-              (setq date encoded
-                    ledger-add-transaction-last-date encoded)))
-        (ledger-xact-find-slot date)))
+      (let* ((date (car args))
+             (parsed-date (ledger-parse-iso-date date)))
+        (setq ledger-add-transaction-last-date parsed-date)
+        (ledger-xact-find-slot (or parsed-date date))))
     (if (> (length args) 1)
         (save-excursion
           (insert
