@@ -25,8 +25,6 @@
 
 ;;; Code:
 
-(defvar ledger-buf)
-
 (defconst ledger-version-needed "3.0.0"
   "The version of ledger executable needed for interactive features.")
 
@@ -82,8 +80,7 @@
 
 (defun ledger-version-greater-p (needed)
   "Verify the ledger binary is usable for `ledger-mode' (version greater than NEEDED)."
-  (let ((buffer ledger-buf)
-        (version-strings '()))
+  (let ((version-strings '()))
     (with-temp-buffer
       (when (ledger-exec-ledger (current-buffer) (current-buffer) "--version")
         (goto-char (point-min))
