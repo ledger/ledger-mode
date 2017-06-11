@@ -150,15 +150,24 @@ MOMENT is an encoded date"
   (let ((bounds (ledger-navigate-find-xact-extents pos)))
     (delete-region (car bounds) (cadr bounds))))
 
+(defvar ledger-add-transaction-last-date nil
+  "Last date entered using `ledger-read-transaction'.")
+
+(defun ledger-read-transaction ()
+  "Read the text of a transaction, which is at least the current date."
+  (let ((reference-date (or ledger-add-transaction-last-date (current-time))))
+    (read-string
+     "Transaction: "
+     ;; Pre-fill year and month, but not day: this assumes DD is the last format arg.
+     (replace-regexp-in-string "[0-9]+$" "" (ledger-format-date reference-date))
+     'ledger-minibuffer-history)))
+
 (defun ledger-add-transaction (transaction-text &optional insert-at-point)
   "Use ledger xact TRANSACTION-TEXT to add a transaction to the buffer.
 If INSERT-AT-POINT is non-nil insert the transaction there,
 otherwise call `ledger-xact-find-slot' to insert it at the
 correct chronological place in the buffer."
-  (interactive (list
-                ;; Note: This isn't "just" the date - it can contain
-                ;; other text too
-                (ledger-read-date "Transaction: ")))
+  (interactive (list (ledger-read-transaction)))
   (let* ((args (with-temp-buffer
                  (insert transaction-text)
                  (eshell-parse-arguments (point-min) (point-max))))
@@ -167,10 +176,11 @@ correct chronological place in the buffer."
     (unless insert-at-point
       (let ((date (car args)))
         (if (string-match ledger-iso-date-regexp date)
-            (setq date
-                  (encode-time 0 0 0 (string-to-number (match-string 4 date))
-                               (string-to-number (match-string 3 date))
-                               (string-to-number (match-string 2 date)))))
+            (let ((encoded (encode-time 0 0 0 (string-to-number (match-string 4 date))
+                                        (string-to-number (match-string 3 date))
+                                        (string-to-number (match-string 2 date)))))
+              (setq date encoded
+                    ledger-add-transaction-last-date encoded)))
         (ledger-xact-find-slot date)))
     (if (> (length args) 1)
         (save-excursion
