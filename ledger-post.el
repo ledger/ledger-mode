@@ -52,35 +52,6 @@ decimal separator."
                 (const :tag "align at the decimal separator" :decimal))
   :group 'ledger-post)
 
-(defcustom ledger-post-use-completion-engine :built-in
-  "Which completion engine to use, :iswitchb or :ido chose those engines.
-:built-in uses built-in Ledger-mode completion"
-  :type '(radio (const :tag "built in completion" :built-in)
-                (const :tag "ido completion" :ido)
-                (const :tag "iswitchb completion" :iswitchb) )
-  :group 'ledger-post)
-
-(declare-function iswitchb-read-buffer "iswitchb"
-                  (prompt &optional default require-match start matches-set))
-
-(defvar iswitchb-temp-buflist)
-
-(defun ledger-post-completing-read (prompt choices)
-  "Use iswitchb as a `completing-read' replacement to choose from choices.
-PROMPT is a string to prompt with.  CHOICES is a list of strings
-to choose from."
-  (cond ((eq ledger-post-use-completion-engine :iswitchb)
-         (let* ((iswitchb-use-virtual-buffers nil)
-                (iswitchb-make-buflist-hook
-                 (lambda ()
-                   (setq iswitchb-temp-buflist choices))))
-           (iswitchb-read-buffer prompt)))
-        ((eq ledger-post-use-completion-engine :ido)
-         (ido-completing-read prompt choices))
-        (t
-         (completing-read prompt choices))))
-
-
 (defun ledger-next-amount (&optional end)
   "Move point to the next amount, as long as it is not past END.
 Return the width of the amount field as an integer and leave

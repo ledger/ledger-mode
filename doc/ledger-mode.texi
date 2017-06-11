@@ -1102,11 +1102,6 @@ The column Ledger-mode uses to align amounts.
 @item ledger-default-acct-transaction-indent
 Default indentation for account transactions in an entry.
 
-@item ledger-post-use-completion-engine
-Which completion engine to use: @var{iswitchb}, @var{ido}, or built-in.
-
-@item ledger-post-use-ido
-
 @end ftable
 
 @node Ledger Exec Customization Group, Ledger Test Customization Group, Ledger Post Customization Group, Customization Variables
