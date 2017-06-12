@@ -126,7 +126,7 @@ MOMENT is an encoded date"
   (let* ((here (point))
          (extents (ledger-navigate-find-xact-extents (point)))
          (transaction (buffer-substring-no-properties (car extents) (cadr extents)))
-         encoded-date (ledger-parse-iso-date date))
+         (encoded-date (ledger-parse-iso-date date)))
     (ledger-xact-find-slot encoded-date)
     (insert transaction "\n")
     (beginning-of-line -1)
