@@ -179,11 +179,11 @@ Possible values are '(date)', '(amount)', '(payee)' or '(0)' for no sorting, i.e
     ;; separated from the actual format string.  emacs does not
     ;; split arguments like the shell does, so you need to
     ;; specify the individual fields in the command line.
-    (if (ledger-exec-ledger buffer (current-buffer)
-                            "balance" "--limit" "cleared or pending" "--empty" "--collapse"
-                            "--format" "%(scrub(display_total))" account)
-        (ledger-split-commodity-string
-         (buffer-substring-no-properties (point-min) (point-max))))))
+    (ledger-exec-ledger buffer (current-buffer)
+                        "balance" "--limit" "cleared or pending" "--empty" "--collapse"
+                        "--format" "%(scrub(display_total))" account)
+    (ledger-split-commodity-string
+     (buffer-substring-no-properties (point-min) (point-max)))))
 
 (defun ledger-display-balance ()
   "Display the cleared-or-pending balance.
@@ -441,21 +441,19 @@ POSTING is used in `ledger-clear-whole-transactions' is nil."
 Return a count of the uncleared transactions."
   (let* ((buf ledger-buf)
          (account ledger-acct)
-         (ledger-success nil)
          (sort-by (if sort
                       sort
                     "(date)"))
          (xacts
           (with-temp-buffer
-            (when (ledger-exec-ledger buf (current-buffer)
-                                      "--uncleared" "--real" "emacs" "--sort" sort-by account)
-              (setq ledger-success t)
-              (goto-char (point-min))
-              (unless (eobp)
-                (if (looking-at "(")
-                    (read (current-buffer)))))))  ;current-buffer is the *temp* created above
+            (ledger-exec-ledger buf (current-buffer)
+                                "--uncleared" "--real" "emacs" "--sort" sort-by account)
+            (goto-char (point-min))
+            (unless (eobp)
+              (if (looking-at "(")
+                  (read (current-buffer))))))
          (fmt (ledger-reconcile-compile-format-string ledger-reconcile-buffer-line-format)))
-    (if (and ledger-success (> (length xacts) 0))
+    (if (> (length xacts) 0)
         (progn
           (if ledger-reconcile-buffer-header
               (insert (format ledger-reconcile-buffer-header account)))
@@ -463,9 +461,7 @@ Return a count of the uncleared transactions."
             (ledger-reconcile-format-xact xact fmt))
           (goto-char (point-max))
           (delete-char -1)) ;gets rid of the extra line feed at the bottom of the list
-      (if ledger-success
-          (insert (concat "There are no uncleared entries for " account))
-        (insert "Ledger has reported a problem.  Check *Ledger Error* buffer.")))
+      (insert (concat "There are no uncleared entries for " account)))
     (goto-char (point-min))
     (set-buffer-modified-p nil)
     (setq buffer-read-only t)
