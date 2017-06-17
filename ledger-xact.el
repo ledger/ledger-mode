@@ -73,6 +73,7 @@
 
 (defun ledger-time-less-p (t1 t2)
   "Say whether time value T1 is less than time value T2."
+  ;; TODO: assert listp, or support when both are strings
   (or (< (car t1) (car t2))
       (and (= (car t1) (car t2))
            (< (nth 1 t1) (nth 1 t2)))))
@@ -178,19 +179,17 @@ correct chronological place in the buffer."
       (let* ((date (car args))
              (parsed-date (ledger-parse-iso-date date)))
         (setq ledger-add-transaction-last-date parsed-date)
+        ;; TODO: what about when it can't be parsed?
         (ledger-xact-find-slot (or parsed-date date))))
     (if (> (length args) 1)
         (save-excursion
           (insert
            (with-temp-buffer
-             (setq exit-code
-                   (apply #'ledger-exec-ledger ledger-buf (current-buffer) "xact"
-                          (mapcar 'eval args)))
+             (apply #'ledger-exec-ledger ledger-buf (current-buffer) "xact"
+                    (mapcar 'eval args))
              (goto-char (point-min))
-             (if (looking-at "Error: ")
-                 (error (concat "Error in ledger-add-transaction: " (buffer-string)))
-               (ledger-post-align-postings (point-min) (point-max))
-               (buffer-string)))
+             (ledger-post-align-postings (point-min) (point-max))
+             (buffer-string))
            "\n"))
       (progn
         (insert (car args) " \n\n")

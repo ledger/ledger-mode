@@ -45,38 +45,48 @@
   :type 'file
   :group 'ledger-exec)
 
-(defun ledger-exec-handle-error (ledger-output)
-  "Deal with ledger errors contained in LEDGER-OUTPUT."
+(defun ledger-exec-handle-error (ledger-errfile)
+  "Deal with ledger errors contained in LEDGER-ERRFILE."
   (with-current-buffer (get-buffer-create "*Ledger Error*")
-    (insert-buffer-substring ledger-output)
+    (let ((buffer-read-only nil))
+      (delete-region (point-min) (point-max))
+      (insert-file-contents ledger-errfile))
     (view-mode)
-    (setq buffer-read-only t)))
+    (setq buffer-read-only t)
+    (current-buffer)))
 
-(defun ledger-exec-success-p (ledger-output-buffer)
-  "Return t if the ledger output in LEDGER-OUTPUT-BUFFER is successful."
+(defun ledger-exec-success-p (exit-code ledger-output-buffer)
+  "Return t if EXIT-CODE is non-zero and output in LEDGER-OUTPUT-BUFFER is successful."
   (with-current-buffer ledger-output-buffer
     (goto-char (point-min))
-    (if (and (> (buffer-size) 1) (looking-at (regexp-quote "While")))
+    (if (or (not (zerop exit-code))
+            (and (> (buffer-size) 1) (looking-at (regexp-quote "While"))))
         nil  ;; failure, there is an error starting with "While"
       ledger-output-buffer)))
 
 (defun ledger-exec-ledger (input-buffer &optional output-buffer &rest args)
-  "Run Ledger using INPUT-BUFFER and optionally capturing output in OUTPUT-BUFFER with ARGS."
+  "Run Ledger using INPUT-BUFFER.
+Optionally capture output in OUTPUT-BUFFER, and pass ARGS on the
+command line.  Returns OUTPUT-BUFFER if ledger succeeded,
+otherwise the error output is displayed and an error is raised."
   (if (null ledger-binary-path)
       (error "The variable `ledger-binary-path' has not been set")
     (let ((buf (or input-buffer (find-file-noselect (ledger-master-file))))
           (outbuf (or output-buffer
-                      (generate-new-buffer " *ledger-tmp*"))))
+                      (generate-new-buffer " *ledger-tmp*")))
+          (errfile (make-temp-file "ledger-errors")))
       (with-current-buffer buf
-        (let ((coding-system-for-write 'utf-8)
-              (coding-system-for-read 'utf-8))
-          (apply #'call-process-region
-                 (append (list (point-min) (point-max)
-                               ledger-binary-path nil outbuf nil "-f" "-")
-                         args)))
-        (if (ledger-exec-success-p outbuf)
-            outbuf
-          (ledger-exec-handle-error outbuf))))))
+        (let ((exit-code
+               (let ((coding-system-for-write 'utf-8)
+                     (coding-system-for-read 'utf-8))
+                 (apply #'call-process-region
+                        (append (list (point-min) (point-max)
+                                      ledger-binary-path nil (list outbuf errfile) nil "-f" "-")
+                                args)))))
+          (if (ledger-exec-success-p exit-code outbuf)
+              outbuf
+            (display-buffer (ledger-exec-handle-error errfile))
+            (error "Ledger execution failed")))))))
 
 (defun ledger-version-greater-p (needed)
   "Verify the ledger binary is usable for `ledger-mode' (version greater than NEEDED)."
