@@ -66,7 +66,8 @@ This is for use as a `font-lock-fontify-region-function'."
                  (ledger-fontify-set-face extents 'ledger-font-xact-cleared-face))
                 ((eq state 'pending)
                  (ledger-fontify-set-face extents 'ledger-font-xact-pending-face)))
-        (ledger-fontify-xact-by-line extents)))))
+        (ledger-fontify-xact-by-line extents))
+      (font-lock-fontify-keywords-region (car extents) (cadr extents)))))
 
 (defun ledger-fontify-xact-by-line (extents)
   "Do line-by-line detailed fontification of xact in EXTENTS."
@@ -204,11 +205,13 @@ Fontify the first line of an xact"
            (setq face 'ledger-font-timeclock-directive-face))
           ((looking-at "^\\(year\\|Y\\)[[:blank:]]")
            (setq face 'ledger-font-year-directive-face)))
-    (ledger-fontify-set-face extents face)))
+    (ledger-fontify-set-face extents face)
+    (save-excursion
+      (font-lock-fontify-keywords-region (car extents) (cadr extents)))))
 
 (defun ledger-fontify-set-face (extents face)
   "Set the text in EXTENTS to FACE."
-  (put-text-property (car extents) (cadr extents) 'font-lock-face face))
+  (put-text-property (car extents) (cadr extents) 'face face))
 
 
 (provide 'ledger-fontify)
