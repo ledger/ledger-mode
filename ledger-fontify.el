@@ -151,7 +151,8 @@ Fontify the first line of an xact"
 (defun ledger-fontify-directive-at (pos)
   "Fontify the directive at POS."
   (let ((extents (ledger-navigate-find-element-extents pos))
-        (face 'ledger-font-default-face))
+        (face 'ledger-font-default-face)
+        (case-fold-search nil))
     (cond ((looking-at "^=[[:blank:]]")
            (setq face 'ledger-font-auto-xact-face))
           ((looking-at "^~[[:blank:]]")
