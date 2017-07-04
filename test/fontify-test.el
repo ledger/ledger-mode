@@ -318,8 +318,7 @@ P 2014-01-01 WBDES $100.00
     b9f7b467:53dd031c:379c2da8              $-100.00
     df0fcf15:59c361db:4972bdf0:f3e78683
 "
- '("
-; Budget ========================================================
+ '("; Budget ========================================================
 " ledger-font-comment-face
 "~ Weekly
     b9f7b467:53dd031c:379c2da8               $100.00
@@ -1697,8 +1696,7 @@ define ten_dollars(s, date, t) = market($10, date, t)
 |    and this,
 *     and this.
 "
-   '("
-; This is a single line comment,
+   '("; This is a single line comment,
 #  and this,"         ledger-font-comment-face
    "%   and this,"    ledger-font-comment-face
    "|    and this,"   ledger-font-comment-face

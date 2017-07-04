@@ -112,12 +112,11 @@ Requires empty line separating xacts."
                       (> (point) (point-min)))
             (forward-line -1))
           ;; We are either at the beginning of the buffer, or we found
-          ;; a line outside the comment.  If we are not at the
-          ;; beginning of the buffer then we need to move forward a
-          ;; line.
-          (if (> (point) (point-min))
-              (progn (forward-line 1)
-                     (beginning-of-line)))
+          ;; a line outside the comment, or both.  If we are outside
+          ;; the comment then we need to move forward a line.
+          (unless (looking-at " *;")
+            (forward-line 1)
+            (beginning-of-line))
           (setq begin (point))
           (goto-char pos)
           (beginning-of-line)
