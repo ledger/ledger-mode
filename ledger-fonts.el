@@ -27,6 +27,7 @@
 ;;; Code:
 
 (require 'ledger-regex)
+(require 'ledger-state)
 
 (defgroup ledger-faces nil "Ledger mode highlighting" :group 'ledger)
 
@@ -291,7 +292,17 @@
     ("^P[[:blank:]].*$" . 'ledger-font-price-directive-face)
     ("^tag[[:blank:]].*$" . 'ledger-font-tag-directive-face)
     ("^[IiOobh][[:blank:]].*$" . 'ledger-font-timeclock-directive-face)
-    ("^\\(?:year\\|Y\\)[[:blank:]].*$" . 'ledger-font-year-directive-face))
+    ("^\\(?:year\\|Y\\)[[:blank:]].*$" . 'ledger-font-year-directive-face)
+
+    (,(concat "^\\([[:digit:]][^ \t\n]*\\)" ; date, subexp 1
+              ledger-xact-after-date-regex) ; mark 2, code 3, desc 4, comment 5
+     (1 'ledger-font-posting-date-face)
+     (3 'ledger-font-code-face nil :lax)
+     (4 (let ((state (save-match-data (ledger-state-from-string (match-string 2)))))
+          (cond ((eq state 'pending) 'ledger-font-payee-pending-face)
+                ((eq state 'cleared) 'ledger-font-payee-cleared-face)
+                (t 'ledger-font-payee-uncleared-face))))
+     (5 'ledger-font-comment-face nil :lax)))
   "Expressions to highlight in Ledger mode.")
 
 

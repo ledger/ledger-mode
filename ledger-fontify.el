@@ -81,7 +81,8 @@ This is for use as a `font-lock-fontify-region-function'."
 (defun ledger-fontify-xact-by-line (extents)
   "Do line-by-line detailed fontification of xact in EXTENTS."
   (save-excursion
-    (ledger-fontify-xact-start (car extents))
+    (goto-char (car extents))
+    (forward-line)
     (while (< (point) (cadr extents))
       (if (looking-at "[ \t]+;")
           (ledger-fontify-set-face (list (point) (progn
@@ -89,32 +90,6 @@ This is for use as a `font-lock-fontify-region-function'."
                                                    (point))) 'ledger-font-comment-face)
         (ledger-fontify-posting))
       (forward-line))))
-
-(defun ledger-fontify-xact-start (pos)
-  "POS should be at the beginning of a line starting an xact.
-Fontify the first line of an xact"
-  (goto-char pos)
-  (let ((line-start (line-beginning-position)))
-    (goto-char line-start)
-    (re-search-forward "[ \t]")
-    (ledger-fontify-set-face (list line-start (match-beginning 0)) 'ledger-font-posting-date-face)
-    (goto-char line-start)
-    (re-search-forward ledger-xact-after-date-regex)
-    (let ((state (save-match-data (ledger-state-from-string (match-string 1)))))
-      (ledger-fontify-set-face (list (match-beginning 3) (match-end 3))
-                               (cond ((eq state 'pending)
-                                      'ledger-font-payee-pending-face)
-                                     ((eq state 'cleared)
-                                      'ledger-font-payee-cleared-face)
-                                     (t
-                                      'ledger-font-payee-uncleared-face))))
-    (when (match-beginning 2)
-      (ledger-fontify-set-face (list (match-beginning 2)
-                                     (match-end 2)) 'ledger-font-code-face))
-    (when (match-beginning 4)
-      (ledger-fontify-set-face (list (match-beginning 4)
-                                     (match-end 4)) 'ledger-font-comment-face))
-    (forward-line)))
 
 (defun ledger-fontify-posting ()
   "Fontify the posting at point."
