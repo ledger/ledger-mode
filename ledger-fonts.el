@@ -30,11 +30,6 @@
 
 (defgroup ledger-faces nil "Ledger mode highlighting" :group 'ledger)
 
-(defface ledger-font-default-face
-  `((t :inherit default))
-  "Default face"
-  :group 'ledger-faces)
-
 (defface ledger-font-auto-xact-face
   `((t :inherit font-lock-negation-char-face))
   "Default face for automatic transactions"
@@ -266,29 +261,37 @@
   :group 'ledger-faces)
 
 (defface ledger-font-code-face
-  `((t :inherit ledger-font-default-face))
+  `((t :inherit default))
   "Face for Ledger codes"
   :group 'ledger-faces)
 
 (defvar ledger-font-lock-keywords
-  `(("account" . 'ledger-font-account-directive-face)
-    ("apply" . 'ledger-font-apply-directive-face)
-    ("alias" . 'ledger-font-alias-directive-face)
-    ("assert" . 'ledger-font-assert-directive-face)
-    ("bucket" . 'ledger-font-bucket-directive-face)
-    ("capture" . 'ledger-font-capture-directive-face)
-    ("check" . 'ledger-font-check-directive-face)
-    ("comment" . 'ledger-font-comment-face)
-    ("commodity" . 'ledger-font-commodity-directive-face)
-    ("define" . 'ledger-font-define-directive-face)
-    ("end" . 'ledger-font-end-directive-face)
-    ("expr" . 'ledger-font-expr-directive-face)
-    ("fixed" . 'ledger-font-fixed-directive-face)
-    ("include" . 'ledger-font-include-directive-face)
-    ("payee" . 'ledger-font-payee-directive-face)
-    ("tag" . 'ledger-font-tag-directive-face)
-    ("test" . 'ledger-font-comment-face)
-    ("year" . 'ledger-font-year-directive-face))
+  `(("^[;#%|*].*$" . 'ledger-font-comment-face)
+    ("^account[[:blank:]].*$" . 'ledger-font-account-directive-face)
+    ("^alias[[:blank:]].*$" . 'ledger-font-alias-directive-face)
+    ("^apply[[:blank:]].*$" . 'ledger-font-apply-directive-face)
+    ("^assert[[:blank:]].*$" . 'ledger-font-assert-directive-face)
+    ("^\\(?:bucket\\|A\\)[[:blank:]].*$" . 'ledger-font-bucket-directive-face)
+    ("^C[[:blank:]].*$" . 'ledger-font-C-directive-face)
+    ("^capture[[:blank:]].*$" . 'ledger-font-capture-directive-face)
+    ("^check[[:blank:]].*$" . 'ledger-font-check-directive-face)
+    ;; FIXME: wrong regex — comment does not require a blank but
+    ;; must not be followed by other letters, e.g. “commentary”
+    ("^\\(?:comment\\|test[[:blank:]]\\).*$" . 'ledger-font-comment-face)
+    ("^commodity[[:blank:]].*$" . 'ledger-font-commodity-directive-face)
+    ("^D[[:blank:]].*$" . 'ledger-font-D-directive-face)
+    ("^\\(?:define\\|def\\)[[:blank:]].*$" . 'ledger-font-define-directive-face)
+    ;; FIXME: this matches “end” and “endfixed” but also “endoscopy”
+    ("^end.*$" . 'ledger-font-end-directive-face)
+    ("^expr[[:blank:]].*$" . 'ledger-font-expr-directive-face)
+    ("^fixed[[:blank:]].*$" . 'ledger-font-fixed-directive-face)
+    ("^include[[:blank:]].*$" . 'ledger-font-include-directive-face)
+    ("^N[[:blank:]].*$" . 'ledger-font-N-directive-face)
+    ("^payee[[:blank:]].*$" . 'ledger-font-payee-directive-face)
+    ("^P[[:blank:]].*$" . 'ledger-font-price-directive-face)
+    ("^tag[[:blank:]].*$" . 'ledger-font-tag-directive-face)
+    ("^[IiOobh][[:blank:]].*$" . 'ledger-font-timeclock-directive-face)
+    ("^\\(?:year\\|Y\\)[[:blank:]].*$" . 'ledger-font-year-directive-face))
   "Expressions to highlight in Ledger mode.")
 
 

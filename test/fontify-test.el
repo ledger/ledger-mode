@@ -318,8 +318,7 @@ P 2014-01-01 WBDES $100.00
     b9f7b467:53dd031c:379c2da8              $-100.00
     df0fcf15:59c361db:4972bdf0:f3e78683
 "
- '("; Budget ========================================================
-" ledger-font-comment-face
+ '("; Budget ========================================================" ledger-font-comment-face
 "~ Weekly
     b9f7b467:53dd031c:379c2da8               $100.00
     df0fcf15" ledger-font-periodic-xact-face
@@ -329,14 +328,12 @@ P 2014-01-01 WBDES $100.00
     "~ Biweekly from 2014-04-03 until 2014-09-18
     b9f7b467:53dd031c:379c2da8               $100.00
     df0fcf15" ledger-font-periodic-xact-face
-    "; Pricing =======================================================
-" ledger-font-comment-face
+    "; Pricing =======================================================" ledger-font-comment-face
 "P 2014-01-01 WRCOM $100.00" ledger-font-price-directive-face
 "P 2014-01-01 VFDAY $100.00" ledger-font-price-directive-face
 "P 2014-01-01 VHDAY $100.00" ledger-font-price-directive-face
 "P 2014-01-01 WBDES $100.00" ledger-font-price-directive-face
-"; 2014-11 =======================================================
-" ledger-font-comment-face
+"; 2014-11 =======================================================" ledger-font-comment-face
 "2014-11-01" ledger-font-posting-date-face
 " 921edb9b" ledger-font-payee-cleared-face
 "    ; 53dd031c" ledger-font-comment-face
@@ -1696,11 +1693,11 @@ define ten_dollars(s, date, t) = market($10, date, t)
 |    and this,
 *     and this.
 "
-   '("; This is a single line comment,
-#  and this,"         ledger-font-comment-face
-   "%   and this,"    ledger-font-comment-face
-   "|    and this,"   ledger-font-comment-face
-   "*     and this."  ledger-font-comment-face)))
+   '("; This is a single line comment," ledger-font-comment-face
+     "#  and this,"     ledger-font-comment-face
+     "%   and this,"    ledger-font-comment-face
+     "|    and this,"   ledger-font-comment-face
+     "*     and this."  ledger-font-comment-face)))
 
 
 
@@ -2176,7 +2173,7 @@ o 2013/03/29 03:39:00
    "
 YY 2015
 "
-   '("YY 2015" ledger-font-default-face)))
+   nil))
 
 
 (ert-deftest ledger-fontify/test-098 ()
@@ -2187,7 +2184,7 @@ YY 2015
    "
 payeee Charity
 "
-   '("payeee Charity" ledger-font-default-face)))
+   nil))
 
 
 (provide 'fontify-test)
