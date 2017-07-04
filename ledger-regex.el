@@ -382,11 +382,11 @@
           ))
 
 (defconst ledger-posting-regex
-  (concat "^[ \t]+ ?"  ;; initial white space
-          "\\([*!]\\)? ?" ;; state, subexpr 1
-          "\\([[:print:]]+\\([ \t][ \t]\\)\\)"  ;; account, subexpr 2
-          "\\([^;\n]*\\)"  ;; amount, subexpr 4
-          "\\(.*\\)" ;; comment, subexpr 5
+  (concat "^\\([[:blank:]]+"  ;; initial white space
+          "\\(?:\\([*!]\\)[[:blank:]]\\)?" ;; state and account 1, state 2
+          "\\(?:.*?[[:graph:]]\\([ \t][ \t]\\)\\|.*\\)\\)"  ;; column separator 3
+          "\\([^;\n]*\\)?"  ;; amount, subexpr 4
+          "\\(.*\\)?$" ;; comment, subexpr 5
           ))
 
 

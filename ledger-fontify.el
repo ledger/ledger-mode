@@ -73,63 +73,8 @@ This is for use as a `font-lock-fontify-region-function'."
         (cond ((eq state 'cleared)
                (ledger-fontify-set-face extents 'ledger-font-xact-cleared-face))
               ((eq state 'pending)
-               (ledger-fontify-set-face extents 'ledger-font-xact-pending-face))))
-       (t
-        (ledger-fontify-xact-by-line extents)))
+               (ledger-fontify-set-face extents 'ledger-font-xact-pending-face)))))
       (font-lock-fontify-keywords-region (car extents) (cadr extents)))))
-
-(defun ledger-fontify-xact-by-line (extents)
-  "Do line-by-line detailed fontification of xact in EXTENTS."
-  (save-excursion
-    (goto-char (car extents))
-    (forward-line)
-    (while (< (point) (cadr extents))
-      (unless (looking-at "[ \t]+;")
-        (ledger-fontify-posting))
-      (forward-line))))
-
-(defun ledger-fontify-posting ()
-  "Fontify the posting at point."
-  (let* ((state nil)
-         (end-of-line-comment nil)
-         (end (progn (end-of-line)
-                     (point)))
-         (start (progn (beginning-of-line)
-                       (point))))
-
-    ;; Look for a posting status flag
-    (set-match-data nil 'reseat)
-    (re-search-forward "^[[:blank:]]+\\([*!]\\)[[:blank:]]" end t)
-    (if (match-string 1)
-        (setq state (ledger-state-from-string  (match-string 1))))
-    (beginning-of-line)
-    (re-search-forward "[[:graph:]]\\([ \t][ \t]\\)" end 'end)  ;; find the end of the account, or end of line
-
-    (when (<= (point) end)  ;; we are still on the line
-      (ledger-fontify-set-face (list start (point))
-                               (cond ((eq state 'cleared)
-                                      'ledger-font-posting-account-cleared-face)
-                                     ((eq state 'pending)
-                                      'ledger-font-posting-account-pending-face)
-                                     (t
-                                      'ledger-font-posting-account-face)))
-
-
-      (when (< (point) end)  ;; there is still more to fontify
-        (setq start (point))  ;; update start of next font region
-        (setq end-of-line-comment (re-search-forward ";" end 'end))  ;; find the end of the line, or start of a comment
-        (ledger-fontify-set-face (list start (point) )
-                                 (cond ((eq state 'cleared)
-                                        'ledger-font-posting-amount-cleared-face)
-                                       ((eq state 'pending)
-                                        'ledger-font-posting-amount-pending-face)
-                                       (t
-                                        'ledger-font-posting-amount-face)))
-        (when end-of-line-comment
-          (setq start (point))
-          (end-of-line)
-          (ledger-fontify-set-face (list (- start 1) (point)) ;; subtract 1 from start because we passed the semi-colon
-                                   'ledger-font-comment-face))))))
 
 (defun ledger-fontify-set-face (extents face)
   "Set the text in EXTENTS to FACE."

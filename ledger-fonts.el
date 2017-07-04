@@ -307,7 +307,20 @@
      ("^[ \t]+;.*"
       (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
       (goto-char (match-end 0))
-      (0 'ledger-font-comment-face))))
+      (0 'ledger-font-comment-face))
+     (,ledger-posting-regex ; state and account 1, state 2, amount 4, comment 5
+      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
+      (goto-char (match-end 0))
+      (1 (let ((state (save-match-data (ledger-state-from-string (match-string 2)))))
+           (cond ((eq state 'cleared) 'ledger-font-posting-account-cleared-face)
+                 ((eq state 'pending) 'ledger-font-posting-account-pending-face)
+                 (t 'ledger-font-posting-account-face)))
+         nil :lax)
+      (4 (let ((state (save-match-data (ledger-state-from-string (match-string 2)))))
+           (cond ((eq state 'cleared) 'ledger-font-posting-amount-cleared-face)
+                 ((eq state 'pending) 'ledger-font-posting-amount-pending-face)
+                 (t 'ledger-font-posting-amount-face))))
+      (5 'ledger-font-comment-face))))
   "Expressions to highlight in Ledger mode.")
 
 
