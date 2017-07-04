@@ -65,10 +65,6 @@ This is for use as a `font-lock-fontify-region-function'."
     (let ((extents (ledger-navigate-find-element-extents position))
           (state (ledger-transaction-state)))
       (cond
-       ((looking-at "^=[[:blank:]]")
-        (ledger-fontify-set-face extents 'ledger-font-auto-xact-face))
-       ((looking-at "^~[[:blank:]]")
-        (ledger-fontify-set-face extents 'ledger-font-periodic-xact-face))
        ((and ledger-fontify-xact-state-overrides state)
         (cond ((eq state 'cleared)
                (ledger-fontify-set-face extents 'ledger-font-xact-cleared-face))

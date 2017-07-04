@@ -295,6 +295,8 @@
     ("^[IiOobh][[:blank:]].*$" . 'ledger-font-timeclock-directive-face)
     ("^\\(?:year\\|Y\\)[[:blank:]].*$" . 'ledger-font-year-directive-face)
 
+    ("^=[[:blank:]].*\\(?:\n[ \t]+.*\\)*" . 'ledger-font-auto-xact-face)
+    ("^~[[:blank:]].*\\(?:\n[ \t]+.*\\)*" . 'ledger-font-periodic-xact-face)
     (,(concat "^\\([[:digit:]][^ \t\n]*\\)" ; date, subexp 1
               ledger-xact-after-date-regex) ; mark 2, code 3, desc 4, comment 5
      (1 'ledger-font-posting-date-face)
