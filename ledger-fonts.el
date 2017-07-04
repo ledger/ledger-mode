@@ -26,6 +26,7 @@
 
 ;;; Code:
 
+(require 'ledger-navigate)
 (require 'ledger-regex)
 (require 'ledger-state)
 
@@ -302,7 +303,11 @@
           (cond ((eq state 'pending) 'ledger-font-payee-pending-face)
                 ((eq state 'cleared) 'ledger-font-payee-cleared-face)
                 (t 'ledger-font-payee-uncleared-face))))
-     (5 'ledger-font-comment-face nil :lax)))
+     (5 'ledger-font-comment-face nil :lax)
+     ("^[ \t]+;.*"
+      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
+      (goto-char (match-end 0))
+      (0 'ledger-font-comment-face))))
   "Expressions to highlight in Ledger mode.")
 
 
