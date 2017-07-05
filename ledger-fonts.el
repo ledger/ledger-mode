@@ -288,42 +288,39 @@ PENDING if pending, and OTHER if none of the above."
           ((eq state 'pending) (nth 1 faces))
           (t (nth 2 faces)))))
 
+(defun ledger-font-subdirectives (subdirectives)
+  "Construct anchored highlighters for subdirectives.
+
+Each element of SUBDIRECTIVES should have the form (MATCHER
+SUBEXP-HIGHLIGHTERS…). The result will be a list of elements of
+the form (MATCHER PRE-FORM POST-FORM SUBEXP-HIGHLIGHTERS) with
+PRE-FORM and POST-FORM set to appropriate values.
+
+See `font-lock-keywords' for the full description."
+
+  (mapcar (lambda (item)
+            `(,(car item)
+              (save-excursion
+                (save-match-data
+                  (ledger-navigate-end-of-xact))
+                (point))
+              (goto-char (match-end 0))
+              ,@(cdr item)))
+          subdirectives))
+
 (defvar ledger-font-lock-keywords
   `(("^[;#%|*].*$" . 'ledger-font-comment-face)
     ("^account\\>.*$"
      (0 'ledger-font-account-directive-face)
-     ("^[ \t]+\\(;.*\\)"
-      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
-      (goto-char (match-end 0))
-      (1 'ledger-font-comment-face))
-     ("^[ \t]+\\(note\\>.*\\)"
-      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
-      (goto-char (match-end 0))
-      (1 'ledger-font-note-directive-face))
-     ("^[ \t]+\\(alias\\>.*\\)"
-      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
-      (goto-char (match-end 0))
-      (1 'ledger-font-alias-directive-face))
-     ("^[ \t]+\\(payee\\>.*\\)"
-      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
-      (goto-char (match-end 0))
-      (1 'ledger-font-payee-directive-face))
-     ("^[ \t]+\\(check\\>.*\\)"
-      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
-      (goto-char (match-end 0))
-      (1 'ledger-font-check-directive-face))
-     ("^[ \t]+\\(assert\\>.*\\)"
-      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
-      (goto-char (match-end 0))
-      (1 'ledger-font-assert-directive-face))
-     ("^[ \t]+\\(eval\\>.*\\)"
-      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
-      (goto-char (match-end 0))
-      (1 'ledger-font-expr-directive-face))
-     ("^[ \t]+\\(default\\>.*\\)"
-      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
-      (goto-char (match-end 0))
-      (1 'ledger-font-default-directive-face)))
+     ,@(ledger-font-subdirectives
+        '(("^[ \t]+\\(;.*\\)" (1 'ledger-font-comment-face))
+          ("^[ \t]+\\(note\\>.*\\)" (1 'ledger-font-note-directive-face))
+          ("^[ \t]+\\(alias\\>.*\\)" (1 'ledger-font-alias-directive-face))
+          ("^[ \t]+\\(payee\\>.*\\)" (1 'ledger-font-payee-directive-face))
+          ("^[ \t]+\\(check\\>.*\\)" (1 'ledger-font-check-directive-face))
+          ("^[ \t]+\\(assert\\>.*\\)" (1 'ledger-font-assert-directive-face))
+          ("^[ \t]+\\(eval\\>.*\\)" (1 'ledger-font-expr-directive-face))
+          ("^[ \t]+\\(default\\>.*\\)" (1 'ledger-font-default-directive-face)))))
     ("^alias\\>.*$" . 'ledger-font-alias-directive-face)
     ("^apply\\>.*$" . 'ledger-font-apply-directive-face)
     ("^assert\\>.*$" . 'ledger-font-assert-directive-face)
@@ -371,21 +368,18 @@ PENDING if pending, and OTHER if none of the above."
                                        ledger-font-payee-pending-face
                                        ledger-font-payee-uncleared-face)))
      (5 'ledger-font-comment-face nil :lax)
-     ("^[ \t]+;.*"
-      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
-      (goto-char (match-end 0))
-      (0 'ledger-font-comment-face))
-     (,ledger-posting-regex ; state and account 1, state 2, amount 4, comment 5
-      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
-      (goto-char (match-end 0))
-      (1 (ledger-font-face-by-state 2 '(ledger-font-posting-account-cleared-face
-                                        ledger-font-posting-account-pending-face
-                                        ledger-font-posting-account-face))
-         nil :lax)
-      (4 (ledger-font-face-by-state 2 '(ledger-font-posting-amount-cleared-face
-                                        ledger-font-posting-amount-pending-face
-                                        ledger-font-posting-amount-face)))
-      (5 'ledger-font-comment-face))))
+     ,@(ledger-font-subdirectives
+        `(("^[ \t]+;.*"
+           (0 'ledger-font-comment-face))
+          (,ledger-posting-regex ; state and account 1, state 2, amount 4, comment 5
+           (1 (ledger-font-face-by-state 2 '(ledger-font-posting-account-cleared-face
+                                             ledger-font-posting-account-pending-face
+                                             ledger-font-posting-account-face))
+              nil :lax)
+           (4 (ledger-font-face-by-state 2 '(ledger-font-posting-amount-cleared-face
+                                             ledger-font-posting-amount-pending-face
+                                             ledger-font-posting-amount-face)))
+           (5 'ledger-font-comment-face))))))
   "Expressions to highlight in Ledger mode.")
 
 
