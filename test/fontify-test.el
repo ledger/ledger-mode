@@ -1862,15 +1862,18 @@ check account =~ /REGEX/
   "Command Directives: comment"
   :tags '(font baseline)
 
-  (ledger-test-font-lock  ; FIXME why not fontifying as comment the in-between lines?
+  (ledger-test-font-lock
    "
 comment
     This is a block comment with
     multiple lines
 end comment
 "
-   '("comment" ledger-font-comment-face
-     "end comment" ledger-font-end-directive-face)))
+   '("comment
+    This is a block comment with
+    multiple lines
+end comment
+"  ledger-font-comment-face)))
 
 
 
@@ -2067,8 +2070,11 @@ test reg --now 2014-05-14 -p 'this month'
                                 Assets:Cash                   $-500            0
 end test
 "
-   '("test reg --now 2014-05-14 -p 'this month'" ledger-font-comment-face
-     "end test" ledger-font-end-directive-face)))
+   '("test reg --now 2014-05-14 -p 'this month'
+14-May-13 Bug 1038 Test         Expenses:Some:Account          $500         $500
+                                Assets:Cash                   $-500            0
+end test
+"  ledger-font-comment-face)))
 
 
 

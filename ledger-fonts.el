@@ -288,9 +288,10 @@ PENDING if pending, and OTHER if none of the above."
     ("^C[[:blank:]].*$" . 'ledger-font-C-directive-face)
     ("^capture[[:blank:]].*$" . 'ledger-font-capture-directive-face)
     ("^check[[:blank:]].*$" . 'ledger-font-check-directive-face)
-    ;; FIXME: wrong regex — comment does not require a blank but
-    ;; must not be followed by other letters, e.g. “commentary”
-    ("^\\(?:comment\\|test[[:blank:]]\\).*$" . 'ledger-font-comment-face)
+    (,(concat "^\\(?:comment\\|test\\)\\>"
+              "[^\0]*?\n"
+              "end[[:blank:]]+\\(?:comment\\|test\\)\\>.*\n")
+     . 'ledger-font-comment-face)
     ("^commodity[[:blank:]].*$" . 'ledger-font-commodity-directive-face)
     ("^D[[:blank:]].*$" . 'ledger-font-D-directive-face)
     ("^\\(?:define\\|def\\)[[:blank:]].*$" . 'ledger-font-define-directive-face)
