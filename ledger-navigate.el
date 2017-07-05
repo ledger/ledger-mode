@@ -131,8 +131,8 @@ Requires empty line separating xacts."
         (setq end (point))))
      ((looking-at "\\(?:comment\\|test\\)\\>")
       (setq end (or (save-match-data
-                      (re-search-forward "^end[[:blank:]]+\\(?:comment\\|test\\)\\_>")
-                      (point-max))))))
+                      (re-search-forward "^end[[:blank:]]+\\(?:comment\\|test\\)\\_>"))
+                    (point-max)))))
     (list begin end)))
 
 (defun ledger-navigate-block-comment (pos)
