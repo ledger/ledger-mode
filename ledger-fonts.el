@@ -267,6 +267,17 @@
   "Face for Ledger codes"
   :group 'ledger-faces)
 
+(defun ledger-font-face-by-state (num faces)
+  "Choose one of three faces depending on transaction state.
+NUM specifies a match group containing the state.
+FACES has the form (CLEARED PENDING OTHER).
+Return CLEARED if that group specifies a cleared transaction,
+PENDING if pending, and OTHER if none of the above."
+  (let ((state (save-match-data (ledger-state-from-string (match-string num)))))
+    (cond ((eq state 'cleared) (nth 0 faces))
+          ((eq state 'pending) (nth 1 faces))
+          (t (nth 2 faces)))))
+
 (defvar ledger-font-lock-keywords
   `(("^[;#%|*].*$" . 'ledger-font-comment-face)
     ("^account[[:blank:]].*$" . 'ledger-font-account-directive-face)
@@ -306,17 +317,15 @@
                    "\\(?:\n[ \t]+.*\\)*"     ; postings
                    )
            limit t)))
-     (0 (let ((state (save-match-data (ledger-state-from-string (match-string 1)))))
-          (cond ((eq state 'cleared) 'ledger-font-xact-cleared-face)
-                ((eq state 'pending) 'ledger-font-xact-pending-face)))))
+     (0 (ledger-font-face-by-state 1 '(ledger-font-xact-cleared-face
+                                       ledger-font-xact-pending-face))))
     (,(concat "^\\([[:digit:]][^ \t\n]*\\)" ; date, subexp 1
               ledger-xact-after-date-regex) ; mark 2, code 3, desc 4, comment 5
      (1 'ledger-font-posting-date-face)
      (3 'ledger-font-code-face nil :lax)
-     (4 (let ((state (save-match-data (ledger-state-from-string (match-string 2)))))
-          (cond ((eq state 'pending) 'ledger-font-payee-pending-face)
-                ((eq state 'cleared) 'ledger-font-payee-cleared-face)
-                (t 'ledger-font-payee-uncleared-face))))
+     (4 (ledger-font-face-by-state 2 '(ledger-font-payee-cleared-face
+                                       ledger-font-payee-pending-face
+                                       ledger-font-payee-uncleared-face)))
      (5 'ledger-font-comment-face nil :lax)
      ("^[ \t]+;.*"
       (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
@@ -325,15 +334,13 @@
      (,ledger-posting-regex ; state and account 1, state 2, amount 4, comment 5
       (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
       (goto-char (match-end 0))
-      (1 (let ((state (save-match-data (ledger-state-from-string (match-string 2)))))
-           (cond ((eq state 'cleared) 'ledger-font-posting-account-cleared-face)
-                 ((eq state 'pending) 'ledger-font-posting-account-pending-face)
-                 (t 'ledger-font-posting-account-face)))
+      (1 (ledger-font-face-by-state 2 '(ledger-font-posting-account-cleared-face
+                                        ledger-font-posting-account-pending-face
+                                        ledger-font-posting-account-face))
          nil :lax)
-      (4 (let ((state (save-match-data (ledger-state-from-string (match-string 2)))))
-           (cond ((eq state 'cleared) 'ledger-font-posting-amount-cleared-face)
-                 ((eq state 'pending) 'ledger-font-posting-amount-pending-face)
-                 (t 'ledger-font-posting-amount-face))))
+      (4 (ledger-font-face-by-state 2 '(ledger-font-posting-amount-cleared-face
+                                        ledger-font-posting-amount-pending-face
+                                        ledger-font-posting-amount-face)))
       (5 'ledger-font-comment-face))))
   "Expressions to highlight in Ledger mode.")
 
