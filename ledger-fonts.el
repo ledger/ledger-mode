@@ -92,6 +92,16 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-note-directive-face
+  `((t :inherit ledger-font-directive-face))
+  "Face for note subdirectives"
+  :group 'ledger-faces)
+
+(defface ledger-font-default-directive-face
+  `((t :inherit ledger-font-directive-face))
+  "Face for default subdirectives"
+  :group 'ledger-faces)
+
 (defface ledger-font-price-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -280,7 +290,40 @@ PENDING if pending, and OTHER if none of the above."
 
 (defvar ledger-font-lock-keywords
   `(("^[;#%|*].*$" . 'ledger-font-comment-face)
-    ("^account\\>.*$" . 'ledger-font-account-directive-face)
+    ("^account\\>.*$"
+     (0 'ledger-font-account-directive-face)
+     ("^[ \t]+\\(;.*\\)"
+      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
+      (goto-char (match-end 0))
+      (1 'ledger-font-comment-face))
+     ("^[ \t]+\\(note\\>.*\\)"
+      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
+      (goto-char (match-end 0))
+      (1 'ledger-font-note-directive-face))
+     ("^[ \t]+\\(alias\\>.*\\)"
+      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
+      (goto-char (match-end 0))
+      (1 'ledger-font-alias-directive-face))
+     ("^[ \t]+\\(payee\\>.*\\)"
+      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
+      (goto-char (match-end 0))
+      (1 'ledger-font-payee-directive-face))
+     ("^[ \t]+\\(check\\>.*\\)"
+      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
+      (goto-char (match-end 0))
+      (1 'ledger-font-check-directive-face))
+     ("^[ \t]+\\(assert\\>.*\\)"
+      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
+      (goto-char (match-end 0))
+      (1 'ledger-font-assert-directive-face))
+     ("^[ \t]+\\(eval\\>.*\\)"
+      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
+      (goto-char (match-end 0))
+      (1 'ledger-font-expr-directive-face))
+     ("^[ \t]+\\(default\\>.*\\)"
+      (save-excursion (save-match-data (ledger-navigate-end-of-xact)) (point))
+      (goto-char (match-end 0))
+      (1 'ledger-font-default-directive-face)))
     ("^alias\\>.*$" . 'ledger-font-alias-directive-face)
     ("^apply\\>.*$" . 'ledger-font-apply-directive-face)
     ("^assert\\>.*$" . 'ledger-font-assert-directive-face)
