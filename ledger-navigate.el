@@ -101,11 +101,15 @@ Requires empty line separating xacts."
   "Return the extents of the directive at POS."
   (goto-char pos)
   (let ((begin (progn (beginning-of-line)
+                      (while (looking-at "[ \t]")
+                        (forward-line -1))
                       (point)))
-        (end (progn (end-of-line)
-                    (min (point-max) (point)))))
+        (end (progn (forward-line 1)
+                    (while (looking-at "[ \t]")
+                      (forward-line 1))
+                    (point))))
     ;; handle block comments here
-    (beginning-of-line)
+    (goto-char begin)
     (if (looking-at " *;")
         (progn
           (while (and (looking-at " *;")
@@ -157,7 +161,9 @@ Requires empty line separating xacts."
   (save-excursion
     (goto-char pos)
     (beginning-of-line)
-    (if (looking-at "[ =~0-9\\[]")
+    (while (looking-at "[ \t]")
+      (forward-line -1))
+    (if (looking-at "[=~0-9\\[]")
         (ledger-navigate-find-xact-extents pos)
       (ledger-navigate-find-directive-extents pos))))
 
