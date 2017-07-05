@@ -101,7 +101,7 @@ Requires empty line separating xacts."
   "Return the extents of the directive at POS."
   (goto-char pos)
   (let ((begin (progn (beginning-of-line)
-                      (while (looking-at "[ \t]")
+                      (while (looking-at "[ \t]\\|end[[:blank:]]+\\(?:comment\\|test\\)")
                         (forward-line -1))
                       (point)))
         (end (progn (forward-line 1)
@@ -110,24 +110,29 @@ Requires empty line separating xacts."
                     (point))))
     ;; handle block comments here
     (goto-char begin)
-    (if (looking-at " *;")
-        (progn
-          (while (and (looking-at " *;")
-                      (> (point) (point-min)))
-            (forward-line -1))
-          ;; We are either at the beginning of the buffer, or we found
-          ;; a line outside the comment, or both.  If we are outside
-          ;; the comment then we need to move forward a line.
-          (unless (looking-at " *;")
-            (forward-line 1)
-            (beginning-of-line))
-          (setq begin (point))
-          (goto-char pos)
-          (beginning-of-line)
-          (while (and (looking-at " *;")
-                      (< (point) (point-max)))
-            (forward-line 1))
-          (setq end (point))))
+    (cond
+     ((looking-at " *;")
+      (progn
+        (while (and (looking-at " *;")
+                    (> (point) (point-min)))
+          (forward-line -1))
+        ;; We are either at the beginning of the buffer, or we found
+        ;; a line outside the comment, or both.  If we are outside
+        ;; the comment then we need to move forward a line.
+        (unless (looking-at " *;")
+          (forward-line 1)
+          (beginning-of-line))
+        (setq begin (point))
+        (goto-char pos)
+        (beginning-of-line)
+        (while (and (looking-at " *;")
+                    (< (point) (point-max)))
+          (forward-line 1))
+        (setq end (point))))
+     ((looking-at "\\(?:comment\\|test\\)\\>")
+      (setq end (or (save-match-data
+                      (re-search-forward "^end[[:blank:]]+\\(?:comment\\|test\\)\\_>")
+                      (point-max))))))
     (list begin end)))
 
 (defun ledger-navigate-block-comment (pos)
@@ -161,7 +166,7 @@ Requires empty line separating xacts."
   (save-excursion
     (goto-char pos)
     (beginning-of-line)
-    (while (looking-at "[ \t]")
+    (while (looking-at "[ \t]\\|end[[:blank:]]+\\(?:comment\\|test\\)\\_>")
       (forward-line -1))
     (if (looking-at "[=~0-9\\[]")
         (ledger-navigate-find-xact-extents pos)
