@@ -297,6 +297,18 @@
 
     ("^=[[:blank:]].*\\(?:\n[ \t]+.*\\)*" . 'ledger-font-auto-xact-face)
     ("^~[[:blank:]].*\\(?:\n[ \t]+.*\\)*" . 'ledger-font-periodic-xact-face)
+    (,(lambda (limit)
+        (when ledger-fontify-xact-state-overrides
+          (re-search-forward
+           (concat "^[[:digit:]][^ \t\n]*"   ; date
+                   "[ \t]+\\([*!]\\)"        ; mark, subexp 1
+                   ".*"                      ; rest of header
+                   "\\(?:\n[ \t]+.*\\)*"     ; postings
+                   )
+           limit t)))
+     (0 (let ((state (save-match-data (ledger-state-from-string (match-string 1)))))
+          (cond ((eq state 'cleared) 'ledger-font-xact-cleared-face)
+                ((eq state 'pending) 'ledger-font-xact-pending-face)))))
     (,(concat "^\\([[:digit:]][^ \t\n]*\\)" ; date, subexp 1
               ledger-xact-after-date-regex) ; mark 2, code 3, desc 4, comment 5
      (1 'ledger-font-posting-date-face)
