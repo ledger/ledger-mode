@@ -374,27 +374,34 @@ See `font-lock-keywords' for the full description."
     ("^[IiOobh]\\>.*$" . 'ledger-font-timeclock-directive-face)
     ("^\\(?:year\\|Y\\)\\>.*$" . 'ledger-font-year-directive-face)
 
-    ("^=.*\\(?:\n[ \t]+.*\\)*" . 'ledger-font-auto-xact-face)
-    ("^~.*\\(?:\n[ \t]+.*\\)*" . 'ledger-font-periodic-xact-face)
     (,(lambda (limit)
         (when ledger-fontify-xact-state-overrides
           (re-search-forward
-           (concat "^[[:digit:]][^ \t\n]*"   ; date
-                   "[ \t]+\\([*!]\\)"        ; mark, subexp 1
-                   ".*"                      ; rest of header
-                   "\\(?:\n[ \t]+.*\\)*"     ; postings
+           (concat "^\\(?:\\([=~]\\)[ \t].*\\|" ; auto/periodic, subexpr 1
+                   "[[:digit:]][^ \t\n]*"       ; date
+                   "[ \t]+\\([*!]\\)"           ; mark, subexp 2
+                   ".*\\)"                      ; rest of header
+                   "\\(?:\n[ \t]+.*\\)*"        ; postings
                    )
            limit t)))
-     (0 (ledger-font-face-by-state 1 '(ledger-font-xact-cleared-face
-                                       ledger-font-xact-pending-face))))
-    (,(concat "^\\([[:digit:]][^ \t\n]*\\)" ; date, subexp 1
-              ledger-xact-after-date-regex) ; mark 2, code 3, desc 4, comment 5
-     (1 'ledger-font-posting-date-face)
-     (3 'ledger-font-code-face nil :lax)
-     (4 (ledger-font-face-by-state 2 '(ledger-font-payee-cleared-face
+     (0 (cond ((equal "=" (match-string 1)) 'ledger-font-auto-xact-face)
+              ((equal "~" (match-string 1)) 'ledger-font-periodic-xact-face)
+              (t (ledger-font-face-by-state 2 '(ledger-font-xact-cleared-face
+                                                ledger-font-xact-pending-face))))))
+    (,(concat "^\\(?:\\(\\([=~]\\).*\\)\\|"       ; auto/periodic, subexp 1, 2
+              "\\([[:digit:]][^ \t\n]*\\)"        ; date, subexp 3
+              ledger-xact-after-date-regex "\\)") ; mark 4, code 5, desc 6, comment 7
+     (1 (cond ((equal "=" (match-string 2)) 'ledger-font-auto-xact-face)
+              ((equal "~" (match-string 2)) 'ledger-font-periodic-xact-face)
+              (t 'ledger-font-default-face))
+        nil :lax)
+     (3 'ledger-font-posting-date-face nil :lax)
+     (5 'ledger-font-code-face nil :lax)
+     (6 (ledger-font-face-by-state 4 '(ledger-font-payee-cleared-face
                                        ledger-font-payee-pending-face
-                                       ledger-font-payee-uncleared-face)))
-     (5 'ledger-font-comment-face nil :lax)
+                                       ledger-font-payee-uncleared-face))
+        nil :lax)
+     (7 'ledger-font-comment-face nil :lax)
      ,@(ledger-font-subdirectives
         `(("^[ \t]+;.*"
            (0 'ledger-font-comment-face))
