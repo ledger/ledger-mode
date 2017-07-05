@@ -192,6 +192,11 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-uuid-directive-face
+  `((t :inherit ledger-font-directive-face))
+  "Face for uuid subdirectives"
+  :group 'ledger-faces)
+
 (defface ledger-font-tag-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -353,7 +358,12 @@ See `font-lock-keywords' for the full description."
     ("^fixed\\>.*$" . 'ledger-font-fixed-directive-face)
     ("^include\\>.*$" . 'ledger-font-include-directive-face)
     ("^N\\>.*$" . 'ledger-font-N-directive-face)
-    ("^payee\\>.*$" . 'ledger-font-payee-directive-face)
+    ("^payee\\>.*$"
+     (0 'ledger-font-payee-directive-face)
+     ,@(ledger-font-subdirectives
+        '(("^[ \t]+\\(;.*\\)" (1 'ledger-font-comment-face))
+          ("^[ \t]+\\(alias\\>.*\\)" (1 'ledger-font-alias-directive-face))
+          ("^[ \t]+\\(uuid\\>.*\\)" (1 'ledger-font-uuid-directive-face)))))
     ("^P\\>.*$" . 'ledger-font-price-directive-face)
     ("^tag\\>.*$" . 'ledger-font-tag-directive-face)
     ("^[IiOobh]\\>.*$" . 'ledger-font-timeclock-directive-face)
