@@ -365,7 +365,12 @@ See `font-lock-keywords' for the full description."
           ("^[ \t]+\\(alias\\>.*\\)" (1 'ledger-font-alias-directive-face))
           ("^[ \t]+\\(uuid\\>.*\\)" (1 'ledger-font-uuid-directive-face)))))
     ("^P\\>.*$" . 'ledger-font-price-directive-face)
-    ("^tag\\>.*$" . 'ledger-font-tag-directive-face)
+    ("^tag\\>.*$"
+     (0 'ledger-font-tag-directive-face)
+     ,@(ledger-font-subdirectives
+        '(("^[ \t]+\\(;.*\\)" (1 'ledger-font-comment-face))
+          ("^[ \t]+\\(check\\>.*\\)" (1 'ledger-font-check-directive-face))
+          ("^[ \t]+\\(assert\\>.*\\)" (1 'ledger-font-assert-directive-face)))))
     ("^[IiOobh]\\>.*$" . 'ledger-font-timeclock-directive-face)
     ("^\\(?:year\\|Y\\)\\>.*$" . 'ledger-font-year-directive-face)
 

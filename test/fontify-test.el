@@ -2078,7 +2078,9 @@ tag Receipt
   check value =~ /pattern/
   assert value != 'foobar'
 "
-   '("tag Receipt" ledger-font-tag-directive-face)))
+   '("tag Receipt"          ledger-font-tag-directive-face
+"check value =~ /pattern/"  ledger-font-check-directive-face
+"assert value != 'foobar'"  ledger-font-assert-directive-face)))
 
 
 
