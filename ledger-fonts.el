@@ -147,6 +147,11 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-format-directive-face
+  `((t :inherit ledger-font-directive-face))
+  "Face for format subdirective"
+  :group 'ledger-faces)
+
 (defface ledger-font-D-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for D directive"
@@ -332,7 +337,14 @@ See `font-lock-keywords' for the full description."
               "[^\0]*?\n"
               "end[[:blank:]]+\\(?:comment\\|test\\)\\>.*\n")
      . 'ledger-font-comment-face)
-    ("^commodity\\>.*$" . 'ledger-font-commodity-directive-face)
+    ("^commodity\\>.*$"
+     (0 'ledger-font-commodity-directive-face)
+     ,@(ledger-font-subdirectives
+        '(("^[ \t]+\\(;.*\\)" (1 'ledger-font-comment-face))
+          ("^[ \t]+\\(note\\>.*\\)" (1 'ledger-font-note-directive-face))
+          ("^[ \t]+\\(format\\>.*\\)" (1 'ledger-font-format-directive-face))
+          ("^[ \t]+\\(nomarket\\>.*\\)" (1 'ledger-font-N-directive-face))
+          ("^[ \t]+\\(default\\>.*\\)" (1 'ledger-font-default-directive-face)))))
     ("^D\\>.*$" . 'ledger-font-D-directive-face)
     ("^\\(?:define\\|def\\)\\>.*$" . 'ledger-font-define-directive-face)
     ;; FIXME: this matches “end” and “endfixed” but also “endoscopy”
