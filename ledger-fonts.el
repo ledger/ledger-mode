@@ -232,6 +232,16 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-define-name-face
+  `((t :inherit font-lock-variable-name-face))
+  "Face for variable name in define directive"
+  :group 'ledger-faces)
+
+(defface ledger-font-define-body-face
+  `((t :inherit default))
+  "Face for body in define directive"
+  :group 'ledger-faces)
+
 (defface ledger-font-end-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -480,7 +490,12 @@ See `font-lock-keywords' for the full description."
     ("^\\(D\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
      (1 'ledger-font-D-directive-face)
      (2 'ledger-font-commodity-format-face nil :lax))
-    ("^\\(?:define\\|def\\)\\>.*$" . 'ledger-font-define-directive-face)
+    (,(concat "^\\(define\\|def\\)"
+              "\\(?:[[:blank:]]+\\([^=\n]*?\\)[[:blank:]]*"
+              "\\(?:=[[:blank:]]*\\(.*\\)\\)?\\)?$")
+     (1 'ledger-font-define-directive-face)
+     (2 'ledger-font-define-name-face nil :lax)
+     (3 'ledger-font-define-body-face nil :lax))
     ;; FIXME: this matches “end” and “endfixed” but also “endoscopy”
     ("^end.*$" . 'ledger-font-end-directive-face)
     ("^expr\\>.*$" . 'ledger-font-expr-directive-face)

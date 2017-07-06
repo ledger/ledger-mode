@@ -1439,15 +1439,17 @@ define ten_dollars(s, date, t) = market($10, date, t)
     Assets:Brokerage            -5 AAPL {$50.00} ((ten_dollars)) @@ $375.00
     Income:Capital Gains       $-125.00
 "
-   '("define ten_dollars(s, date, t) = market($10, date, t)" ledger-font-define-directive-face
-"2012-04-10"                                             ledger-font-posting-date-face
-" My Broker"                                             ledger-font-payee-uncleared-face
-"    Assets:Brokerage:Cash  "                            ledger-font-posting-account-face
-"     $375.00"                                           ledger-font-posting-amount-face
-"    Assets:Brokerage  "                                 ledger-font-posting-account-face
-"          -5 AAPL {$50.00} ((ten_dollars)) @@ $375.00"  ledger-font-posting-amount-face
-"    Income:Capital Gains  "                             ledger-font-posting-account-face
-"     $-125.00"                                          ledger-font-posting-amount-face)))
+   '("define"                                                 ledger-font-define-directive-face
+     "ten_dollars(s, date, t)"                                ledger-font-define-name-face
+     "market($10, date, t)"                                   ledger-font-define-body-face
+     "2012-04-10"                                             ledger-font-posting-date-face
+     " My Broker"                                             ledger-font-payee-uncleared-face
+     "    Assets:Brokerage:Cash  "                            ledger-font-posting-account-face
+     "     $375.00"                                           ledger-font-posting-amount-face
+     "    Assets:Brokerage  "                                 ledger-font-posting-account-face
+     "          -5 AAPL {$50.00} ((ten_dollars)) @@ $375.00"  ledger-font-posting-amount-face
+     "    Income:Capital Gains  "                             ledger-font-posting-account-face
+     "     $-125.00"                                          ledger-font-posting-amount-face)))
 
 
 
@@ -2049,18 +2051,28 @@ commodity $
 
   (ledger-test-font-lock
    "
+define
+define var_name
+define var_name=
 define var_name=$100
 
 2011/12/01 Test
     Expenses  (var_name*4)
     Assets
 "
-   '("define var_name=$100"  ledger-font-define-directive-face
-     "2011/12/01"            ledger-font-posting-date-face
-     " Test"                 ledger-font-payee-uncleared-face
-     "    Expenses  "        ledger-font-posting-account-face
-     "(var_name*4)"          ledger-font-posting-amount-face
-     "    Assets"            ledger-font-posting-account-face)))
+   '("define"          ledger-font-define-directive-face
+     "define"          ledger-font-define-directive-face
+     "var_name"        ledger-font-define-name-face
+     "define"          ledger-font-define-directive-face
+     "var_name"        ledger-font-define-name-face
+     "define"          ledger-font-define-directive-face
+     "var_name"        ledger-font-define-name-face
+     "$100"            ledger-font-define-body-face
+     "2011/12/01"      ledger-font-posting-date-face
+     " Test"           ledger-font-payee-uncleared-face
+     "    Expenses  "  ledger-font-posting-account-face
+     "(var_name*4)"    ledger-font-posting-amount-face
+     "    Assets"      ledger-font-posting-account-face)))
 
 
 
