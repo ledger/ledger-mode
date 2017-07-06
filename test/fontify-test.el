@@ -2016,17 +2016,30 @@ end comment
 
   (ledger-test-font-lock
    "
+commodity
+commodity $
+    note
+    format
 commodity $
    note American Dollars
    format $1,000.00
    nomarket
    default
+
 "
-   '("commodity $"       ledger-font-commodity-directive-face
-"note American Dollars"  ledger-font-note-directive-face
-"format $1,000.00"       ledger-font-format-directive-face
-"nomarket"               ledger-font-N-directive-face
-"default"                ledger-font-default-directive-face)))
+   '("commodity"         ledger-font-commodity-directive-face
+     "commodity"         ledger-font-commodity-directive-face
+     "$"                 ledger-font-commodity-name-face
+     "note"              ledger-font-note-directive-face
+     "format"            ledger-font-format-directive-face
+     "commodity"         ledger-font-commodity-directive-face
+     "$"                 ledger-font-commodity-name-face
+     "note"              ledger-font-note-directive-face
+     "American Dollars"  ledger-font-note-text-face
+     "format"            ledger-font-format-directive-face
+     "$1,000.00"         ledger-font-commodity-format-face
+     "nomarket"          ledger-font-N-directive-face
+     "default"           ledger-font-default-directive-face)))
 
 
 

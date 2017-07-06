@@ -207,9 +207,19 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-commodity-name-face
+  `((t :inherit font-lock-constant-face))
+  "Face for commodity name in commodity directives"
+  :group 'ledger-faces)
+
 (defface ledger-font-format-directive-face
   `((t :inherit ledger-font-directive-face))
   "Face for format subdirective"
+  :group 'ledger-faces)
+
+(defface ledger-font-commodity-format-face
+  `((t :inherit default))
+  "Face for format subdirective argument"
   :group 'ledger-faces)
 
 (defface ledger-font-D-directive-face
@@ -452,14 +462,21 @@ See `font-lock-keywords' for the full description."
               "[^\0]*?\n"
               "end[[:blank:]]+\\(?:comment\\|test\\)\\>.*\n")
      . 'ledger-font-comment-face)
-    ("^commodity\\>.*$"
-     (0 'ledger-font-commodity-directive-face)
+    ("^\\(commodity\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+     (1 'ledger-font-commodity-directive-face)
+     (2 'ledger-font-commodity-name-face nil :lax)
      ,@(ledger-font-subdirectives
         '(("^[ \t]+\\(;.*\\)" (1 'ledger-font-comment-face))
-          ("^[ \t]+\\(note\\>.*\\)" (1 'ledger-font-note-directive-face))
-          ("^[ \t]+\\(format\\>.*\\)" (1 'ledger-font-format-directive-face))
-          ("^[ \t]+\\(nomarket\\>.*\\)" (1 'ledger-font-N-directive-face))
-          ("^[ \t]+\\(default\\>.*\\)" (1 'ledger-font-default-directive-face)))))
+          ("^[ \t]+\\(note\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+           (1 'ledger-font-note-directive-face)
+           (2 'ledger-font-note-text-face nil :lax))
+          ("^[ \t]+\\(format\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+           (1 'ledger-font-format-directive-face)
+           (2 'ledger-font-commodity-format-face nil :lax))
+          ("^[ \t]+\\(nomarket\\)\\>.*"
+           (1 'ledger-font-N-directive-face))
+          ("^[ \t]+\\(default\\)\\>.*"
+           (1 'ledger-font-default-directive-face)))))
     ("^D\\>.*$" . 'ledger-font-D-directive-face)
     ("^\\(?:define\\|def\\)\\>.*$" . 'ledger-font-define-directive-face)
     ;; FIXME: this matches “end” and “endfixed” but also “endoscopy”
