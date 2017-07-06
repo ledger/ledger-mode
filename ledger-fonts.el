@@ -92,9 +92,19 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-account-name-face
+  `((t :inherit font-lock-variable-name-face))
+  "Face for account names in account and alias directives"
+  :group 'ledger-faces)
+
 (defface ledger-font-note-directive-face
   `((t :inherit ledger-font-directive-face))
   "Face for note subdirectives"
+  :group 'ledger-faces)
+
+(defface ledger-font-note-text-face
+  `((t :inherit font-lock-doc-face))
+  "Face for note subdirective text"
   :group 'ledger-faces)
 
 (defface ledger-font-default-directive-face
@@ -122,6 +132,16 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-condition-face
+  `((t :inherit default))
+  "Default face for check and assert conditions"
+  :group 'ledger-faces)
+
+(defface ledger-font-assert-condition-face
+  `((t :inherit ledger-font-condition-face))
+  "Face for assert conditions"
+  :group 'ledger-faces)
+
 (defface ledger-font-bucket-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -140,6 +160,11 @@
 (defface ledger-font-check-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
+  :group 'ledger-faces)
+
+(defface ledger-font-check-condition-face
+  `((t :inherit ledger-font-condition-face))
+  "Face for check conditions"
   :group 'ledger-faces)
 
 (defface ledger-font-commodity-directive-face
@@ -172,6 +197,11 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-expr-expression-face
+  `((t :inherit default))
+  "Face for expr and eval expressions"
+  :group 'ledger-faces)
+
 (defface ledger-font-fixed-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -190,6 +220,11 @@
 (defface ledger-font-payee-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
+  :group 'ledger-faces)
+
+(defface ledger-font-payee-regex-face
+  `((t :inherit font-lock-string-face))
+  "Face for payee subdirective regex in account directive"
   :group 'ledger-faces)
 
 (defface ledger-font-uuid-directive-face
@@ -320,17 +355,31 @@ See `font-lock-keywords' for the full description."
 
 (defvar ledger-font-lock-keywords
   `(("^[;#%|*].*$" . 'ledger-font-comment-face)
-    ("^account\\>.*$"
-     (0 'ledger-font-account-directive-face)
+    ("^\\(account\\)\\(?:[[:blank:]]\\(.*\\)\\)?$"
+     (1 'ledger-font-account-directive-face)
+     (2 'ledger-font-account-name-face nil :lax)
      ,@(ledger-font-subdirectives
         '(("^[ \t]+\\(;.*\\)" (1 'ledger-font-comment-face))
-          ("^[ \t]+\\(note\\>.*\\)" (1 'ledger-font-note-directive-face))
-          ("^[ \t]+\\(alias\\>.*\\)" (1 'ledger-font-alias-directive-face))
-          ("^[ \t]+\\(payee\\>.*\\)" (1 'ledger-font-payee-directive-face))
-          ("^[ \t]+\\(check\\>.*\\)" (1 'ledger-font-check-directive-face))
-          ("^[ \t]+\\(assert\\>.*\\)" (1 'ledger-font-assert-directive-face))
-          ("^[ \t]+\\(eval\\>.*\\)" (1 'ledger-font-expr-directive-face))
-          ("^[ \t]+\\(default\\>.*\\)" (1 'ledger-font-default-directive-face)))))
+          ("^[ \t]+\\(note\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+           (1 'ledger-font-note-directive-face)
+           (2 'ledger-font-note-text-face nil :lax))
+          ("^[ \t]+\\(alias\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+           (1 'ledger-font-alias-directive-face)
+           (2 'ledger-font-account-name-face nil :lax))
+          ("^[ \t]+\\(payee\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+           (1 'ledger-font-payee-directive-face)
+           (2 'ledger-font-payee-regex-face nil :lax))
+          ("^[ \t]+\\(check\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+           (1 'ledger-font-check-directive-face)
+           (2 'ledger-font-check-condition-face nil :lax))
+          ("^[ \t]+\\(assert\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+           (1 'ledger-font-assert-directive-face)
+           (2 'ledger-font-assert-condition-face nil :lax))
+          ("^[ \t]+\\(eval\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+           (1 'ledger-font-expr-directive-face)
+           (2 'ledger-font-expr-expression-face nil :lax))
+          ("^[ \t]+\\(default\\)\\>.*"
+           (1 'ledger-font-default-directive-face)))))
     ("^alias\\>.*$" . 'ledger-font-alias-directive-face)
     ("^apply\\>.*$" . 'ledger-font-apply-directive-face)
     ("^assert\\>.*$" . 'ledger-font-assert-directive-face)

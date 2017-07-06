@@ -226,17 +226,22 @@ account Assets:Bank5:LDD
     ; cmut-id: XXX
     ; boobank-id: YYY
 "
- '("account Assets:Bank1:Checking" ledger-font-account-directive-face
-"note foo"                       ledger-font-note-directive-face
-"; country: it"                  ledger-font-comment-face
-"; IBAN: XXX"                    ledger-font-comment-face
-"; ledger-file: current.ledger"  ledger-font-comment-face
-   "account Assets:Bank5:LDD"    ledger-font-account-directive-face
-"note foo bar baz"               ledger-font-note-directive-face
-"note foo bar baz"               ledger-font-note-directive-face
-"; country: fr"                  ledger-font-comment-face
-"; cmut-id: XXX"                 ledger-font-comment-face
-"; boobank-id: YYY"              ledger-font-comment-face)))
+ '("account"                        ledger-font-account-directive-face
+   "Assets:Bank1:Checking"          ledger-font-account-name-face
+   "note"                           ledger-font-note-directive-face
+   "foo"                            ledger-font-note-text-face
+   "; country: it"                  ledger-font-comment-face
+   "; IBAN: XXX"                    ledger-font-comment-face
+   "; ledger-file: current.ledger"  ledger-font-comment-face
+   "account"                        ledger-font-account-directive-face
+   "Assets:Bank5:LDD"               ledger-font-account-name-face
+   "note"                           ledger-font-note-directive-face
+   "foo bar baz"                    ledger-font-note-text-face
+   "note"                           ledger-font-note-directive-face
+   "foo bar baz"                    ledger-font-note-text-face
+   "; country: fr"                  ledger-font-comment-face
+   "; cmut-id: XXX"                 ledger-font-comment-face
+   "; boobank-id: YYY"              ledger-font-comment-face)))
 
 
 (ert-deftest ledger-fontify/test-008 ()
@@ -435,8 +440,10 @@ account Assets:StarOne Savings
     cash      -$45.13
     starone    $45.13
 "
- '("account Assets:StarOne Savings" ledger-font-account-directive-face
-   "alias starone"             ledger-font-alias-directive-face
+ '("account"                   ledger-font-account-directive-face
+   "Assets:StarOne Savings"    ledger-font-account-name-face
+   "alias"                     ledger-font-alias-directive-face
+   "starone"                   ledger-font-account-name-face
    "2014/05/07"                ledger-font-posting-date-face
    "   CoinStar Jar of Coins"  ledger-font-payee-uncleared-face
    "    cash  "                ledger-font-posting-account-face
@@ -1779,6 +1786,14 @@ define ten_dollars(s, date, t) = market($10, date, t)
 
   (ledger-test-font-lock
    "
+account
+account Expenses:Food
+    note
+    alias
+    payee
+    check
+    assert
+    eval
 account Expenses:Food
     note This account is all about the chicken!
     alias food
@@ -1787,15 +1802,32 @@ account Expenses:Food
     assert commodity == \"$\"
     eval print(\"Hello!\")
     default
+
 "
-   '("account Expenses:Food"                   ledger-font-account-directive-face
-"note This account is all about the chicken!"  ledger-font-note-directive-face
-"alias food"                                   ledger-font-alias-directive-face
-"payee ^(KFC|Popeyes)$"                        ledger-font-payee-directive-face
-"check commodity == \"$\""                     ledger-font-check-directive-face
-"assert commodity == \"$\""                    ledger-font-assert-directive-face
-"eval print(\"Hello!\")"                       ledger-font-expr-directive-face
-"default"                                      ledger-font-default-directive-face)))
+   '("account"                                 ledger-font-account-directive-face
+     "account"                                 ledger-font-account-directive-face
+     "Expenses:Food"                           ledger-font-account-name-face
+     "note"                                    ledger-font-note-directive-face
+     "alias"                                   ledger-font-alias-directive-face
+     "payee"                                   ledger-font-payee-directive-face
+     "check"                                   ledger-font-check-directive-face
+     "assert"                                  ledger-font-assert-directive-face
+     "eval"                                    ledger-font-expr-directive-face
+     "account"                                 ledger-font-account-directive-face
+     "Expenses:Food"                           ledger-font-account-name-face
+     "note"                                    ledger-font-note-directive-face
+     "This account is all about the chicken!"  ledger-font-note-text-face
+     "alias"                                   ledger-font-alias-directive-face
+     "food"                                    ledger-font-account-name-face
+     "payee"                                   ledger-font-payee-directive-face
+     "^(KFC|Popeyes)$"                         ledger-font-payee-regex-face
+     "check"                                   ledger-font-check-directive-face
+     "commodity == \"$\""                      ledger-font-check-condition-face
+     "assert"                                  ledger-font-assert-directive-face
+     "commodity == \"$\""                      ledger-font-assert-condition-face
+     "eval"                                    ledger-font-expr-directive-face
+     "print(\"Hello!\")"                       ledger-font-expr-expression-face
+     "default"                                 ledger-font-default-directive-face)))
 
 
 
