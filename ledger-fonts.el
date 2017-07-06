@@ -407,11 +407,15 @@ See `font-lock-keywords' for the full description."
      (3 'ledger-font-apply-account-face nil :lax)
      (4 'ledger-font-apply-directive-face nil :lax)
      (5 'ledger-font-apply-tag-face nil :lax))
-    ("^assert\\>.*$" . 'ledger-font-assert-directive-face)
+    ("^\\(assert\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+     (1 'ledger-font-assert-directive-face)
+     (2 'ledger-font-assert-condition-face nil :lax))
     ("^\\(?:bucket\\|A\\)\\>.*$" . 'ledger-font-bucket-directive-face)
     ("^C\\>.*$" . 'ledger-font-C-directive-face)
     ("^capture\\>.*$" . 'ledger-font-capture-directive-face)
-    ("^check\\>.*$" . 'ledger-font-check-directive-face)
+    ("^\\(check\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+     (1 'ledger-font-check-directive-face)
+     (2 'ledger-font-check-condition-face nil :lax))
     (,(concat "^\\(?:comment\\|test\\)\\>"
               "[^\0]*?\n"
               "end[[:blank:]]+\\(?:comment\\|test\\)\\>.*\n")

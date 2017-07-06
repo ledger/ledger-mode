@@ -1907,11 +1907,15 @@ alias Checking=Assets:Credit Union:Joint Checking Account
 
   (ledger-test-font-lock
    "
+assert
 assert commodity == 'VIFSX'
 assert comment =~ /REGEX/
 "
-   '("assert commodity == 'VIFSX'" ledger-font-assert-directive-face
-     "assert comment =~ /REGEX/" ledger-font-assert-directive-face)))
+   '("assert"                ledger-font-assert-directive-face
+     "assert"                ledger-font-assert-directive-face
+     "commodity == 'VIFSX'"  ledger-font-assert-condition-face
+     "assert"                ledger-font-assert-directive-face
+     "comment =~ /REGEX/"    ledger-font-assert-condition-face)))
 
 
 
@@ -1965,11 +1969,15 @@ capture  Expenses:Deductible:Medical  Medical
 
   (ledger-test-font-lock
    "
+check
 check amount == $20
 check account =~ /REGEX/
 "
-   '("check amount == $20" ledger-font-check-directive-face
-     "check account =~ /REGEX/" ledger-font-check-directive-face)))
+   '("check"               ledger-font-check-directive-face
+     "check"               ledger-font-check-directive-face
+     "amount == $20"       ledger-font-check-condition-face
+     "check"               ledger-font-check-directive-face
+     "account =~ /REGEX/"  ledger-font-check-condition-face)))
 
 
 
