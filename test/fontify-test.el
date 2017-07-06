@@ -1960,9 +1960,16 @@ bucket Assets:Checking
 
   (ledger-test-font-lock
    "
+capture
+capture Expenses:Deductible:Medical
 capture  Expenses:Deductible:Medical  Medical
 "
-   '("capture  Expenses:Deductible:Medical  Medical" ledger-font-capture-directive-face)))
+   '("capture"                      ledger-font-capture-directive-face
+     "capture"                      ledger-font-capture-directive-face
+     "Expenses:Deductible:Medical"  ledger-font-capture-account-face
+     "capture"                      ledger-font-capture-directive-face
+     "Expenses:Deductible:Medical"  ledger-font-capture-account-face
+     "Medical"                      ledger-font-capture-regex-face)))
 
 
 

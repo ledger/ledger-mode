@@ -182,6 +182,16 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-capture-account-face
+  `((t :inherit default))
+  "Face for account name in capture directives"
+  :group 'ledger-faces)
+
+(defface ledger-font-capture-regex-face
+  `((t :inherit default))
+  "Face for match regex in capture directives"
+  :group 'ledger-faces)
+
 (defface ledger-font-check-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -429,7 +439,12 @@ See `font-lock-keywords' for the full description."
      (1 'ledger-font-C-directive-face)
      (2 'ledger-font-C-amount-face nil :lax)
      (3 'ledger-font-C-amount-face nil :lax))
-    ("^capture\\>.*$" . 'ledger-font-capture-directive-face)
+    (,(concat "^\\(capture\\)"
+              "\\(?:[[:blank:]]+\\(.*?\\)"
+              "\\(?:\\(?:\t\\|[ \t]\\{2,\\}\\)\\(.*\\)\\)?\\)?$")
+     (1 'ledger-font-capture-directive-face)
+     (2 'ledger-font-capture-account-face nil :lax)
+     (3 'ledger-font-capture-regex-face nil :lax))
     ("^\\(check\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
      (1 'ledger-font-check-directive-face)
      (2 'ledger-font-check-condition-face nil :lax))
