@@ -127,6 +127,11 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-alias-definition-face
+  `((t :inherit default))
+  "Face for aliased account in alias directives"
+  :group 'ledger-faces)
+
 (defface ledger-font-assert-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -380,7 +385,10 @@ See `font-lock-keywords' for the full description."
            (2 'ledger-font-expr-expression-face nil :lax))
           ("^[ \t]+\\(default\\)\\>.*"
            (1 'ledger-font-default-directive-face)))))
-    ("^alias\\>.*$" . 'ledger-font-alias-directive-face)
+    ("^\\(alias\\)\\(?:[[:blank:]]+\\([^=\n]*\\)\\(?:=\\(.*\\)\\)?\\)?$"
+     (1 'ledger-font-alias-directive-face)
+     (2 'ledger-font-account-name-face nil :lax)
+     (3 'ledger-font-alias-definition-face nil :lax))
     ("^apply\\>.*$" . 'ledger-font-apply-directive-face)
     ("^assert\\>.*$" . 'ledger-font-assert-directive-face)
     ("^\\(?:bucket\\|A\\)\\>.*$" . 'ledger-font-bucket-directive-face)

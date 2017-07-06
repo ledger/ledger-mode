@@ -1859,6 +1859,9 @@ end apply account
 
   (ledger-test-font-lock
    "
+alias
+alias Entertainment
+alias Entertainment=
 alias Entertainment=Expenses:Entertainment
 alias Dining=Entertainment:Dining
 alias Checking=Assets:Credit Union:Joint Checking Account
@@ -1866,15 +1869,27 @@ alias Checking=Assets:Credit Union:Joint Checking Account
 2011/11/30 ChopChop
   Dining          $10.00
   Checking
+
 "
-   '("alias Entertainment=Expenses:Entertainment"                 ledger-font-alias-directive-face
-     "alias Dining=Entertainment:Dining"                          ledger-font-alias-directive-face
-     "alias Checking=Assets:Credit Union:Joint Checking Account"  ledger-font-alias-directive-face
-     "2011/11/30"                                                 ledger-font-posting-date-face
-     " ChopChop"                                                  ledger-font-payee-uncleared-face
-     "  Dining  "                                                 ledger-font-posting-account-face
-     "        $10.00"                                             ledger-font-posting-amount-face
-     "  Checking"                                                 ledger-font-posting-account-face)))
+   '("alias"                                       ledger-font-alias-directive-face
+     "alias"                                       ledger-font-alias-directive-face
+     "Entertainment"                               ledger-font-account-name-face
+     "alias"                                       ledger-font-alias-directive-face
+     "Entertainment"                               ledger-font-account-name-face
+     "alias"                                       ledger-font-alias-directive-face
+     "Entertainment"                               ledger-font-account-name-face
+     "Expenses:Entertainment"                      ledger-font-alias-definition-face
+     "alias"                                       ledger-font-alias-directive-face
+     "Dining"                                      ledger-font-account-name-face
+     "Entertainment:Dining"                        ledger-font-alias-definition-face
+     "alias"                                       ledger-font-alias-directive-face
+     "Checking"                                    ledger-font-account-name-face
+     "Assets:Credit Union:Joint Checking Account"  ledger-font-alias-definition-face
+     "2011/11/30"                                  ledger-font-posting-date-face
+     " ChopChop"                                   ledger-font-payee-uncleared-face
+     "  Dining  "                                  ledger-font-posting-account-face
+     "        $10.00"                              ledger-font-posting-amount-face
+     "  Checking"                                  ledger-font-posting-account-face)))
 
 
 
