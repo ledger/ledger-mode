@@ -1859,7 +1859,9 @@ end apply account
      "    Expenses:Groceries  "  ledger-font-posting-account-face
      "    $ 50.00"               ledger-font-posting-amount-face
      "    Assets:Checking"       ledger-font-posting-account-face
-     "end apply account"         ledger-font-end-directive-face)))
+     "end"                       ledger-font-end-directive-face
+     "apply"                     ledger-font-end-directive-face
+     "account"                   ledger-font-end-directive-face)))
 
 
 
@@ -2083,8 +2085,19 @@ define var_name=$100
   (ledger-test-font-lock
    "
 end
+end apply
+end apply account
+end apply tag
 "
-   '("end" ledger-font-end-directive-face)))
+   '("end"      ledger-font-end-directive-face
+     "end"      ledger-font-end-directive-face
+     "apply"    ledger-font-end-directive-face
+     "end"      ledger-font-end-directive-face
+     "apply"    ledger-font-end-directive-face
+     "account"  ledger-font-end-directive-face
+     "end"      ledger-font-end-directive-face
+     "apply"    ledger-font-end-directive-face
+     "tag"      ledger-font-end-directive-face)))
 
 
 
@@ -2208,13 +2221,17 @@ end apply tag
      "    Expenses:Books  "            ledger-font-posting-account-face
      "                     $20.00"     ledger-font-posting-amount-face
      "    Liabilities:MasterCard"      ledger-font-posting-account-face
-     "end apply tag"                   ledger-font-end-directive-face
+     "end"                             ledger-font-end-directive-face
+     "apply"                           ledger-font-end-directive-face
+     "tag"                             ledger-font-end-directive-face
      "2011/12/01"                      ledger-font-posting-date-face
      " Sale"                           ledger-font-payee-uncleared-face
      "    Assets:Checking:Business  "  ledger-font-posting-account-face
      "          $ 30.00"               ledger-font-posting-amount-face
      "    Income:Sales"                ledger-font-posting-account-face
-     "end apply tag"                   ledger-font-end-directive-face)))
+     "end"                             ledger-font-end-directive-face
+     "apply"                           ledger-font-end-directive-face
+     "tag"                             ledger-font-end-directive-face)))
 
 
 
