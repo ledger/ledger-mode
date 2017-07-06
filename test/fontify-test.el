@@ -2288,9 +2288,19 @@ D $1,000.00
 
   (ledger-test-font-lock
    "
+C
+C 1.00
+C 1.00 Kb =
 C 1.00 Kb = 1024 bytes
 "
-   '("C 1.00 Kb = 1024 bytes" ledger-font-C-directive-face)))
+   '("C"           ledger-font-C-directive-face
+     "C"           ledger-font-C-directive-face
+     "1.00"        ledger-font-C-amount-face
+     "C"           ledger-font-C-directive-face
+     "1.00 Kb"     ledger-font-C-amount-face
+     "C"           ledger-font-C-directive-face
+     "1.00 Kb"     ledger-font-C-amount-face
+     "1024 bytes"  ledger-font-C-amount-face)))
 
 
 
