@@ -162,6 +162,11 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-bucket-account-face
+  `((t :inherit default))
+  "Face for bucket directive argument"
+  :group 'ledger-faces)
+
 (defface ledger-font-C-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for C directive"
@@ -410,7 +415,9 @@ See `font-lock-keywords' for the full description."
     ("^\\(assert\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
      (1 'ledger-font-assert-directive-face)
      (2 'ledger-font-assert-condition-face nil :lax))
-    ("^\\(?:bucket\\|A\\)\\>.*$" . 'ledger-font-bucket-directive-face)
+    ("^\\(bucket\\|A\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+     (1 'ledger-font-bucket-directive-face)
+     (2 'ledger-font-bucket-account-face nil :lax))
     ("^C\\>.*$" . 'ledger-font-C-directive-face)
     ("^capture\\>.*$" . 'ledger-font-capture-directive-face)
     ("^\\(check\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
