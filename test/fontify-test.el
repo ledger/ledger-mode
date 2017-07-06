@@ -2296,9 +2296,12 @@ N SYMBOL
 
   (ledger-test-font-lock
    "
+D
 D $1,000.00
 "
-   '("D $1,000.00" ledger-font-D-directive-face)))
+   '("D"  ledger-font-D-directive-face
+     "D"  ledger-font-D-directive-face
+     "$1,000.00" ledger-font-commodity-format-face)))
 
 
 

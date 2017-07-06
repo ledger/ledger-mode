@@ -477,7 +477,9 @@ See `font-lock-keywords' for the full description."
            (1 'ledger-font-N-directive-face))
           ("^[ \t]+\\(default\\)\\>.*"
            (1 'ledger-font-default-directive-face)))))
-    ("^D\\>.*$" . 'ledger-font-D-directive-face)
+    ("^\\(D\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+     (1 'ledger-font-D-directive-face)
+     (2 'ledger-font-commodity-format-face nil :lax))
     ("^\\(?:define\\|def\\)\\>.*$" . 'ledger-font-define-directive-face)
     ;; FIXME: this matches “end” and “endfixed” but also “endoscopy”
     ("^end.*$" . 'ledger-font-end-directive-face)
