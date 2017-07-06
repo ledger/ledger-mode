@@ -122,6 +122,16 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-apply-account-face
+  `((t :inherit default))
+  "Face for argument of apply account directive"
+  :group 'ledger-faces)
+
+(defface ledger-font-apply-tag-face
+  `((t :inherit default))
+  "Face for argument of apply tag directive"
+  :group 'ledger-faces)
+
 (defface ledger-font-alias-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -389,7 +399,14 @@ See `font-lock-keywords' for the full description."
      (1 'ledger-font-alias-directive-face)
      (2 'ledger-font-account-name-face nil :lax)
      (3 'ledger-font-alias-definition-face nil :lax))
-    ("^apply\\>.*$" . 'ledger-font-apply-directive-face)
+    (,(concat "^\\(apply\\)\\(?:[[:blank:]]+"
+              "\\(?:\\(account\\)\\(?:[[:blank:]]+\\(.*\\)\\)?"
+              "\\|\\(tag\\)\\(?:[[:blank:]]+\\(.*\\)\\)?\\)\\)?$")
+     (1 'ledger-font-apply-directive-face)
+     (2 'ledger-font-apply-directive-face nil :lax)
+     (3 'ledger-font-apply-account-face nil :lax)
+     (4 'ledger-font-apply-directive-face nil :lax)
+     (5 'ledger-font-apply-tag-face nil :lax))
     ("^assert\\>.*$" . 'ledger-font-assert-directive-face)
     ("^\\(?:bucket\\|A\\)\\>.*$" . 'ledger-font-bucket-directive-face)
     ("^C\\>.*$" . 'ledger-font-C-directive-face)
