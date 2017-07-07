@@ -336,6 +336,11 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-tag-name-face
+  `((t :inherit font-lock-type-face))
+  "Face for tag name in tag directive"
+  :group 'ledger-faces)
+
 (defface ledger-font-timeclock-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for timeclock I,i,O,o,b,h directives"
@@ -582,12 +587,17 @@ See `font-lock-keywords' for the full description."
      (2 'ledger-font-price-date-face nil :lax)
      (3 'ledger-font-price-symbol-face nil :lax)
      (4 'ledger-font-price-face nil :lax))
-    ("^tag\\>.*$"
-     (0 'ledger-font-tag-directive-face)
+    ("^\\(tag\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+     (1 'ledger-font-tag-directive-face)
+     (2 'ledger-font-tag-name-face nil :lax)
      ,@(ledger-font-subdirectives
         '(("^[ \t]+\\(;.*\\)" (1 'ledger-font-comment-face))
-          ("^[ \t]+\\(check\\>.*\\)" (1 'ledger-font-check-directive-face))
-          ("^[ \t]+\\(assert\\>.*\\)" (1 'ledger-font-assert-directive-face)))))
+          ("^[ \t]+\\(check\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+           (1 'ledger-font-check-directive-face)
+           (2 'ledger-font-check-condition-face nil :lax))
+          ("^[ \t]+\\(assert\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+           (1 'ledger-font-assert-directive-face)
+           (2 'ledger-font-assert-condition-face nil :lax)))))
     ("^[IiOobh]\\>.*$" . 'ledger-font-timeclock-directive-face)
     ("^\\(?:year\\|Y\\)\\>.*$" . 'ledger-font-year-directive-face)
 

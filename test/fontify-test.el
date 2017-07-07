@@ -2288,13 +2288,25 @@ end apply tag
 
   (ledger-test-font-lock
    "
+tag
+tag Receipt
+  check
+  assert
 tag Receipt
   check value =~ /pattern/
   assert value != 'foobar'
 "
-   '("tag Receipt"          ledger-font-tag-directive-face
-"check value =~ /pattern/"  ledger-font-check-directive-face
-"assert value != 'foobar'"  ledger-font-assert-directive-face)))
+   '("tag"                 ledger-font-tag-directive-face
+     "tag"                 ledger-font-tag-directive-face
+     "Receipt"             ledger-font-tag-name-face
+     "check"               ledger-font-check-directive-face
+     "assert"              ledger-font-assert-directive-face
+     "tag"                 ledger-font-tag-directive-face
+     "Receipt"             ledger-font-tag-name-face
+     "check"               ledger-font-check-directive-face
+     "value =~ /pattern/"  ledger-font-check-condition-face
+     "assert"              ledger-font-assert-directive-face
+     "value != 'foobar'"   ledger-font-assert-condition-face)))
 
 
 
