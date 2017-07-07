@@ -262,6 +262,16 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-fixed-commodity-face
+  `((t :inherit font-lock-constant-face))
+  "Face for commodity name in fixed directive"
+  :group 'ledger-faces)
+
+(defface ledger-font-fixed-price-face
+  `((t :inherit default))
+  "Face for price in fixed directive"
+  :group 'ledger-faces)
+
 (defface ledger-font-include-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -502,9 +512,14 @@ See `font-lock-keywords' for the full description."
      (1 'ledger-font-end-directive-face)
      (2 'ledger-font-end-directive-face nil :lax)
      (3 'ledger-font-end-directive-face nil :lax))
-    ("^endfixed\\>.*$" . 'ledger-font-end-directive-face)
+    ("^\\(endfixed\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+     (1 'ledger-font-end-directive-face)
+     (2 'ledger-font-fixed-commodity-face nil :lax))
     ("^expr\\>.*$" . 'ledger-font-expr-directive-face)
-    ("^fixed\\>.*$" . 'ledger-font-fixed-directive-face)
+    ("^\\(fixed\\)\\(?:[[:blank:]]+\\([^[:blank:]\n]+\\)\\(?:[[:blank:]]+\\(.*\\)\\)?\\)?$"
+     (1 'ledger-font-fixed-directive-face)
+     (2 'ledger-font-fixed-commodity-face nil :lax)
+     (3 'ledger-font-fixed-price-face nil :lax))
     ("^include\\>.*$" . 'ledger-font-include-directive-face)
     ("^N\\>.*$" . 'ledger-font-N-directive-face)
     ("^payee\\>.*$"
