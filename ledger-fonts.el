@@ -296,6 +296,11 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-payee-name-face
+  `((t :inherit font-lock-function-name-face))
+  "Face for payee name in payee directive"
+  :group 'ledger-faces)
+
 (defface ledger-font-payee-regex-face
   `((t :inherit font-lock-string-face))
   "Face for payee subdirective regex in account directive"
@@ -304,6 +309,11 @@
 (defface ledger-font-uuid-directive-face
   `((t :inherit ledger-font-directive-face))
   "Face for uuid subdirectives"
+  :group 'ledger-faces)
+
+(defface ledger-font-uuid-face
+  `((t :inherit default))
+  "Face for uuid in uuid subdirectives"
   :group 'ledger-faces)
 
 (defface ledger-font-tag-directive-face
@@ -537,12 +547,17 @@ See `font-lock-keywords' for the full description."
     ("^\\(N\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
      (1 'ledger-font-N-directive-face)
      (2 'ledger-font-N-symbol-face nil :lax))
-    ("^payee\\>.*$"
-     (0 'ledger-font-payee-directive-face)
+    ("^\\(payee\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+     (1 'ledger-font-payee-directive-face)
+     (2 'ledger-font-payee-name-face nil :lax)
      ,@(ledger-font-subdirectives
         '(("^[ \t]+\\(;.*\\)" (1 'ledger-font-comment-face))
-          ("^[ \t]+\\(alias\\>.*\\)" (1 'ledger-font-alias-directive-face))
-          ("^[ \t]+\\(uuid\\>.*\\)" (1 'ledger-font-uuid-directive-face)))))
+          ("^[ \t]+\\(alias\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+           (1 'ledger-font-alias-directive-face)
+           (2 'ledger-font-payee-regex-face nil :lax))
+          ("^[ \t]+\\(uuid\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+           (1 'ledger-font-uuid-directive-face)
+           (2 'ledger-font-uuid-face nil :lax)))))
     ("^P\\>.*$" . 'ledger-font-price-directive-face)
     ("^tag\\>.*$"
      (0 'ledger-font-tag-directive-face)

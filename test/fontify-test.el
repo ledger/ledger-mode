@@ -2180,13 +2180,25 @@ include file.ledger
 
   (ledger-test-font-lock
    "
+payee
+payee KFC
+    alias
+    uuid
 payee KFC
     alias KENTUCKY FRIED CHICKEN
     uuid 2a2e21d434356f886c84371eebac6e44f1337fda
 "
-   '("payee KFC"                                 ledger-font-payee-directive-face
-"alias KENTUCKY FRIED CHICKEN"                   ledger-font-alias-directive-face
-"uuid 2a2e21d434356f886c84371eebac6e44f1337fda"  ledger-font-uuid-directive-face)))
+   '("payee"                                     ledger-font-payee-directive-face
+     "payee"                                     ledger-font-payee-directive-face
+     "KFC"                                       ledger-font-payee-name-face
+     "alias"                                     ledger-font-alias-directive-face
+     "uuid"                                      ledger-font-uuid-directive-face
+     "payee"                                     ledger-font-payee-directive-face
+     "KFC"                                       ledger-font-payee-name-face
+     "alias"                                     ledger-font-alias-directive-face
+     "KENTUCKY FRIED CHICKEN"                    ledger-font-payee-regex-face
+     "uuid"                                      ledger-font-uuid-directive-face
+     "2a2e21d434356f886c84371eebac6e44f1337fda"  ledger-font-uuid-face)))
 
 
 
