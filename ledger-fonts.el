@@ -660,17 +660,18 @@ See `font-lock-keywords' for the full description."
         nil :lax)
      (7 'ledger-font-comment-face nil :lax)
      ,@(ledger-font-subdirectives
-        `(("^[ \t]+;.*"
-           (0 'ledger-font-comment-face))
-          (,ledger-posting-regex ; state and account 1, state 2, amount 4, comment 5
+        `(("^[ \t]+\\(;.*\\)"
+           (1 'ledger-font-comment-face))
+          (,ledger-posting-regex ; state and account 1, state 2, account 3, amount 4, comment 5
            (1 (ledger-font-face-by-state 2 '(ledger-font-posting-account-cleared-face
                                              ledger-font-posting-account-pending-face
                                              ledger-font-posting-account-face))
               nil :lax)
            (4 (ledger-font-face-by-state 2 '(ledger-font-posting-amount-cleared-face
                                              ledger-font-posting-amount-pending-face
-                                             ledger-font-posting-amount-face)))
-           (5 'ledger-font-comment-face))))))
+                                             ledger-font-posting-amount-face))
+              nil :lax)
+           (5 'ledger-font-comment-face nil :lax))))))
   "Expressions to highlight in Ledger mode.")
 
 
