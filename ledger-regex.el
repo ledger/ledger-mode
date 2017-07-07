@@ -375,10 +375,10 @@
           ))
 
 (defconst ledger-xact-after-date-regex
-  (concat "\\([ \t]+[*!]\\)?"  ;; mark, subexp 1
-          "\\([ \t]+(.*?)\\)?"  ;; code, subexp 2
-          "\\([ \t]+[^;\n]+\\)"   ;; desc, subexp 3
-          "\\(;[^\n]*\\)?" ;; comment, subexp 4
+  (concat "\\(?:[ \t]+\\([*!]\\)\\)?"  ;; mark, subexp 1
+          "\\(?:[ \t]+\\((.*?)\\)\\)?"  ;; code, subexp 2
+          "\\(?:[ \t]+\\([^;\n]+?\\)\\)"   ;; desc, subexp 3
+          "\\(?:[ \t]*\\(;[^\n]*\\)\\)?$" ;; comment, subexp 4
           ))
 
 (defconst ledger-posting-regex

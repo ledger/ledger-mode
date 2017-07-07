@@ -55,7 +55,7 @@
   Equity:Opening Balances
 "
    '("2010/12/01"                  ledger-font-posting-date-face
-     " Checking balance"           ledger-font-payee-cleared-face
+     "Checking balance"            ledger-font-payee-cleared-face
      "  Assets:Checking  "         ledger-font-posting-account-face
      "                 $1,000.00"  ledger-font-posting-amount-face
      "  Equity:Opening Balances"   ledger-font-posting-account-face)))
@@ -73,7 +73,7 @@ https://groups.google.com/d/msg/ledger-cli/FcYG5cnFOpw/PmpLq_dzdYwJ"
   Equity:Opening Balances
 "
    '("2010/12/01"                 ledger-font-posting-date-face
-     " Checking balance"          ledger-font-payee-cleared-face
+     "Checking balance"           ledger-font-payee-cleared-face
      "  Assets:Checking  "        ledger-font-posting-account-face
      "                 $42.00 "   ledger-font-posting-amount-face
      "; the answer to life"       ledger-font-comment-face
@@ -92,7 +92,7 @@ https://groups.google.com/d/msg/ledger-cli/FcYG5cnFOpw/856tmpSFbNcJ"
   Equity:Opening Balances            = $500.00
 "
    '("2010/12/01"                   ledger-font-posting-date-face
-     " Checking balance"            ledger-font-payee-cleared-face
+     "Checking balance"             ledger-font-payee-cleared-face
      "  Assets:Checking  "          ledger-font-posting-account-face
      "            (1/4 * $123.00)"  ledger-font-posting-amount-face
      "  Equity:Opening Balances  "  ledger-font-posting-account-face
@@ -119,25 +119,25 @@ https://groups.google.com/d/msg/ledger-cli/cBy3-QSai6o/qoEUGLfcZuUJ"
     k:varia-k:filantropie:azg                  €7.44
 "
  '("2014-11-29"                             ledger-font-posting-date-face
-   " colruyt"                               ledger-font-payee-uncleared-face
+   "colruyt"                                ledger-font-payee-uncleared-face
    "    k:eten:olie  "                      ledger-font-posting-account-face
    "                   (€11.52 - €2.00)"    ledger-font-posting-amount-face
    "    t:colruyt  "                        ledger-font-posting-account-face
    "                               €-9.52"  ledger-font-posting-amount-face
    "2014-12-03=2014-11-29"                  ledger-font-posting-date-face
-   " colruyt"                               ledger-font-payee-uncleared-face
+   "colruyt"                                ledger-font-payee-uncleared-face
    "    t:colruyt  "                        ledger-font-posting-account-face
    "                               €35.90"  ledger-font-posting-amount-face
    "    b:bkbc:cmfrt  "                     ledger-font-posting-account-face
    "                           €-35.90"     ledger-font-posting-amount-face
    "2014-12-03=2014-11-29"                  ledger-font-posting-date-face
-   " colruyt"                               ledger-font-payee-uncleared-face
+   "colruyt"                                ledger-font-payee-uncleared-face
    "    t:colruyt  "                        ledger-font-posting-account-face
    "                                €9.52"  ledger-font-posting-amount-face
    "    b:bkbc:cmfrt  "                     ledger-font-posting-account-face
    "                            €-9.52"     ledger-font-posting-amount-face
    "2014-12-01"                             ledger-font-posting-date-face
-   " azg"                                   ledger-font-payee-uncleared-face
+   "azg"                                    ledger-font-payee-uncleared-face
    "    k:varia-k:filantropie:azg  "        ledger-font-posting-account-face
    "                €7.44"                  ledger-font-posting-amount-face)))
 
@@ -158,13 +158,13 @@ https://groups.google.com/d/msg/ledger-cli/cBy3-QSai6o/_GeGBvRxLukJ"
     e6ee9cc7:b91c4f8d:5746af7b:9e12005e
 "
  '("2014-11-26"                                 ledger-font-posting-date-face
-   " 0bbde77a"                                  ledger-font-payee-uncleared-face
+   "0bbde77a"                                   ledger-font-payee-uncleared-face
    "    ea91d4b4:e45cece9:55d77630:6fe97d2b  "  ledger-font-posting-account-face
    "      A4.13"                                ledger-font-posting-amount-face
    "    155ee966:be2467c7:e75bfd51:ce9edcc0  "  ledger-font-posting-account-face
    "     A-4.13"                                ledger-font-posting-amount-face
    "2014-11-27=2014-11-15"                      ledger-font-posting-date-face
-   " e92211c9"                                  ledger-font-payee-cleared-face
+   "e92211c9"                                   ledger-font-payee-cleared-face
    "    94f2b492:e361e00d:6e702d4d:13531a9d  "  ledger-font-posting-account-face
    "     A38.98"                                ledger-font-posting-amount-face
    "    e6ee9cc7:b91c4f8d:5746af7b:9e12005e"    ledger-font-posting-account-face)))
@@ -191,7 +191,7 @@ P 2006/03/06 BAR £1.50
   Assets:X
 "
  '("2006/03/10"                   ledger-font-posting-date-face
-   " Opening balance"             ledger-font-payee-uncleared-face
+   "Opening balance"              ledger-font-payee-uncleared-face
    "  Assets:X  "                 ledger-font-posting-account-face
    "£4000"                        ledger-font-posting-amount-face
    "  Equity:Opening Balance"     ledger-font-posting-account-face
@@ -204,7 +204,7 @@ P 2006/03/06 BAR £1.50
    "BAR"                          ledger-font-price-symbol-face
    "£1.50"                        ledger-font-price-face
    "2006/05/15"                   ledger-font-posting-date-face
-   " Interest"                    ledger-font-payee-uncleared-face
+   "Interest"                     ledger-font-payee-uncleared-face
    "  Income:Taxable:Interest  "  ledger-font-posting-account-face
    "£-28.75"                      ledger-font-posting-amount-face
    "  Expenses:Tax:Income Tax  "  ledger-font-posting-account-face
@@ -270,19 +270,19 @@ https://groups.google.com/d/msg/ledger-cli/yNHQHN60qo0/XaDLxAHF92UJ"
     Assets:Checking                               -7 EUR
 "
  '("2014/11/02"                                    ledger-font-posting-date-face
-   " beer"                                         ledger-font-payee-cleared-face
+   "beer"                                          ledger-font-payee-cleared-face
    "    Expenses:Drinks  "                         ledger-font-posting-account-face
    "                              5 EUR"           ledger-font-posting-amount-face
    "    Assets:Checking  "                         ledger-font-posting-account-face
    "                             -5 EUR"           ledger-font-posting-amount-face
    "2014/11/02=2014/11/03"                         ledger-font-posting-date-face
-   " salary"                                       ledger-font-payee-cleared-face
+   "salary"                                        ledger-font-payee-cleared-face
    "    Assets:Checking  "                         ledger-font-posting-account-face
    "                             10 EUR"           ledger-font-posting-amount-face
    "    Income  "                                  ledger-font-posting-account-face
    "                                     -10 EUR"  ledger-font-posting-amount-face
    "2014/11/02"                                    ledger-font-posting-date-face
-   " burger"                                       ledger-font-payee-cleared-face
+   "burger"                                        ledger-font-payee-cleared-face
    "    Expenses:Food  "                           ledger-font-posting-account-face
    "                                7 EUR"         ledger-font-posting-amount-face
    "    Assets:Checking  "                         ledger-font-posting-account-face
@@ -370,19 +370,19 @@ P 2014-01-01 WBDES $100.00
 "$100.00" ledger-font-price-face
 "; 2014-11 =======================================================" ledger-font-comment-face
 "2014-11-01" ledger-font-posting-date-face
-" 921edb9b" ledger-font-payee-cleared-face
+"921edb9b" ledger-font-payee-cleared-face
 "    ; 53dd031c" ledger-font-comment-face
 "    b9f7b467:53dd031c:379c2da8  " ledger-font-posting-account-face
 "            $-100.00" ledger-font-posting-amount-face
 "    df0fcf15:59c361db:4972bdf0:f3e78683" ledger-font-posting-account-face
 "2014-11-01" ledger-font-posting-date-face
-" 921edb9b" ledger-font-payee-cleared-face
+"921edb9b" ledger-font-payee-cleared-face
 "    ; 53dd031c" ledger-font-comment-face
 "    b9f7b467:53dd031c:379c2da8" ledger-font-posting-account-face
 "    df0fcf15:59c361db:4972bdf0:f3e78683  " ledger-font-posting-account-face
 "    $100.00" ledger-font-posting-amount-face
 "2014-11-01=2014-11-02" ledger-font-posting-date-face
-" 921edb9b" ledger-font-payee-cleared-face
+"921edb9b" ledger-font-payee-cleared-face
 "    ; 53dd031c" ledger-font-comment-face
 "    b9f7b467:53dd031c:379c2da8  " ledger-font-posting-account-face
 "            $-100.00" ledger-font-posting-amount-face
@@ -402,7 +402,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/nFCm2sthtfAJ"
     C                                          -6,75€
 "
  '("2014/03/11"                                      ledger-font-posting-date-face
-   " Whatever"                                       ledger-font-payee-uncleared-face
+   "Whatever"                                        ledger-font-payee-uncleared-face
    "    A  "                                         ledger-font-posting-account-face
    "                                             0"  ledger-font-posting-amount-face
    "    B  "                                         ledger-font-posting-account-face
@@ -426,7 +426,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/92yhmm3lk0UJ"
     card                                    -€ 10,00
 "
  '("2014/08/23"                                  ledger-font-posting-date-face
-   " demo fontification error"                   ledger-font-payee-uncleared-face
+   "demo fontification error"                    ledger-font-payee-uncleared-face
    "    Expense:AAA  "                           ledger-font-posting-account-face
    "                            € 10,00"         ledger-font-posting-amount-face
    "    Expense:BBB  "                           ledger-font-posting-account-face
@@ -463,7 +463,7 @@ account Assets:StarOne Savings
    "alias"                     ledger-font-alias-directive-face
    "starone"                   ledger-font-account-name-face
    "2014/05/07"                ledger-font-posting-date-face
-   "   CoinStar Jar of Coins"  ledger-font-payee-uncleared-face
+   "CoinStar Jar of Coins"     ledger-font-payee-uncleared-face
    "    cash  "                ledger-font-posting-account-face
    "   -$27.69"                ledger-font-posting-amount-face
    "    starone  "             ledger-font-posting-account-face
@@ -502,17 +502,17 @@ https://groups.google.com/d/msg/ledger-cli/tLKIzj02XZA/8f1cT5vS6DkJ"
   Wallets:Some Person
 "
  '("2011/05/08"               ledger-font-posting-date-face
-   " Some expense"            ledger-font-payee-cleared-face
+   "Some expense"             ledger-font-payee-cleared-face
    "  Wallets:Some Person  "  ledger-font-posting-account-face
    "$9.31"                    ledger-font-posting-amount-face
    "  Income:Some income"     ledger-font-posting-account-face
    "2011/05/17"               ledger-font-posting-date-face
-   " Another expense"         ledger-font-payee-cleared-face
+   "Another expense"          ledger-font-payee-cleared-face
    "  Wallets:Some Person  "  ledger-font-posting-account-face
    "$10.38"                   ledger-font-posting-amount-face
    "  Income:Some income"     ledger-font-posting-account-face
    "2011/09/11"               ledger-font-posting-date-face
-   " Another expense"         ledger-font-payee-uncleared-face
+   "Another expense"          ledger-font-payee-uncleared-face
    "  Expenses:Expensive  "   ledger-font-posting-account-face
    "$585.00"                  ledger-font-posting-amount-face
    "  Wallets:Some Person"    ledger-font-posting-account-face)))
@@ -533,13 +533,13 @@ https://groups.google.com/d/msg/ledger-cli/tLKIzj02XZA/8f1cT5vS6DkJ"
   Equity:Opening Balances
 "
    '("2010/12/01"                  ledger-font-posting-date-face
-     " Checking balance  "         ledger-font-payee-cleared-face
+     "Checking balance"            ledger-font-payee-cleared-face
      "; note"                      ledger-font-comment-face
      "  Assets:Checking  "         ledger-font-posting-account-face
      "                 $1,000.00"  ledger-font-posting-amount-face
      "  Equity:Opening Balances"   ledger-font-posting-account-face
      "2010/12/01"                  ledger-font-posting-date-face
-     " Checking balance  "         ledger-font-payee-uncleared-face
+     "Checking balance"            ledger-font-payee-uncleared-face
      "; note"                      ledger-font-comment-face
      "  Assets:Checking  "         ledger-font-posting-account-face
      "                 $1,000.00"  ledger-font-posting-amount-face
@@ -557,8 +557,8 @@ https://groups.google.com/d/msg/ledger-cli/tLKIzj02XZA/8f1cT5vS6DkJ"
     Actif:Courant:BnpCc
 "
    '("2013/01/03"                   ledger-font-posting-date-face
-     " (6106152)"                   ledger-font-code-face
-     " Dr About"                    ledger-font-payee-cleared-face
+     "(6106152)"                    ledger-font-code-face
+     "Dr About"                     ledger-font-payee-cleared-face
      "    Dépense:Santé:Médecin  "  ledger-font-posting-account-face
      "                  23,00 €"    ledger-font-posting-amount-face
      "    Actif:Courant:BnpCc"      ledger-font-posting-account-face)))
@@ -605,7 +605,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
            "2010/12/01 * Checking balance  ; note\n  Assets:Checking                   $1,000.00\n  Equity:Opening Balances" ledger-font-xact-cleared-face
            "2010/12/01 ! Checking balance  ; note\n  Assets:Checking                   $1,000.00\n  Equity:Opening Balances" ledger-font-xact-pending-face
            "2010/12/01"                  ledger-font-posting-date-face
-           " Checking balance  "         ledger-font-payee-uncleared-face
+           "Checking balance"            ledger-font-payee-uncleared-face
            "; note"                      ledger-font-comment-face
            "  Assets:Checking  "         ledger-font-posting-account-face
            "                 $1,000.00"  ledger-font-posting-amount-face
@@ -630,12 +630,14 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
 
   (ledger-test-font-lock
    "
+2012-03
 2012-03-10 KFC
     Expenses:Food                $20.00
     Assets:Cash                 $-20.00
 "
-   '("2012-03-10"              ledger-font-posting-date-face
-     " KFC"                    ledger-font-payee-uncleared-face
+   '("2012-03"                 ledger-font-posting-date-face
+     "2012-03-10"              ledger-font-posting-date-face
+     "KFC"                     ledger-font-payee-uncleared-face
      "    Expenses:Food  "     ledger-font-posting-account-face
      "              $20.00"    ledger-font-posting-amount-face
      "    Assets:Cash  "       ledger-font-posting-account-face
@@ -655,7 +657,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Liabilities:Credit          $-10.00
 "
    '("2012-03-10"                ledger-font-posting-date-face
-     " KFC"                      ledger-font-payee-uncleared-face
+     "KFC"                       ledger-font-payee-uncleared-face
      "    Expenses:Food  "       ledger-font-posting-account-face
      "              $20.00"      ledger-font-posting-amount-face
      "    Assets:Cash  "         ledger-font-posting-account-face
@@ -677,7 +679,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Liabilities:Credit                   ; same as specifying $-10
 "
    '("2012-03-10"                 ledger-font-posting-date-face
-     " KFC"                       ledger-font-payee-uncleared-face
+     "KFC"                        ledger-font-payee-uncleared-face
      "    Expenses:Food  "        ledger-font-posting-account-face
      "              $20.00"       ledger-font-posting-amount-face
      "    Assets:Cash  "          ledger-font-posting-account-face
@@ -702,7 +704,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Liabilities:Credit
 "
    '("2012-03-10"              ledger-font-posting-date-face
-     " KFC"                    ledger-font-payee-uncleared-face
+     "KFC"                     ledger-font-payee-uncleared-face
      "    Expenses:Food  "     ledger-font-posting-account-face
      "              $20.00"    ledger-font-posting-amount-face
      "    Expenses:Tips  "     ledger-font-posting-account-face
@@ -721,12 +723,14 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
 
   (ledger-test-font-lock
    "
+2012-03-10=2012-03
 2012-03-10=2012-03-08 KFC
     Expenses:Food                $20.00
     Assets:Cash                 $-20.00
 "
-   '("2012-03-10=2012-03-08"   ledger-font-posting-date-face
-     " KFC"                    ledger-font-payee-uncleared-face
+   '("2012-03-10=2012-03"      ledger-font-posting-date-face
+     "2012-03-10=2012-03-08"   ledger-font-posting-date-face
+     "KFC"                     ledger-font-payee-uncleared-face
      "    Expenses:Food  "     ledger-font-posting-account-face
      "              $20.00"    ledger-font-posting-amount-face
      "    Assets:Cash  "       ledger-font-posting-account-face
@@ -740,13 +744,16 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
 
   (ledger-test-font-lock
    "
+2012-03-10 (#100)
 2012-03-10 (#100) KFC
     Expenses:Food                $20.00
     Assets:Checking
 "
    '("2012-03-10"            ledger-font-posting-date-face
-     " (#100)"               ledger-font-code-face
-     " KFC"                  ledger-font-payee-uncleared-face
+     "(#100)"                ledger-font-code-face
+     "2012-03-10"            ledger-font-posting-date-face
+     "(#100)"                ledger-font-code-face
+     "KFC"                   ledger-font-payee-uncleared-face
      "    Expenses:Food  "   ledger-font-posting-account-face
      "              $20.00"  ledger-font-posting-amount-face
      "    Assets:Checking"   ledger-font-posting-account-face)))
@@ -759,12 +766,14 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
 
   (ledger-test-font-lock
    "
+2012-03-10 *
 2012-03-10 * KFC
     Expenses:Food                $20.00
     Assets:Cash
 "
    '("2012-03-10"            ledger-font-posting-date-face
-     " KFC"                  ledger-font-payee-cleared-face
+     "2012-03-10"            ledger-font-posting-date-face
+     "KFC"                   ledger-font-payee-cleared-face
      "    Expenses:Food  "   ledger-font-posting-account-face
      "              $20.00"  ledger-font-posting-amount-face
      "    Assets:Cash"       ledger-font-posting-account-face)))
@@ -777,12 +786,14 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
 
   (ledger-test-font-lock
    "
+2012-03-10 !
 2012-03-10 ! KFC
     Expenses:Food                $20.00
     Assets:Cash
 "
    '("2012-03-10"            ledger-font-posting-date-face
-     " KFC"                  ledger-font-payee-pending-face
+     "2012-03-10"            ledger-font-posting-date-face
+     "KFC"                   ledger-font-payee-pending-face
      "    Expenses:Food  "   ledger-font-posting-account-face
      "              $20.00"  ledger-font-posting-amount-face
      "    Assets:Cash"       ledger-font-posting-account-face)))
@@ -800,7 +811,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     * Assets:Cash
 "
    '("2012-03-10"             ledger-font-posting-date-face
-     " KFC"                   ledger-font-payee-uncleared-face
+     "KFC"                    ledger-font-payee-uncleared-face
      "    * Expenses:Food  "  ledger-font-posting-account-cleared-face
      "              $20.00"   ledger-font-posting-amount-cleared-face
      "    * Assets:Cash"      ledger-font-posting-account-cleared-face)))
@@ -818,7 +829,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     * Assets:Checking
 "
    '("2012-03-10"                ledger-font-posting-date-face
-     " KFC"                      ledger-font-payee-uncleared-face
+     "KFC"                       ledger-font-payee-uncleared-face
      "    Liabilities:Credit  "  ledger-font-posting-account-face
      "          $100.00"         ledger-font-posting-amount-face
      "    * Assets:Checking"     ledger-font-posting-account-cleared-face)))
@@ -836,7 +847,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Cash
 "
    '("2012-03-10"            ledger-font-posting-date-face
-     " KFC                "  ledger-font-payee-cleared-face
+     "KFC"                   ledger-font-payee-cleared-face
      "; yum, chicken..."     ledger-font-comment-face
      "    Expenses:Food  "   ledger-font-posting-account-face
      "              $20.00"  ledger-font-posting-amount-face
@@ -856,7 +867,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Cash
 "
    '("2012-03-10"               ledger-font-posting-date-face
-     " KFC                "     ledger-font-payee-cleared-face
+     "KFC"                      ledger-font-payee-cleared-face
      "; yum, chicken..."        ledger-font-comment-face
      "    ; and more notes..."  ledger-font-comment-face
      "    Expenses:Food  "      ledger-font-posting-account-face
@@ -877,7 +888,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Cash
 "
    '("2012-03-10"                 ledger-font-posting-date-face
-     " KFC"                       ledger-font-payee-cleared-face
+     "KFC"                        ledger-font-payee-cleared-face
      "    ; just these notes..."  ledger-font-comment-face
      "    Expenses:Food  "        ledger-font-posting-account-face
      "              $20.00"       ledger-font-posting-amount-face
@@ -897,7 +908,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
       ; posting #2 note, extra indentation is optional
 "
    '("2012-03-10"                                              ledger-font-posting-date-face
-     " KFC"                                                    ledger-font-payee-cleared-face
+     "KFC"                                                     ledger-font-payee-cleared-face
      "    Expenses:Food  "                                     ledger-font-posting-account-face
      "              $20.00  "                                  ledger-font-posting-amount-face
      "; posting #1 note"                                       ledger-font-comment-face
@@ -918,7 +929,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
       ; :TAG:
 "
    '("2012-03-10"            ledger-font-posting-date-face
-     " KFC"                  ledger-font-payee-cleared-face
+     "KFC"                   ledger-font-payee-cleared-face
      "    Expenses:Food  "   ledger-font-posting-account-face
      "              $20.00"  ledger-font-posting-amount-face
      "    Assets:Cash"       ledger-font-posting-account-face
@@ -938,7 +949,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
       ; :TAG1:TAG2:TAG3:
 "
    '("2012-03-10"                ledger-font-posting-date-face
-     " KFC"                      ledger-font-payee-cleared-face
+     "KFC"                       ledger-font-payee-cleared-face
      "    Expenses:Food  "       ledger-font-posting-account-face
      "              $20.00"      ledger-font-posting-amount-face
      "    Assets:Cash"           ledger-font-posting-account-face
@@ -960,7 +971,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Income:Check4     $-100.00  ; Payee: Person Four
 "
    '("2010-06-17"             ledger-font-posting-date-face
-     " Sample"                ledger-font-payee-uncleared-face
+     "Sample"                 ledger-font-payee-uncleared-face
      "    Assets:Bank  "      ledger-font-posting-account-face
      "      $400.00"          ledger-font-posting-amount-face
      "    Income:Check1  "    ledger-font-posting-account-face
@@ -990,7 +1001,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
       ; MyTag: This is just a bogus value for MyTag
 "
    '("2012-03-10"                                           ledger-font-posting-date-face
-     " KFC"                                                 ledger-font-payee-cleared-face
+     "KFC"                                                  ledger-font-payee-cleared-face
      "    Expenses:Food  "                                  ledger-font-posting-account-face
      "              $20.00"                                 ledger-font-posting-amount-face
      "    Assets:Cash"                                      ledger-font-posting-account-face
@@ -1010,7 +1021,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
       ; AuxDate: 2012/02/30
 "
    '("2012-03-10"                   ledger-font-posting-date-face
-     " KFC"                         ledger-font-payee-cleared-face
+     "KFC"                          ledger-font-payee-cleared-face
      "    Expenses:Food  "          ledger-font-posting-account-face
      "              $20.00"         ledger-font-posting-amount-face
      "    Assets:Cash"              ledger-font-posting-account-face
@@ -1030,7 +1041,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
       ; AuxDate:: [2012/02/30]
 "
    '("2012-03-10"                      ledger-font-posting-date-face
-     " KFC"                            ledger-font-payee-cleared-face
+     "KFC"                             ledger-font-payee-cleared-face
      "    Expenses:Food  "             ledger-font-posting-account-face
      "              $20.00"            ledger-font-posting-amount-face
      "    Assets:Cash"                 ledger-font-posting-account-face
@@ -1050,7 +1061,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     (Budget:Food)               $-20.00
 "
    '("2012-03-10"            ledger-font-posting-date-face
-     " KFC"                  ledger-font-payee-cleared-face
+     "KFC"                   ledger-font-payee-cleared-face
      "    Expenses:Food  "   ledger-font-posting-account-face
      "              $20.00"  ledger-font-posting-amount-face
      "    Assets:Cash"       ledger-font-posting-account-face
@@ -1072,7 +1083,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     [Equity:Budgets]             $20.00
 "
    '("2012-03-10"              ledger-font-posting-date-face
-     " KFC"                    ledger-font-payee-cleared-face
+     "KFC"                     ledger-font-payee-cleared-face
      "    Expenses:Food  "     ledger-font-posting-account-face
      "              $20.00"    ledger-font-posting-amount-face
      "    Assets:Cash"         ledger-font-posting-account-face
@@ -1094,7 +1105,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Cash
 "
    '("2012-03-10"                   ledger-font-posting-date-face
-     " KFC"                         ledger-font-payee-cleared-face
+     "KFC"                          ledger-font-payee-cleared-face
      "    Expenses:Food  "          ledger-font-posting-account-face
      "    ($10.00 + $20.00)  "      ledger-font-posting-amount-face
      "; Ledger adds it up for you"  ledger-font-comment-face
@@ -1113,7 +1124,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Cash                 $-20.00 = $500.00
 "
    '("2012-03-10"                        ledger-font-posting-date-face
-     " KFC"                              ledger-font-payee-uncleared-face
+     "KFC"                               ledger-font-payee-uncleared-face
      "    Expenses:Food  "               ledger-font-posting-account-face
      "              $20.00"              ledger-font-posting-amount-face
      "    Assets:Cash  "                 ledger-font-posting-account-face
@@ -1132,7 +1143,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Cash                         = $500.00
 "
    '("2012-03-10"                        ledger-font-posting-date-face
-     " KFC"                              ledger-font-payee-uncleared-face
+     "KFC"                               ledger-font-payee-uncleared-face
      "    Expenses:Food  "               ledger-font-posting-account-face
      "              $20.00"              ledger-font-posting-amount-face
      "    Assets:Cash  "                 ledger-font-posting-account-face
@@ -1151,7 +1162,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Equity:Adjustments
 "
    '("2012-03-10"                        ledger-font-posting-date-face
-     " Adjustment"                       ledger-font-payee-uncleared-face
+     "Adjustment"                        ledger-font-payee-uncleared-face
      "    Assets:Cash  "                 ledger-font-posting-account-face
      "                       = $500.00"  ledger-font-posting-amount-face
      "    Equity:Adjustments"            ledger-font-posting-account-face)))
@@ -1168,7 +1179,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     [Assets:Brokerage]            = 10 AAPL
 "
    '("2012-03-10"                ledger-font-posting-date-face
-     " My Broker"                ledger-font-payee-uncleared-face
+     "My Broker"                 ledger-font-payee-uncleared-face
      "    [Assets:Brokerage]  "  ledger-font-posting-account-face
      "          = 10 AAPL"       ledger-font-posting-amount-face)))
 
@@ -1185,7 +1196,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Brokerage:Cash       $-500.00
 "
    '("2012-03-10"                   ledger-font-posting-date-face
-     " My Broker"                   ledger-font-payee-uncleared-face
+     "My Broker"                    ledger-font-payee-uncleared-face
      "    Assets:Brokerage  "       ledger-font-posting-account-face
      "           10 AAPL"           ledger-font-posting-amount-face
      "    Assets:Brokerage:Cash  "  ledger-font-posting-account-face
@@ -1204,7 +1215,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Brokerage:Cash       $-500.00
 "
    '("2012-03-10"                   ledger-font-posting-date-face
-     " My Broker"                   ledger-font-payee-uncleared-face
+     "My Broker"                    ledger-font-payee-uncleared-face
      "    Assets:Brokerage  "       ledger-font-posting-account-face
      "           10 AAPL @ $50.00"  ledger-font-posting-amount-face
      "    Assets:Brokerage:Cash  "  ledger-font-posting-account-face
@@ -1223,7 +1234,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Brokerage:Cash
 "
    '("2012-03-10"                   ledger-font-posting-date-face
-     " My Broker"                   ledger-font-payee-uncleared-face
+     "My Broker"                    ledger-font-payee-uncleared-face
      "    Assets:Brokerage  "       ledger-font-posting-account-face
      "           10 AAPL @ $50.00"  ledger-font-posting-amount-face
      "    Assets:Brokerage:Cash"    ledger-font-posting-account-face)))
@@ -1241,7 +1252,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Brokerage:Cash
 "
    '("2012-03-10"                           ledger-font-posting-date-face
-     " My Broker"                           ledger-font-payee-uncleared-face
+     "My Broker"                            ledger-font-payee-uncleared-face
      "    Assets:Brokerage  "               ledger-font-posting-account-face
      "           10 AAPL @ ($500.00 / 10)"  ledger-font-posting-amount-face
      "    Assets:Brokerage:Cash"            ledger-font-posting-account-face)))
@@ -1259,7 +1270,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Brokerage:Cash
 "
    '("2012-03-10"                                ledger-font-posting-date-face
-     " My Broker"                                ledger-font-payee-uncleared-face
+     "My Broker"                                 ledger-font-payee-uncleared-face
      "    Assets:Brokerage  "                    ledger-font-posting-account-face
      "           (5 AAPL * 2) @ ($500.00 / 10)"  ledger-font-posting-amount-face
      "    Assets:Brokerage:Cash"                 ledger-font-posting-account-face)))
@@ -1277,7 +1288,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Brokerage:Cash
 "
    '("2012-03-10"                     ledger-font-posting-date-face
-     " My Broker"                     ledger-font-payee-uncleared-face
+     "My Broker"                      ledger-font-payee-uncleared-face
      "    Assets:Brokerage  "         ledger-font-posting-account-face
      "           10 AAPL @@ $500.00"  ledger-font-posting-amount-face
      "    Assets:Brokerage:Cash"      ledger-font-posting-account-face)))
@@ -1295,7 +1306,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Income:Gifts Received
 "
    '("2012-03-10"                  ledger-font-posting-date-face
-     " My Brother"                 ledger-font-payee-uncleared-face
+     "My Brother"                  ledger-font-payee-uncleared-face
      "    Assets:Brokerage  "      ledger-font-posting-account-face
      "          1000 AAPL (@) $1"  ledger-font-posting-amount-face
      "    Income:Gifts Received"   ledger-font-posting-account-face)))
@@ -1313,7 +1324,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Brokerage            -10 AAPL {$50.00} @ $75.00
 "
    '("2012-04-10"                            ledger-font-posting-date-face
-     " My Broker"                            ledger-font-payee-uncleared-face
+     "My Broker"                             ledger-font-payee-uncleared-face
      "    Assets:Brokerage:Cash  "           ledger-font-posting-account-face
      "     $750.00"                          ledger-font-posting-amount-face
      "    Assets:Brokerage  "                ledger-font-posting-account-face
@@ -1333,7 +1344,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Income:Capital Gains       $-250.00
 "
    '("2012-04-10"                                 ledger-font-posting-date-face
-     " My Broker"                                 ledger-font-payee-uncleared-face
+     "My Broker"                                  ledger-font-payee-uncleared-face
      "    Assets:Brokerage:Cash  "                ledger-font-posting-account-face
      "     $750.00"                               ledger-font-posting-amount-face
      "    Assets:Brokerage  "                     ledger-font-posting-account-face
@@ -1354,7 +1365,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Brokerage:Cash       $750.00
 "
    '("2012-04-10"                   ledger-font-posting-date-face
-     " My Broker"                   ledger-font-payee-uncleared-face
+     "My Broker"                    ledger-font-payee-uncleared-face
      "    Assets:Brokerage  "       ledger-font-posting-account-face
      "          10 AAPL {$50.00}"   ledger-font-posting-amount-face
      "    Assets:Brokerage:Cash  "  ledger-font-posting-account-face
@@ -1373,7 +1384,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Brokerage:Cash       $750.00
 "
    '("2012-04-10"                   ledger-font-posting-date-face
-     " My Broker"                   ledger-font-payee-uncleared-face
+     "My Broker"                    ledger-font-payee-uncleared-face
      "    Assets:Brokerage  "       ledger-font-posting-account-face
      "          10 AAPL {=$50.00}"  ledger-font-posting-amount-face
      "    Assets:Brokerage:Cash  "  ledger-font-posting-account-face
@@ -1392,7 +1403,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Assets:Brokerage:Cash       $750.00
 "
    '("2012-04-10"                   ledger-font-posting-date-face
-     " My Broker"                   ledger-font-payee-uncleared-face
+     "My Broker"                    ledger-font-payee-uncleared-face
      "    Assets:Brokerage  "       ledger-font-posting-account-face
      "          10 AAPL @ =$50.00"  ledger-font-posting-amount-face
      "    Assets:Brokerage:Cash  "  ledger-font-posting-account-face
@@ -1412,7 +1423,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Income:Capital Gains       $-125.00
 "
    '("2012-04-10"                                         ledger-font-posting-date-face
-     " My Broker"                                         ledger-font-payee-uncleared-face
+     "My Broker"                                          ledger-font-payee-uncleared-face
      "    Assets:Brokerage:Cash  "                        ledger-font-posting-account-face
      "     $375.00"                                       ledger-font-posting-amount-face
      "    Assets:Brokerage  "                             ledger-font-posting-account-face
@@ -1434,7 +1445,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Income:Capital Gains       $-125.00
 "
    '("2012-04-10"                                                  ledger-font-posting-date-face
-     " My Broker"                                                  ledger-font-payee-uncleared-face
+     "My Broker"                                                   ledger-font-payee-uncleared-face
      "    Assets:Brokerage:Cash  "                                 ledger-font-posting-account-face
      "     $375.00"                                                ledger-font-posting-amount-face
      "    Assets:Brokerage  "                                      ledger-font-posting-account-face
@@ -1461,7 +1472,7 @@ define ten_dollars(s, date, t) = market($10, date, t)
      "ten_dollars(s, date, t)"                                ledger-font-define-name-face
      "market($10, date, t)"                                   ledger-font-define-body-face
      "2012-04-10"                                             ledger-font-posting-date-face
-     " My Broker"                                             ledger-font-payee-uncleared-face
+     "My Broker"                                              ledger-font-payee-uncleared-face
      "    Assets:Brokerage:Cash  "                            ledger-font-posting-account-face
      "     $375.00"                                           ledger-font-posting-amount-face
      "    Assets:Brokerage  "                                 ledger-font-posting-account-face
@@ -1483,7 +1494,7 @@ define ten_dollars(s, date, t) = market($10, date, t)
     Income:Capital Gains       $-125.00
 "
    '("2012-04-10"                                                          ledger-font-posting-date-face
-     " My Broker"                                                          ledger-font-payee-uncleared-face
+     "My Broker"                                                           ledger-font-payee-uncleared-face
      "    A:B:Cash  "                                                      ledger-font-posting-account-face
      "     $375.00"                                                        ledger-font-posting-amount-face
      "    A:B  "                                                           ledger-font-posting-account-face
@@ -1513,7 +1524,7 @@ define ten_dollars(s, date, t) = market($10, date, t)
      "    Bar  "                       ledger-font-posting-account-face
      "                       $-50.00"  ledger-font-posting-amount-face
      "2012-03-10"                      ledger-font-posting-date-face
-     " KFC"                            ledger-font-payee-uncleared-face
+     "KFC"                             ledger-font-payee-uncleared-face
      "    Expenses:Food  "             ledger-font-posting-account-face
      "              $20.00"            ledger-font-posting-amount-face
      "    Assets:Cash"                 ledger-font-posting-account-face)))
@@ -1540,7 +1551,7 @@ define ten_dollars(s, date, t) = market($10, date, t)
      "    Bar  "                       ledger-font-posting-account-face
      "                        -50.00"  ledger-font-posting-amount-face
      "2012-03-10"                      ledger-font-posting-date-face
-     " KFC"                            ledger-font-payee-uncleared-face
+     "KFC"                             ledger-font-payee-uncleared-face
      "    Expenses:Food  "             ledger-font-posting-account-face
      "              $20.00"            ledger-font-posting-amount-face
      "    Assets:Cash"                 ledger-font-posting-account-face)))
@@ -1565,7 +1576,7 @@ define ten_dollars(s, date, t) = market($10, date, t)
      "                (amount * 2)  "  ledger-font-posting-amount-face
      "; same as just 2 in this case"   ledger-font-comment-face
      "2012-03-10"                      ledger-font-posting-date-face
-     " KFC"                            ledger-font-payee-uncleared-face
+     "KFC"                             ledger-font-payee-uncleared-face
      "    Expenses:Food  "             ledger-font-posting-account-face
      "              $20.00"            ledger-font-posting-amount-face
      "    Assets:Cash"                 ledger-font-posting-account-face)))
@@ -1589,7 +1600,7 @@ define ten_dollars(s, date, t) = market($10, date, t)
      "    (Budget:$account)  "  ledger-font-posting-account-face
      "              10"         ledger-font-posting-amount-face
      "2012-03-10"               ledger-font-posting-date-face
-     " KFC"                     ledger-font-payee-uncleared-face
+     "KFC"                      ledger-font-payee-uncleared-face
      "    Expenses:Food  "      ledger-font-posting-account-face
      "              $20.00"     ledger-font-posting-amount-face
      "    Assets:Cash"          ledger-font-posting-account-face)))
@@ -1615,7 +1626,7 @@ define ten_dollars(s, date, t) = market($10, date, t)
      "    (Budget:$account)  "  ledger-font-posting-account-face
      "              10"         ledger-font-posting-amount-face
      "2012-03-10"               ledger-font-posting-date-face
-     " KFC"                     ledger-font-payee-uncleared-face
+     "KFC"                      ledger-font-payee-uncleared-face
      "    Expenses:Food  "      ledger-font-posting-account-face
      "              $20.00"     ledger-font-posting-amount-face
      "    Assets:Cash"          ledger-font-posting-account-face)))
@@ -1641,7 +1652,7 @@ define ten_dollars(s, date, t) = market($10, date, t)
      "              10"         ledger-font-posting-amount-face
      "      ; Foo: Bar"         ledger-font-comment-face
      "2012-03-10"               ledger-font-posting-date-face
-     " KFC"                     ledger-font-payee-uncleared-face
+     "KFC"                      ledger-font-payee-uncleared-face
      "    Expenses:Food  "      ledger-font-posting-account-face
      "              $20.00"     ledger-font-posting-amount-face
      "    Assets:Cash"          ledger-font-posting-account-face)))
@@ -1664,8 +1675,8 @@ define ten_dollars(s, date, t) = market($10, date, t)
     Assets:Checking
 "
    '("2008/10/16"                     ledger-font-posting-date-face
-     " (2090)"                        ledger-font-code-face
-     " Bountiful Blessings Farm"      ledger-font-payee-cleared-face
+     "(2090)"                         ledger-font-code-face
+     "Bountiful Blessings Farm"       ledger-font-payee-cleared-face
      "    Expenses:Food:Groceries  "  ledger-font-posting-account-face
      "                $ 37.50  "      ledger-font-posting-amount-face
      "; [=2008/10/01]"                ledger-font-comment-face
@@ -1753,8 +1764,8 @@ define ten_dollars(s, date, t) = market($10, date, t)
      "  (Liabilities:Huququ'llah)  "  ledger-font-posting-account-face
      "             0.19"              ledger-font-posting-amount-face
      "2003/01/01"                     ledger-font-posting-date-face
-     " (99)"                          ledger-font-code-face
-     " Salary"                        ledger-font-payee-uncleared-face
+     "(99)"                           ledger-font-code-face
+     "Salary"                         ledger-font-payee-uncleared-face
      "  Income:Salary  "              ledger-font-posting-account-face
      "-$1000"                         ledger-font-posting-amount-face
      "  Assets:Checking"              ledger-font-posting-account-face)))
@@ -1792,7 +1803,7 @@ define ten_dollars(s, date, t) = market($10, date, t)
     Actif:SG PEE STK      $-234.90
 "
    '("1999/06/09"                                ledger-font-posting-date-face
-     " Achat"                                    ledger-font-payee-pending-face
+     "Achat"                                     ledger-font-payee-pending-face
      "    Actif:SG PEE STK  "                    ledger-font-posting-account-face
      "       49.957 \"Arcancia Équilibre 454\""  ledger-font-posting-amount-face
      "    Actif:SG PEE STK  "                    ledger-font-posting-account-face
@@ -1873,7 +1884,7 @@ end apply account
      "account"                   ledger-font-apply-directive-face
      "Personal"                  ledger-font-apply-account-face
      "2011/11/15"                ledger-font-posting-date-face
-     "  Supermarket"             ledger-font-payee-uncleared-face
+     "Supermarket"               ledger-font-payee-uncleared-face
      "    Expenses:Groceries  "  ledger-font-posting-account-face
      "    $ 50.00"               ledger-font-posting-amount-face
      "    Assets:Checking"       ledger-font-posting-account-face
@@ -1916,7 +1927,7 @@ alias Checking=Assets:Credit Union:Joint Checking Account
      "Checking"                                    ledger-font-account-name-face
      "Assets:Credit Union:Joint Checking Account"  ledger-font-alias-definition-face
      "2011/11/30"                                  ledger-font-posting-date-face
-     " ChopChop"                                   ledger-font-payee-uncleared-face
+     "ChopChop"                                    ledger-font-payee-uncleared-face
      "  Dining  "                                  ledger-font-posting-account-face
      "        $10.00"                              ledger-font-posting-amount-face
      "  Checking"                                  ledger-font-posting-account-face)))
@@ -1962,15 +1973,15 @@ bucket Assets:Checking
      "bucket"                          ledger-font-bucket-directive-face
      "Assets:Checking"                 ledger-font-bucket-account-face
      "2011/01/25"                      ledger-font-posting-date-face
-     " Tom's Used Cars"                ledger-font-payee-uncleared-face
+     "Tom's Used Cars"                 ledger-font-payee-uncleared-face
      "    Expenses:Auto  "             ledger-font-posting-account-face
      "                  $ 5,500.00"    ledger-font-posting-amount-face
      "2011/01/27"                      ledger-font-posting-date-face
-     " Book Store"                     ledger-font-payee-uncleared-face
+     "Book Store"                      ledger-font-payee-uncleared-face
      "    Expenses:Books  "            ledger-font-posting-account-face
      "                     $20.00"     ledger-font-posting-amount-face
      "2011/12/01"                      ledger-font-posting-date-face
-     " Sale"                           ledger-font-payee-uncleared-face
+     "Sale"                            ledger-font-payee-uncleared-face
      "    Assets:Checking:Business  "  ledger-font-posting-account-face
      "          $ 30.00"               ledger-font-posting-amount-face)))
 
@@ -2089,7 +2100,7 @@ define var_name=$100
      "var_name"        ledger-font-define-name-face
      "$100"            ledger-font-define-body-face
      "2011/12/01"      ledger-font-posting-date-face
-     " Test"           ledger-font-payee-uncleared-face
+     "Test"            ledger-font-payee-uncleared-face
      "    Expenses  "  ledger-font-posting-account-face
      "(var_name*4)"    ledger-font-posting-amount-face
      "    Assets"      ledger-font-posting-account-face)))
@@ -2160,13 +2171,13 @@ endfixed CAD
      "CAD"                           ledger-font-fixed-commodity-face
      "$0.90"                         ledger-font-fixed-price-face
      "2012-04-10"                    ledger-font-posting-date-face
-     " Lunch in Canada"              ledger-font-payee-uncleared-face
+     "Lunch in Canada"               ledger-font-payee-uncleared-face
      "    Assets:Wallet  "           ledger-font-posting-account-face
      "          -15.50 CAD"          ledger-font-posting-amount-face
      "    Expenses:Food  "           ledger-font-posting-account-face
      "          15.50 CAD"           ledger-font-posting-amount-face
      "2012-04-11"                    ledger-font-posting-date-face
-     " Second day Dinner in Canada"  ledger-font-payee-uncleared-face
+     "Second day Dinner in Canada"   ledger-font-payee-uncleared-face
      "    Assets:Wallet  "           ledger-font-posting-account-face
      "          -25.75 CAD"          ledger-font-posting-amount-face
      "    Expenses:Food  "           ledger-font-posting-account-face
@@ -2258,13 +2269,13 @@ end apply tag
      "tag"                             ledger-font-apply-directive-face
      "nestedtag: true"                 ledger-font-apply-tag-face
      "2011/01/25"                      ledger-font-posting-date-face
-     " Tom's Used Cars"                ledger-font-payee-uncleared-face
+     "Tom's Used Cars"                 ledger-font-payee-uncleared-face
      "    Expenses:Auto  "             ledger-font-posting-account-face
      "                  $ 5,500.00"    ledger-font-posting-amount-face
      "    ; :nobudget:"                ledger-font-comment-face
      "    Assets:Checking"             ledger-font-posting-account-face
      "2011/01/27"                      ledger-font-posting-date-face
-     " Book Store"                     ledger-font-payee-uncleared-face
+     "Book Store"                      ledger-font-payee-uncleared-face
      "    Expenses:Books  "            ledger-font-posting-account-face
      "                     $20.00"     ledger-font-posting-amount-face
      "    Liabilities:MasterCard"      ledger-font-posting-account-face
@@ -2272,7 +2283,7 @@ end apply tag
      "apply"                           ledger-font-end-directive-face
      "tag"                             ledger-font-end-directive-face
      "2011/12/01"                      ledger-font-posting-date-face
-     " Sale"                           ledger-font-payee-uncleared-face
+     "Sale"                            ledger-font-payee-uncleared-face
      "    Assets:Checking:Business  "  ledger-font-posting-account-face
      "          $ 30.00"               ledger-font-posting-amount-face
      "    Income:Sales"                ledger-font-posting-account-face
@@ -2555,7 +2566,7 @@ payeee Charity
           '("    Income  "                                  ledger-font-posting-account-face
             "                                     -10 EUR"  ledger-font-posting-amount-face
             "2014/11/02"                                    ledger-font-posting-date-face
-            " burger"                                       ledger-font-payee-cleared-face
+            "burger"                                        ledger-font-payee-cleared-face
             "    Expenses:Food  "                           ledger-font-posting-account-face
             "                                7 EUR"         ledger-font-posting-amount-face)))
     (with-temp-buffer
