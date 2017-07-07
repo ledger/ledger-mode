@@ -437,6 +437,16 @@ PENDING if pending, and OTHER if none of the above."
           ((eq state 'pending) (nth 1 faces))
           (t (nth 2 faces)))))
 
+(defun ledger-font-face-by-timeclock-state (num faces)
+  "Choose one of two faces depending on a timeclock directive character.
+NUM specifies a match group containing the character.
+FACES has the form (CLEARED UNCLEARED).
+Return CLEARED if the character specifies a cleared transaction,
+UNCLEARED otherwise."
+  (if (member (match-string num) '("I" "O"))
+      (nth 0 faces)
+    (nth 1 faces)))
+
 (defun ledger-font-subdirectives (subdirectives)
   "Construct anchored highlighters for subdirectives.
 
@@ -598,7 +608,20 @@ See `font-lock-keywords' for the full description."
           ("^[ \t]+\\(assert\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
            (1 'ledger-font-assert-directive-face)
            (2 'ledger-font-assert-condition-face nil :lax)))))
-    ("^[IiOobh]\\>.*$" . 'ledger-font-timeclock-directive-face)
+    (,(concat "^\\([IiOo]\\)"
+              "\\(?:[[:blank:]]+\\([^[:blank:]\n]+"
+              "\\(?:[[:blank:]]+[^[:blank:]\n]+\\)?\\)"
+              "\\(?:[[:blank:]]+\\(.*?\\)"
+              "\\(?:\t\\|[ \t]\\{2,\\}\\(.*?\\)"
+              "\\(?:\t\\|[ \t]\\{2,\\}\\(;.*\\)\\)?\\)?\\)?\\)?$")
+     (1 'ledger-font-timeclock-directive-face)
+     (2 'ledger-font-posting-date-face nil :lax)
+     (3 (ledger-font-face-by-timeclock-state 1 '(ledger-font-posting-account-cleared-face
+                                                 ledger-font-posting-account-face)) nil :lax)
+     (4 (ledger-font-face-by-timeclock-state 1 '(ledger-font-payee-cleared-face
+                                                 ledger-font-payee-uncleared-face)) nil :lax)
+     (5 'ledger-font-comment-face nil :lax))
+    ("^\\([bh]\\)\\>.*$" (1 'ledger-font-timeclock-directive-face))
     ("^\\(?:year\\|Y\\)\\>.*$" . 'ledger-font-year-directive-face)
 
     (,(lambda (limit)

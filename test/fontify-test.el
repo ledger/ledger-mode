@@ -2424,19 +2424,83 @@ C 1.00 Kb = 1024 bytes
 
   (ledger-test-font-lock
    "
+h
 h 2013/03/28 7 Account
+b
 b 2013/03/27 3600 Account
+I
+I 2013/03
+I 2013/03/28 17:01
+I 2013/03/28 17:01:30 Account
 I 2013/03/28 17:01:30 Account  PAYEE
-O 2013/03/29 18:39:00
-i 2013/03/28 22:13:00
-o 2013/03/29 03:39:00
+O
+O 2013/03
+O 2013/03/29 18:39
+O 2013/03/29 18:39:00 Account
+O 2013/03/29 18:39:00 Account  PAYEE
+i
+i 2013/03
+i 2013/03/28 22:13
+i 2013/03/28 22:13:00 Account
+i 2013/03/28 22:13:00 Account  PAYEE
+o
+o 2013/03
+o 2013/03/29 03:39
+o 2013/03/29 03:39:00 Account
+o 2013/03/29 03:39:00 Account  PAYEE
 "
-   '("h 2013/03/28 7 Account" ledger-font-timeclock-directive-face
-     "b 2013/03/27 3600 Account" ledger-font-timeclock-directive-face
-     "I 2013/03/28 17:01:30 Account  PAYEE" ledger-font-timeclock-directive-face
-     "O 2013/03/29 18:39:00" ledger-font-timeclock-directive-face
-     "i 2013/03/28 22:13:00" ledger-font-timeclock-directive-face
-     "o 2013/03/29 03:39:00" ledger-font-timeclock-directive-face)))
+   '("h"                    ledger-font-timeclock-directive-face
+     "h"                    ledger-font-timeclock-directive-face
+     "b"                    ledger-font-timeclock-directive-face
+     "b"                    ledger-font-timeclock-directive-face
+     "I"                    ledger-font-timeclock-directive-face
+     "I"                    ledger-font-timeclock-directive-face
+     "2013/03"              ledger-font-posting-date-face
+     "I"                    ledger-font-timeclock-directive-face
+     "2013/03/28 17:01"     ledger-font-posting-date-face
+     "I"                    ledger-font-timeclock-directive-face
+     "2013/03/28 17:01:30"  ledger-font-posting-date-face
+     "Account"              ledger-font-posting-account-cleared-face
+     "I"                    ledger-font-timeclock-directive-face
+     "2013/03/28 17:01:30"  ledger-font-posting-date-face
+     "Account"              ledger-font-posting-account-cleared-face
+     "PAYEE"                ledger-font-payee-cleared-face
+     "O"                    ledger-font-timeclock-directive-face
+     "O"                    ledger-font-timeclock-directive-face
+     "2013/03"              ledger-font-posting-date-face
+     "O"                    ledger-font-timeclock-directive-face
+     "2013/03/29 18:39"     ledger-font-posting-date-face
+     "O"                    ledger-font-timeclock-directive-face
+     "2013/03/29 18:39:00"  ledger-font-posting-date-face
+     "Account"              ledger-font-posting-account-cleared-face
+     "O"                    ledger-font-timeclock-directive-face
+     "2013/03/29 18:39:00"  ledger-font-posting-date-face
+     "Account"              ledger-font-posting-account-cleared-face
+     "PAYEE"                ledger-font-payee-cleared-face
+     "i"                    ledger-font-timeclock-directive-face
+     "i"                    ledger-font-timeclock-directive-face
+     "2013/03"              ledger-font-posting-date-face
+     "i"                    ledger-font-timeclock-directive-face
+     "2013/03/28 22:13"     ledger-font-posting-date-face
+     "i"                    ledger-font-timeclock-directive-face
+     "2013/03/28 22:13:00"  ledger-font-posting-date-face
+     "Account"              ledger-font-posting-account-face
+     "i"                    ledger-font-timeclock-directive-face
+     "2013/03/28 22:13:00"  ledger-font-posting-date-face
+     "Account"              ledger-font-posting-account-face
+     "PAYEE"                ledger-font-payee-uncleared-face
+     "o"                    ledger-font-timeclock-directive-face
+     "o"                    ledger-font-timeclock-directive-face
+     "2013/03"              ledger-font-posting-date-face
+     "o"                    ledger-font-timeclock-directive-face
+     "2013/03/29 03:39"     ledger-font-posting-date-face
+     "o"                    ledger-font-timeclock-directive-face
+     "2013/03/29 03:39:00"  ledger-font-posting-date-face
+     "Account"              ledger-font-posting-account-face
+     "o"                    ledger-font-timeclock-directive-face
+     "2013/03/29 03:39:00"  ledger-font-posting-date-face
+     "Account"              ledger-font-posting-account-face
+     "PAYEE"                ledger-font-payee-uncleared-face)))
 
 
 (ert-deftest ledger-fontify/test-097 ()
