@@ -515,7 +515,9 @@ See `font-lock-keywords' for the full description."
     ("^\\(endfixed\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
      (1 'ledger-font-end-directive-face)
      (2 'ledger-font-fixed-commodity-face nil :lax))
-    ("^expr\\>.*$" . 'ledger-font-expr-directive-face)
+    ("^\\(expr\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+     (1 'ledger-font-expr-directive-face)
+     (2 'ledger-font-expr-expression-face nil :lax))
     ("^\\(fixed\\)\\(?:[[:blank:]]+\\([^[:blank:]\n]+\\)\\(?:[[:blank:]]+\\(.*\\)\\)?\\)?$"
      (1 'ledger-font-fixed-directive-face)
      (2 'ledger-font-fixed-commodity-face nil :lax)
