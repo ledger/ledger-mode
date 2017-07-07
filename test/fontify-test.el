@@ -195,8 +195,14 @@ P 2006/03/06 BAR £1.50
    "  Assets:X  "                 ledger-font-posting-account-face
    "£4000"                        ledger-font-posting-amount-face
    "  Equity:Opening Balance"     ledger-font-posting-account-face
-   "P 2006/03/05 FOO £1.40"       ledger-font-price-directive-face
-   "P 2006/03/06 BAR £1.50"       ledger-font-price-directive-face
+   "P"                            ledger-font-price-directive-face
+   "2006/03/05"                   ledger-font-price-date-face
+   "FOO"                          ledger-font-price-symbol-face
+   "£1.40"                        ledger-font-price-face
+   "P"                            ledger-font-price-directive-face
+   "2006/03/06"                   ledger-font-price-date-face
+   "BAR"                          ledger-font-price-symbol-face
+   "£1.50"                        ledger-font-price-face
    "2006/05/15"                   ledger-font-posting-date-face
    " Interest"                    ledger-font-payee-uncleared-face
    "  Income:Taxable:Interest  "  ledger-font-posting-account-face
@@ -346,10 +352,22 @@ P 2014-01-01 WBDES $100.00
     "             $100.00" ledger-font-posting-amount-face
     "    df0fcf15" ledger-font-posting-account-face
     "; Pricing =======================================================" ledger-font-comment-face
-"P 2014-01-01 WRCOM $100.00" ledger-font-price-directive-face
-"P 2014-01-01 VFDAY $100.00" ledger-font-price-directive-face
-"P 2014-01-01 VHDAY $100.00" ledger-font-price-directive-face
-"P 2014-01-01 WBDES $100.00" ledger-font-price-directive-face
+"P" ledger-font-price-directive-face
+"2014-01-01" ledger-font-price-date-face
+"WRCOM" ledger-font-price-symbol-face
+"$100.00" ledger-font-price-face
+"P" ledger-font-price-directive-face
+"2014-01-01" ledger-font-price-date-face
+"VFDAY" ledger-font-price-symbol-face
+"$100.00" ledger-font-price-face
+"P" ledger-font-price-directive-face
+"2014-01-01" ledger-font-price-date-face
+"VHDAY" ledger-font-price-symbol-face
+"$100.00" ledger-font-price-face
+"P" ledger-font-price-directive-face
+"2014-01-01" ledger-font-price-date-face
+"WBDES" ledger-font-price-symbol-face
+"$100.00" ledger-font-price-face
 "; 2014-11 =======================================================" ledger-font-comment-face
 "2014-11-01" ledger-font-posting-date-face
 " 921edb9b" ledger-font-payee-cleared-face
@@ -2464,6 +2482,52 @@ payeee Charity
       (font-lock-fontify-region beg end nil)
       (should (equal (ledger-test-face-groups (buffer-substring beg end))
                      face-groups)))))
+
+
+(ert-deftest ledger-fontify/test-100 ()
+  "price with date and time"
+  :tags '(font regress)
+
+  (ledger-test-font-lock
+   "
+P
+P 2004/06
+P 2004/06/21 02:17
+P 2004/06/21 02:17:58 TWCUX
+P 2004/06/21 02:17:58 TWCUX $27.76
+P 2004/06/21 02:17:59 AGTHX $25.41
+P 2004/06/21 02:18:00 OPTFX $39.31
+P 2004/06/21 02:18:01 FEQTX $22.49
+P 2004/06/21 02:18:02 AAPL $32.91
+"
+   '("P"                    ledger-font-price-directive-face
+     "P"                    ledger-font-price-directive-face
+     "2004/06"              ledger-font-price-date-face
+     "P"                    ledger-font-price-directive-face
+     "2004/06/21 02:17"     ledger-font-price-date-face
+     "P"                    ledger-font-price-directive-face
+     "2004/06/21 02:17:58"  ledger-font-price-date-face
+     "TWCUX"                ledger-font-price-symbol-face
+     "P"                    ledger-font-price-directive-face
+     "2004/06/21 02:17:58"  ledger-font-price-date-face
+     "TWCUX"                ledger-font-price-symbol-face
+     "$27.76"               ledger-font-price-face
+     "P"                    ledger-font-price-directive-face
+     "2004/06/21 02:17:59"  ledger-font-price-date-face
+     "AGTHX"                ledger-font-price-symbol-face
+     "$25.41"               ledger-font-price-face
+     "P"                    ledger-font-price-directive-face
+     "2004/06/21 02:18:00"  ledger-font-price-date-face
+     "OPTFX"                ledger-font-price-symbol-face
+     "$39.31"               ledger-font-price-face
+     "P"                    ledger-font-price-directive-face
+     "2004/06/21 02:18:01"  ledger-font-price-date-face
+     "FEQTX"                ledger-font-price-symbol-face
+     "$22.49"               ledger-font-price-face
+     "P"                    ledger-font-price-directive-face
+     "2004/06/21 02:18:02"  ledger-font-price-date-face
+     "AAPL"                 ledger-font-price-symbol-face
+     "$32.91"               ledger-font-price-face)))
 
 
 (provide 'fontify-test)

@@ -117,6 +117,21 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-price-date-face
+  `((t :inherit default))
+  "Face for date and time in price directive"
+  :group 'ledger-faces)
+
+(defface ledger-font-price-symbol-face
+  `((t :inherit font-lock-constant-face))
+  "Face for symbol in price directive"
+  :group 'ledger-faces)
+
+(defface ledger-font-price-face
+  `((t :inherit default))
+  "Face for price in price directive"
+  :group 'ledger-faces)
+
 (defface ledger-font-apply-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -558,7 +573,15 @@ See `font-lock-keywords' for the full description."
           ("^[ \t]+\\(uuid\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
            (1 'ledger-font-uuid-directive-face)
            (2 'ledger-font-uuid-face nil :lax)))))
-    ("^P\\>.*$" . 'ledger-font-price-directive-face)
+    (,(concat "^\\(P\\)"
+              "\\(?:[[:blank:]]+\\([^[:blank:]\n]+"
+              "\\(?:[[:blank:]]+[[:digit:]][^[:blank:]\n]*\\)?\\)"
+              "\\(?:[[:blank:]]+\\([^[:blank:]\n]+\\)"
+              "\\(?:[[:blank:]]+\\(.*\\)\\)?\\)?\\)?$")
+     (1 'ledger-font-price-directive-face)
+     (2 'ledger-font-price-date-face nil :lax)
+     (3 'ledger-font-price-symbol-face nil :lax)
+     (4 'ledger-font-price-face nil :lax))
     ("^tag\\>.*$"
      (0 'ledger-font-tag-directive-face)
      ,@(ledger-font-subdirectives
