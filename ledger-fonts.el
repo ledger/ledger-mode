@@ -287,6 +287,10 @@
   "Default face for N directive"
   :group 'ledger-faces)
 
+(defface ledger-font-N-symbol-face
+  `((t :inherit default))
+  "Face for symbol in N directives")
+
 (defface ledger-font-payee-directive-face
   `((t :inherit ledger-font-directive-face))
   "Default face for other transactions"
@@ -530,7 +534,9 @@ See `font-lock-keywords' for the full description."
     ("^\\(include\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
      (1 'ledger-font-include-directive-face)
      (2 'ledger-font-include-filename-face nil :lax))
-    ("^N\\>.*$" . 'ledger-font-N-directive-face)
+    ("^\\(N\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+     (1 'ledger-font-N-directive-face)
+     (2 'ledger-font-N-symbol-face nil :lax))
     ("^payee\\>.*$"
      (0 'ledger-font-payee-directive-face)
      ,@(ledger-font-subdirectives
