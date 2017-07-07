@@ -2335,9 +2335,12 @@ end test
 
   (ledger-test-font-lock
    "
+year
 year 2004
 "
-   '("year 2004" ledger-font-year-directive-face)))
+   '("year"  ledger-font-year-directive-face
+     "year"  ledger-font-year-directive-face
+     "2004"  ledger-font-year-face)))
 
 
 
@@ -2360,9 +2363,12 @@ A Assets:Checking
 
   (ledger-test-font-lock
    "
+Y
 Y 2016
 "
-   '("Y 2016" ledger-font-year-directive-face)))
+   '("Y"     ledger-font-year-directive-face
+     "Y"     ledger-font-year-directive-face
+     "2016"  ledger-font-year-face)))
 
 
 

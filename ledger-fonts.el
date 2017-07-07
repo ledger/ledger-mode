@@ -351,6 +351,11 @@
   "Default face for other transactions"
   :group 'ledger-faces)
 
+(defface ledger-font-year-face
+  `((t :inherit default))
+  "Font for year in year directives"
+  :group 'ledger-faces)
+
 (defface ledger-font-posting-account-face
   `((t :inherit ledger-font-default-face))
   "Face for Ledger accounts"
@@ -622,7 +627,9 @@ See `font-lock-keywords' for the full description."
                                                  ledger-font-payee-uncleared-face)) nil :lax)
      (5 'ledger-font-comment-face nil :lax))
     ("^\\([bh]\\)\\>.*$" (1 'ledger-font-timeclock-directive-face))
-    ("^\\(?:year\\|Y\\)\\>.*$" . 'ledger-font-year-directive-face)
+    ("^\\(year\\|Y\\)\\(?:[[:blank:]]+\\(.*\\)\\)?$"
+     (1 'ledger-font-year-directive-face)
+     (2 'ledger-font-year-face nil :lax))
 
     (,(lambda (limit)
         (when ledger-fontify-xact-state-overrides
