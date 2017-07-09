@@ -677,6 +677,11 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Expenses:Food                $20.00
     Assets:Cash                 $-10.00
     Liabilities:Credit                   ; same as specifying $-10
+
+2012-03-10 KFC
+    Expenses:Food                $20.00
+    Assets:Cash                 $-10.00
+    Liabilities:Credit ; semicolon in account name
 "
    '("2012-03-10"                 ledger-font-posting-date-face
      "KFC"                        ledger-font-payee-uncleared-face
@@ -685,7 +690,15 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
      "Assets:Cash"                ledger-font-posting-account-face
      "$-10.00"                    ledger-font-posting-amount-face
      "Liabilities:Credit"         ledger-font-posting-account-face
-     "; same as specifying $-10"  ledger-font-comment-face)))
+     "; same as specifying $-10"  ledger-font-comment-face
+     "2012-03-10"                 ledger-font-posting-date-face
+     "KFC"                        ledger-font-payee-uncleared-face
+     "Expenses:Food"              ledger-font-posting-account-face
+     "$20.00"                     ledger-font-posting-amount-face
+     "Assets:Cash"                ledger-font-posting-account-face
+     "$-10.00"                    ledger-font-posting-amount-face
+     "Liabilities:Credit ; semicolon in account name"
+                                  ledger-font-posting-account-face)))
 
 
 
@@ -926,6 +939,10 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
     Expenses:Food                $20.00  ; posting #1 note
     Assets:Cash
       ; posting #2 note, extra indentation is optional
+
+2012-03-10 * KFC
+    Expenses:Food                $20.00 ; posting #1 note
+    Assets:Cash
 "
    '("2012-03-10"                                        ledger-font-posting-date-face
      "KFC"                                               ledger-font-payee-cleared-face
@@ -933,7 +950,13 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
      "$20.00"                                            ledger-font-posting-amount-face
      "; posting #1 note"                                 ledger-font-comment-face
      "Assets:Cash"                                       ledger-font-posting-account-face
-     "; posting #2 note, extra indentation is optional"  ledger-font-comment-face)))
+     "; posting #2 note, extra indentation is optional"  ledger-font-comment-face
+     "2012-03-10"                                        ledger-font-posting-date-face
+     "KFC"                                               ledger-font-payee-cleared-face
+     "Expenses:Food"                                     ledger-font-posting-account-face
+     "$20.00"                                            ledger-font-posting-amount-face
+     "; posting #1 note"                                 ledger-font-comment-face
+     "Assets:Cash"                                       ledger-font-posting-account-face)))
 
 
 
