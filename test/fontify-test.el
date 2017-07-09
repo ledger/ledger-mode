@@ -808,12 +808,21 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
 2012-03-10 KFC
     * Expenses:Food                $20.00
     * Assets:Cash
+
+2012-03-10 KFC
+    * Expenses:Food                $20.00
+    *
 "
    '("2012-03-10"       ledger-font-posting-date-face
      "KFC"              ledger-font-payee-uncleared-face
      "* Expenses:Food"  ledger-font-posting-account-cleared-face
      "$20.00"           ledger-font-posting-amount-cleared-face
-     "* Assets:Cash"    ledger-font-posting-account-cleared-face)))
+     "* Assets:Cash"    ledger-font-posting-account-cleared-face
+     "2012-03-10"       ledger-font-posting-date-face
+     "KFC"              ledger-font-payee-uncleared-face
+     "* Expenses:Food"  ledger-font-posting-account-cleared-face
+     "$20.00"           ledger-font-posting-amount-cleared-face
+     "*"                ledger-font-posting-account-cleared-face)))
 
 
 
