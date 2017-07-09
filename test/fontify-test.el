@@ -842,11 +842,23 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
 
   (ledger-test-font-lock
    "
+2012-03-10  ; yum, chicken...
+2012-03-10   ; yum, chicken...
+2012-03-10 *  ; yum, chicken...
+2012-03-10 * KFC ; yum, chicken...
 2012-03-10 * KFC                ; yum, chicken...
     Expenses:Food                $20.00
     Assets:Cash
 "
    '("2012-03-10"            ledger-font-posting-date-face
+     "; yum, chicken..."     ledger-font-payee-uncleared-face
+     "2012-03-10"            ledger-font-posting-date-face
+     "; yum, chicken..."     ledger-font-payee-uncleared-face
+     "2012-03-10"            ledger-font-posting-date-face
+     "; yum, chicken..."     ledger-font-payee-cleared-face
+     "2012-03-10"            ledger-font-posting-date-face
+     "KFC ; yum, chicken..." ledger-font-payee-cleared-face
+     "2012-03-10"            ledger-font-posting-date-face
      "KFC"                   ledger-font-payee-cleared-face
      "; yum, chicken..."     ledger-font-comment-face
      "    Expenses:Food  "   ledger-font-posting-account-face
