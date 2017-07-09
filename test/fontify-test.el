@@ -561,7 +561,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
             (setq ledger-fontify-xact-state-overrides t)
             (insert str)
             (ledger-test-font-lock-fontify-buffer)
-            (should (equal (ledger-test-group-str-by-face (buffer-string))
+            (should (equal (ledger-test-face-groups (buffer-string))
                            face-groups)))
         (setq ledger-fontify-xact-state-overrides nil)))))
 
@@ -2185,6 +2185,41 @@ YY 2015
 payeee Charity
 "
    nil))
+
+
+(ert-deftest ledger-fontify/test-099 ()
+  "partial buffer fontification"
+  :tags '(font regress)
+  (let* ((pre-str "
+2014/11/02 * beer
+    Expenses:Drinks                                5 EUR
+    Assets:Checking                               -5 EUR
+
+2014/11/02=2014/11/03 * salary
+    Assets:Checking                               10 EUR")
+         (str "
+    Income                                       -10 EUR
+
+2014/11/02 * burger
+    Expenses:Food                                  7 EUR")
+         (post-str "
+    Assets:Checking                               -7 EUR
+")
+         (beg (+ 1 (length pre-str)))
+         (end (+ beg (length str)))
+         (face-groups
+          '("    Income  "                                  ledger-font-posting-account-face
+            "                                     -10 EUR"  ledger-font-posting-amount-face
+            "2014/11/02"                                    ledger-font-posting-date-face
+            " burger"                                       ledger-font-payee-cleared-face
+            "    Expenses:Food  "                           ledger-font-posting-account-face
+            "                                7 EUR"         ledger-font-posting-amount-face)))
+    (with-temp-buffer
+      (ledger-mode)
+      (insert pre-str str post-str)
+      (font-lock-fontify-region beg end nil)
+      (should (equal (ledger-test-face-groups (buffer-substring beg end))
+                     face-groups)))))
 
 
 (provide 'fontify-test)

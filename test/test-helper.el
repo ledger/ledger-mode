@@ -165,17 +165,21 @@ The two arguments START and END are character positions."
     (buffer-string)))
 
 
-(defun ledger-test-group-str-by-face (str)
-  "Fontify STR in ledger mode and group it by face.
+(defun ledger-test-face-groups (fontified)
+  "Group a fontified string by face.
 Return a list of substrings each followed by its face."
-  (cl-loop with fontified = (ledger-test-fontify-string str)
-           for start = 0 then end
+  (cl-loop for start = 0 then end
            while start
            for end   = (next-single-property-change start 'face fontified)
            for prop  = (get-text-property start 'face fontified)
            for text  = (substring-no-properties fontified start end)
            if prop
            append (list text prop)))
+
+(defun ledger-test-group-str-by-face (str)
+  "Fontify STR in ledger mode and group it by face.
+Return a list of substrings each followed by its face."
+  (ledger-test-face-groups (ledger-test-fontify-string str)))
 
 
 (defun ledger-test-font-lock (source face-groups)
