@@ -153,7 +153,7 @@ MOMENT is an encoded date"
     (read-string
      "Transaction: "
      ;; Pre-fill year and month, but not day: this assumes DD is the last format arg.
-     (replace-regexp-in-string "[0-9]+$" "" (ledger-format-date reference-date))
+     (ledger-format-date reference-date)
      'ledger-minibuffer-history)))
 
 (defun ledger-parse-iso-date (date)
