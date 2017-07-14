@@ -68,16 +68,18 @@ point at beginning of the commodity."
         (- (match-end 3) (point)))))))
 
 (defun ledger-next-account (&optional end)
-  "Move to the beginning of the posting, or status marker, limit to END.
+  "Move to the beginning of the posting, or status marker.
 Return the column of the beginning of the account and leave point
-at beginning of account"
-  (if (> end (point))
-      (when (re-search-forward ledger-account-any-status-regex (1+ end) t)
-        ;; the 1+ is to make sure we can catch the newline
-        (if (match-beginning 1)
-            (goto-char (match-beginning 1))
-          (goto-char (match-beginning 2)))
-        (current-column))))
+at beginning of account.
+Looks only as far as END, if supplied, otherwise `point-max'."
+  (let ((end (or end (point-max))))
+    (if (> end (point))
+        (when (re-search-forward ledger-account-any-status-regex (1+ end) t)
+          ;; the 1+ is to make sure we can catch the newline
+          (if (match-beginning 1)
+              (goto-char (match-beginning 1))
+            (goto-char (match-beginning 2)))
+          (current-column)))))
 
 (defun ledger-post-align-xact (pos)
   "Align all the posting in the xact at POS."
