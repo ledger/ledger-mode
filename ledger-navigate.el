@@ -69,7 +69,7 @@
   (interactive)
   ;; need to start at the beginning of a line incase we are in the first line of an xact already.
   (beginning-of-line)
-  (let ((sreg (concat "^\\(=\\|~\\|" ledger-iso-date-regexp "\\)")))
+  (let ((sreg (concat "^[=~[:digit:]]")))
     (unless (looking-at sreg)
       (re-search-backward sreg nil t)
       (beginning-of-line)))
