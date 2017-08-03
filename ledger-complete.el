@@ -23,6 +23,7 @@
 ;; Functions providing payee and account auto complete.
 
 (require 'pcomplete)
+(require 'cl-lib)
 
 ;; In-place completion support
 
@@ -36,9 +37,12 @@
   ;; this is more complex than it appears to need, so that it can work
   ;; with pcomplete.  See pcomplete-parse-arguments-function for
   ;; details
-  (let* ((begin (save-excursion
-                  (ledger-thing-at-point) ;; leave point at beginning of thing under point
-                  (point)))
+  (let* ((begin (if (save-match-data
+                      (looking-back "^\\(?:[0-9]\\{1,2\\}[-/]\\)?[0-9]\\{1,2\\}"))
+                    (line-beginning-position)
+                  (save-excursion
+                    (ledger-thing-at-point) ;; leave point at beginning of thing under point
+                    (point))))
          (end (point))
          begins args)
     ;; to support end of line metadata
@@ -133,31 +137,56 @@
                   (cdr root))
           'string-lessp))))
 
+(defun ledger-complete-date (month-string day-string)
+  "Complete a date."
+  (lexical-let*
+      ((now (current-time))
+       (decoded (decode-time now))
+       (to-day (nth 3 decoded))
+       (this-month (nth 4 decoded))
+       (this-year (nth 5 decoded))
+       (last-month (if (> this-month 1) (1- this-month) 12))
+       (last-year (1- this-year))
+       (last-month-year (if (> this-month 1) this-year last-year))
+       (month (and month-string
+                   (string-to-number month-string)))
+       (day (string-to-number day-string))
+       (dates (list (encode-time 0 0 0 day (or month this-month) this-year)
+                    (if month
+                        (encode-time 0 0 0 day month last-year)
+                      (encode-time 0 0 0 day last-month last-month-year)))))
+    (lambda (_string _predicate _all)
+      (ledger-format-date
+       (cl-find-if (lambda (date) (not (time-less-p now date))) dates)))))
+
 (defun ledger-complete-at-point ()
   "Do appropriate completion for the thing at point."
   (interactive)
   (while (pcomplete-here
-          (if (eq (save-excursion
-                    (ledger-thing-at-point)) 'transaction)
-              (if (null current-prefix-arg)
-                  (delete
-                   (caar (ledger-parse-arguments))
-                   (ledger-payees-in-buffer)) ;; this completes against payee names
-                (progn
-                  (let ((text (buffer-substring-no-properties
-                               (line-beginning-position)
-                               (line-end-position))))
-                    (delete-region (line-beginning-position)
-                                   (line-end-position))
-                    (condition-case nil
-                        (ledger-add-transaction text t)
-                      (error nil)))
-                  (forward-line)
-                  (goto-char (line-end-position))
-                  (search-backward ";" (line-beginning-position) t)
-                  (skip-chars-backward " \t0123456789.,")
-                  (throw 'pcompleted t)))
-            (ledger-accounts)))))
+          (cond
+           ((looking-back "^\\(?:\\([0-9]\\{1,2\\}\\)[-/]\\)?\\([0-9]\\{1,2\\}\\)")
+            (ledger-complete-date (match-string 1) (match-string 2)))
+           ((eq (save-excursion
+                  (ledger-thing-at-point)) 'transaction)
+            (if (null current-prefix-arg)
+                (delete
+                 (caar (ledger-parse-arguments))
+                 (ledger-payees-in-buffer)) ;; this completes against payee names
+              (progn
+                (let ((text (buffer-substring-no-properties
+                             (line-beginning-position)
+                             (line-end-position))))
+                  (delete-region (line-beginning-position)
+                                 (line-end-position))
+                  (condition-case nil
+                      (ledger-add-transaction text t)
+                    (error nil)))
+                (forward-line)
+                (goto-char (line-end-position))
+                (search-backward ";" (line-beginning-position) t)
+                (skip-chars-backward " \t0123456789.,")
+                (throw 'pcompleted t))))
+           (t (ledger-accounts))))))
 
 (defun ledger-trim-trailing-whitespace (str)
   (replace-regexp-in-string "[ \t]*$" "" str))
