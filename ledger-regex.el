@@ -283,11 +283,11 @@
 
 (ledger-define-regexp commodity-no-group
                       (rx (or (and ?\" (+ (not (any ?\"))) ?\")
-                              (not (any blank ?\n
-                                        digit
-                                        ?- ?\[ ?\]
-                                        ?. ?, ?\; ?+ ?* ?/ ?^ ?? ?: ?& ?| ?! ?=
-                                        ?\< ?\> ?\{ ?\} ?\( ?\) ?@))))
+                              (+ (not (any blank ?\n
+                                           digit
+                                           ?- ?\[ ?\]
+                                           ?. ?, ?\; ?+ ?* ?/ ?^ ?? ?: ?& ?| ?! ?=
+                                           ?\< ?\> ?\{ ?\} ?\( ?\) ?@)))))
                       "")
 
 (ledger-define-regexp commodity
