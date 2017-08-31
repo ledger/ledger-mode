@@ -352,6 +352,9 @@
           "\\([[:word:] ]+\\)"   ;; desc
           "\\)"))
 
+(defconst ledger-incomplete-date-regexp
+  "\\(?:\\([0-9]\\{1,2\\}\\)[-/]\\)?\\([0-9]\\{1,2\\}\\)")
+
 (defconst ledger-xact-start-regex
   (concat "^" ledger-iso-date-regexp  ;; subexp 1
           "\\(=" ledger-iso-date-regexp "\\)?"
