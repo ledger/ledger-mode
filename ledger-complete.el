@@ -156,8 +156,9 @@
                         (encode-time 0 0 0 day month last-year)
                       (encode-time 0 0 0 day last-month last-month-year)))))
     (lambda (_string _predicate _all)
-      (ledger-format-date
-       (cl-find-if (lambda (date) (not (time-less-p now date))) dates)))))
+      (concat (ledger-format-date
+               (cl-find-if (lambda (date) (not (time-less-p now date))) dates))
+              (and (= (point) (line-end-position)) " ")))))
 
 (defun ledger-complete-at-point ()
   "Do appropriate completion for the thing at point."
