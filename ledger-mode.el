@@ -86,25 +86,44 @@
   (find-file "ledger-mode-dump")
   (ledger-mode-dump-group 'ledger))
 
+(defun ledger-accounts-in-buffer ()
+  "Return a list of accounts in the current buffer"
+  (let ((buffer (find-file-noselect (ledger-master-file))))
+    (with-temp-buffer
+      (ledger-exec-ledger buffer (current-buffer) "accounts")
+      (split-string (buffer-string) "\n" t))))
+
 (defun ledger-read-account-with-prompt (prompt)
   "Read an account from the minibuffer with PROMPT."
   (let* ((context (ledger-context-at-point))
          (account (ledger-context-field-value context 'account)))
-    (ledger-read-string-with-default prompt
-                                     (when account
-                                       (regexp-quote account)))))
+    (ledger-completing-read-with-default prompt
+                                         (when account
+                                           (regexp-quote account))
+                                         (ledger-accounts-in-buffer))))
 
 (defun ledger-read-date (prompt)
   "Return user-supplied date after `PROMPT', defaults to today."
   (ledger-format-date (let ((org-read-date-prefer-future nil))
                         (org-read-date nil t nil prompt))))
 
+(defun ledger-get-minibuffer-prompt (prompt default)
+  "Return a string composing of PROMPT and DEFAULT appropriate
+for a minibuffer prompt."
+  (concat prompt
+          (if default
+              (concat " (" default "): ")
+            ": ")))
+
+(defun ledger-completing-read-with-default (prompt default collection)
+  "Return a user supplied string after PROMPT, or DEFAULT while
+  providing completions from COLLECTION."
+  (completing-read (ledger-get-minibuffer-prompt prompt default)
+                   collection nil t nil 'ledger-minibuffer-history default))
+
 (defun ledger-read-string-with-default (prompt default)
   "Return user supplied string after PROMPT, or DEFAULT."
-  (read-string (concat prompt
-                       (if default
-                           (concat " (" default "): ")
-                         ": "))
+  (read-string (ledger-get-minibuffer-prompt prompt default)
                nil 'ledger-minibuffer-history default))
 
 (defun ledger-display-balance-at-point (&optional arg)
