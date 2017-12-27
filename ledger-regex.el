@@ -275,33 +275,41 @@
                       (kind account-kind)
                       (name account))
 
+(ledger-define-regexp commodity-no-group
+                      (rx (or (and ?\" (+ (not (any ?\"))) ?\")
+                              (not (any blank ?\n
+                                        digit
+                                        ?- ?\[ ?\]
+                                        ?. ?, ?\; ?+ ?* ?/ ?^ ?? ?: ?& ?| ?! ?=
+                                        ?\< ?\> ?\{ ?\} ?\( ?\) ?@))))
+                      "")
+
 (ledger-define-regexp commodity
-                      (rx (group
-                           (or (and ?\" (+ (not (any ?\"))) ?\")
-                               (not (any blank ?\n
-                                         digit
-                                         ?- ?\[ ?\]
-                                         ?. ?, ?\; ?+ ?* ?/ ?^ ?? ?: ?& ?| ?! ?=
-                                         ?\< ?\> ?\{ ?\} ?\( ?\) ?@)))))
+                      (macroexpand
+                       `(rx (group (regexp ,ledger-commodity-no-group-regexp))))
+                      "")
+
+(ledger-define-regexp amount-no-group
+                      (rx (and (? ?-)
+                               (and (+ digit)
+                                    (*? (and (any ?. ?,) (+ digit))))
+                               (? (and (any ?. ?,) (+ digit)))))
                       "")
 
 (ledger-define-regexp amount
-                      (rx (group
-                           (and (? ?-)
-                                (and (+ digit)
-                                     (*? (and (any ?. ?,) (+ digit))))
-                                (? (and (any ?. ?,) (+ digit))))))
+                      (macroexpand
+                       `(rx (group (regexp ,ledger-amount-no-group-regexp))))
                       "")
 
 (ledger-define-regexp commoditized-amount
                       (macroexpand
                        `(rx (group
-                             (or (and (regexp ,ledger-commodity-regexp)
+                             (or (and (regexp ,ledger-commodity-no-group-regexp)
                                       (*? blank)
-                                      (regexp ,ledger-amount-regexp))
-                                 (and (regexp ,ledger-amount-regexp)
+                                      (regexp ,ledger-amount-no-group-regexp))
+                                 (and (regexp ,ledger-amount-no-group-regexp)
                                       (*? blank)
-                                      (regexp ,ledger-commodity-regexp))))))
+                                      (regexp ,ledger-commodity-no-group-regexp))))))
                       "")
 
 (ledger-define-regexp commodity-annotations
