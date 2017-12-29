@@ -370,7 +370,7 @@ Optional EDIT the command."
      (replace-regexp-in-string "$"
 			       (concat
 				" --columns " (int-to-string
-					       (- (window-width)
+					       (- (window-text-width)
 						  (if (display-graphic-p) 0 2))))
       (if (and register-report
 	       ledger-report-links-in-register
