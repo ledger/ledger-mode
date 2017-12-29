@@ -367,11 +367,16 @@ Optional EDIT the command."
     (shell-command
      ;; --subtotal does not produce identifiable transactions, so don't
      ;; prepend location information for them
-     (if (and register-report
-              ledger-report-links-in-register
-              (not (string-match "--subtotal" cmd)))
-         (concat cmd " --prepend-format='%(filename):%(beg_line):'")
-       cmd)
+     (replace-regexp-in-string "$"
+			       (concat
+				" --columns " (int-to-string
+					       (- (window-width)
+						  (if (display-graphic-p) 0 2))))
+      (if (and register-report
+	       ledger-report-links-in-register
+	       (not (string-match "--subtotal" cmd)))
+	  (concat cmd " --prepend-format='%(filename):%(beg_line):'")
+	cmd))
      t nil)
     (when (and register-report ledger-report-links-in-register)
       (goto-char data-pos)
