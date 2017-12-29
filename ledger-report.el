@@ -96,6 +96,11 @@ reports to their location in the currrent ledger file buffer."
   :type 'boolean
   :group 'ledger-report)
 
+(defcustom ledger-report-auto-width t
+  "When non-nil, tell ledger about the width of the report window."
+  :type 'boolean
+  :group 'ledger-report)
+
 (defcustom ledger-report-use-header-line nil
   "When non-nil, indicate the report name and command in the `header-line'
 instead of in the buffer."
@@ -361,6 +366,8 @@ used to generate the buffer, navigating the buffer, etc."
   "Compute extra args to add to REPORT-CMD."
   `(,@(when (ledger-report--cmd-needs-links-p report-cmd)
         '("--prepend-format=%(filename):%(beg_line):"))
+    ,@(when ledger-report-auto-width
+        `("--columns" ,(format "%d" (- (window-width) 1))))
     ,@(when ledger-report-use-native-highlighting
         '("--color" "--force-color"))))
 
