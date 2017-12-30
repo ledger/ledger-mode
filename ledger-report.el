@@ -367,8 +367,9 @@ Optional EDIT the command."
     (shell-command
      ;; --subtotal does not produce identifiable transactions, so don't
      ;; prepend location information for them
-     (replace-regexp-in-string "$"
-			       (concat
+     (replace-regexp-in-string (concat "^\\([:blank:]*" ledger-binary-path "\\)")
+                               ;; will fail if ledger-binary-path contains whitespace
+			       (concat "\\1"
 				" --columns " (int-to-string
 					       (- (window-text-width)
 						  (if (display-graphic-p) 0 2))))
