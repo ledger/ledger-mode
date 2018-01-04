@@ -364,7 +364,7 @@ Optional EDIT the command."
     (unless ledger-report-use-header-line
       (insert (format "Report: %s\n" ledger-report-name)
               (format "Command: %s\n" cmd)
-              (make-string report-text-width ?=)
+              (make-string ledger-report-text-width ?=)
               "\n\n"))
     (let ((data-pos (point))
           (register-report (string-match " reg\\(ister\\)? " cmd))
