@@ -371,7 +371,9 @@ Optional EDIT the command."
                                ;; will fail if ledger-binary-path contains whitespace
 			       (concat "\\1"
 				" --columns " (int-to-string
-					       (- (window-text-width)
+					       (- (if (fboundp 'window-text-width)
+                                                      (window-text-width)
+                                                      (window-width))
 						  (if (display-graphic-p) 0 2))))
       (if (and register-report
 	       ledger-report-links-in-register
