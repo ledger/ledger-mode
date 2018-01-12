@@ -39,7 +39,7 @@
   ;; details
   (let* ((begin (save-match-data
                   (if (looking-back (concat "^\\(" ledger-iso-date-regexp "=\\|\\)"
-                                            ledger-incomplete-date-regexp))
+                                            ledger-incomplete-date-regexp) nil)
                       (match-end 1)
                     (save-excursion
                       (ledger-thing-at-point) ;; leave point at beginning of thing under point
@@ -190,10 +190,10 @@
   (interactive)
   (while (pcomplete-here
           (cond
-           ((looking-back (concat "^" ledger-incomplete-date-regexp))
+           ((looking-back (concat "^" ledger-incomplete-date-regexp) nil)
             (ledger-complete-date (match-string 1) (match-string 2)))
            ((looking-back (concat "^" ledger-iso-date-regexp "="
-                                  ledger-incomplete-date-regexp))
+                                  ledger-incomplete-date-regexp) nil)
             (ledger-complete-effective-date
              (match-string 2) (match-string 3) (match-string 4)
              (match-string 5) (match-string 6)))
