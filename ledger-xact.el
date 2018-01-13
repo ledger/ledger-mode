@@ -179,6 +179,7 @@ correct chronological place in the buffer."
       (let* ((date (car args))
              (parsed-date (ledger-parse-iso-date date)))
         (setq ledger-add-transaction-last-date parsed-date)
+        (push-mark)
         ;; TODO: what about when it can't be parsed?
         (ledger-xact-find-slot (or parsed-date date))))
     (if (> (length args) 1)
