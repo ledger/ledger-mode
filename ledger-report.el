@@ -388,7 +388,7 @@ Optional EDIT the command."
                                                                      (ledger-navigate-to-line line)
                                                                      (point-marker))))))
             (add-text-properties (line-beginning-position) (line-end-position)
-                                 (list 'font-lock-face 'ledger-font-report-clickable-face))
+                                 (list 'font-lock-face 'ledger-font-report-face))
             (end-of-line)))))
     (goto-char data-pos)))
 
