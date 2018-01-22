@@ -112,7 +112,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
       (goto-char (point-min))
 
       (dolist (account
-               (cl-remove-if-not (apply-partially 'string-prefix-p prefix)
+               (cl-remove-if-not (lambda (c) (string-prefix-p prefix c pcomplete-ignore-case))
                                  (ledger-accounts-list)))
         (let ((root account-tree))
           (setq account-elements
