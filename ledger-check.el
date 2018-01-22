@@ -87,7 +87,7 @@
                                                                    (ledger-navigate-to-line line)
                                                                    (point-marker))))))
           (add-text-properties (line-beginning-position) (line-end-position)
-                               (list 'font-lock-face 'ledger-font-report-face))
+                               (list 'font-lock-face 'ledger-font-report-clickable-face))
           (setq have-warnings 'true)
           (end-of-line))))
     (if (not have-warnings)
