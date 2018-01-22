@@ -28,6 +28,7 @@
 
 (defcustom ledger-init-file-name "~/.ledgerrc"
   "Location of the ledger initialization file.  nil if you don't have one."
+  :type 'string
   :group 'ledger-exec)
 
 (defvar ledger-environment-alist nil

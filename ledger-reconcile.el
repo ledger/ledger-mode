@@ -50,6 +50,7 @@
 
 (defcustom ledger-recon-buffer-name "*Reconcile*"
   "Name to use for reconciliation buffer."
+  :type 'string
   :group 'ledger-reconcile)
 
 (defcustom ledger-narrow-on-reconcile t
