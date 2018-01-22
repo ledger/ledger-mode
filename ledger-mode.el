@@ -112,7 +112,7 @@ for a minibuffer prompt."
   "Return a user supplied string after PROMPT, or DEFAULT while
   providing completions from COLLECTION."
   (completing-read (ledger-get-minibuffer-prompt prompt default)
-                   collection nil t nil 'ledger-minibuffer-history default))
+                   collection nil nil nil 'ledger-minibuffer-history default))
 
 (defun ledger-read-string-with-default (prompt default)
   "Return user supplied string after PROMPT, or DEFAULT."

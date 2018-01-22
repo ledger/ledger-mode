@@ -176,14 +176,14 @@ in the `header-line'."
 
 (defun ledger-report-tagname-format-specifier ()
   "Return a valid meta-data tag name."
-  ;; It is intended completion should be available on existing account
+  ;; It is intended completion should be available on existing tag
   ;; names, but it remains to be implemented.
   (ledger-read-string-with-default "Tag Name: " nil))
 
 (defun ledger-report-tagvalue-format-specifier ()
   "Return a valid meta-data tag name."
-  ;; It is intended completion should be available on existing account
-  ;; names, but it remains to be implemented.
+  ;; It is intended completion should be available on existing tag
+  ;; values, but it remains to be implemented.
   (ledger-read-string-with-default "Tag Value: " nil))
 
 (defun ledger-report-read-name ()
@@ -312,8 +312,6 @@ used to generate the buffer, navigating the buffer, etc."
    regular expression identifying an account.  If point is on an account
    posting line for an xact, the full account name on that line is
    the default."
-  ;; It is intended completion should be available on existing account
-  ;; names, but it remains to be implemented.
   (ledger-read-account-with-prompt "Account"))
 
 (defun ledger-report-expand-format-specifiers (report-cmd)
