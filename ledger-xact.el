@@ -56,8 +56,9 @@
       (let ((b (car exts))
             (e (cadr exts))
             (p (point)))
-        (if (and (> (- e b) 1)       ; not an empty line
-                 (<= p e) (>= p b))  ; point is within the boundaries
+        (if (and (> (- e b) 1)            ; not an empty line
+                 (<= p e) (>= p b)        ; point is within the boundaries
+                 (not (region-active-p))) ; no active region
             (move-overlay ledger-xact-highlight-overlay b (+ 1 e))
           (move-overlay ledger-xact-highlight-overlay 1 1))))))
 
