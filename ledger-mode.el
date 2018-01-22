@@ -86,13 +86,6 @@
   (find-file "ledger-mode-dump")
   (ledger-mode-dump-group 'ledger))
 
-(defun ledger-accounts-in-buffer ()
-  "Return a list of accounts in the current buffer"
-  (let ((buffer (find-file-noselect (ledger-master-file))))
-    (with-temp-buffer
-      (ledger-exec-ledger buffer (current-buffer) "accounts")
-      (split-string (buffer-string) "\n" t))))
-
 (defun ledger-read-account-with-prompt (prompt)
   "Read an account from the minibuffer with PROMPT."
   (let* ((context (ledger-context-at-point))
@@ -100,7 +93,7 @@
     (ledger-completing-read-with-default prompt
                                          (when account
                                            (regexp-quote account))
-                                         (ledger-accounts-in-buffer))))
+                                         (ledger-accounts-list))))
 
 (defun ledger-read-date (prompt)
   "Return user-supplied date after `PROMPT', defaults to today."

@@ -32,6 +32,12 @@
 (require 'ledger-xact)
 (require 'ledger-schedule)
 
+(defcustom ledger-accounts-file nil
+  "The path to an optional file in which all accounts are used or declared.
+This file will then be used as a source for account name completions."
+  :type 'file
+  :group 'ledger)
+
 (defun ledger-parse-arguments ()
   "Parse whitespace separated arguments in the current region."
   ;; this is more complex than it appears to need, so that it can work
@@ -77,25 +83,37 @@
     ;; to the list
     (pcomplete-uniqify-list (nreverse payees-list))))
 
+(defun ledger-accounts-list-in-buffer ()
+  "Return a list of all known account names in the current buffer as strings.
+Considers both accounts listed in postings and those declared with \"account\" directives."
+  (save-excursion
+    (goto-char (point-min))
+    (let (results)
+      (while (re-search-forward ledger-account-any-status-regex nil t)
+        (setq results (cons (match-string 2) results)))
+      (sort (cl-delete-duplicates results :test 'string=) #'string-greaterp))))
+
+(defun ledger-accounts-list ()
+  "Return a list of all known account names as strings.
+Looks in `ledger-accounts-file' if set, otherwise the current buffer."
+  (if ledger-accounts-file
+      (with-temp-buffer
+        (insert-file-contents ledger-accounts-file)
+        (ledger-accounts-list-in-buffer))
+    (ledger-accounts-list-in-buffer)))
 
 (defun ledger-find-accounts-in-buffer ()
   (interactive)
-  (let ((origin (point))
-        accounts
+  (let (accounts
         (account-tree (list t))
         (account-elements nil)
-        (seed-regex (ledger-account-any-status-with-seed-regex
-                     (regexp-quote (car pcomplete-args)))))
+        (prefix (or (car pcomplete-args) "")))
     (save-excursion
       (goto-char (point-min))
 
       (dolist (account
-               (delete-dups
-                (progn
-                  (while (re-search-forward seed-regex nil t)
-                    (unless (ledger-between origin (match-beginning 0) (match-end 0))
-                      (setq accounts (cons (match-string-no-properties 2) accounts))))
-                  accounts)))
+               (cl-remove-if-not (apply-partially 'string-prefix-p prefix)
+                                 (ledger-accounts-list)))
         (let ((root account-tree))
           (setq account-elements
                 (split-string
@@ -110,7 +128,7 @@
             (setq account-elements (cdr account-elements))))))
     account-tree))
 
-(defun ledger-accounts ()
+(defun ledger-accounts-tree ()
   "Return a tree of all accounts in the buffer."
   (let* ((current (caar (ledger-parse-arguments)))
          (elements (and current (split-string current ":")))
@@ -217,7 +235,7 @@
                 (search-backward ";" (line-beginning-position) t)
                 (skip-chars-backward " \t0123456789.,")
                 (throw 'pcompleted t))))
-           (t (ledger-accounts))))))
+           (t (ledger-accounts-tree))))))
 
 (defun ledger-trim-trailing-whitespace (str)
   (replace-regexp-in-string "[ \t]*$" "" str))

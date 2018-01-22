@@ -74,9 +74,6 @@
 (defconst ledger-account-any-status-regex
   "^\\(?:account\\)? [ \t]+\\([*!]\\s-+\\)?\\([[(]?.+?\\)\\(\t\\|$\\| [ \t]\\)")
 
-(defun ledger-account-any-status-with-seed-regex (seed)
-  (concat "^\\(?:account\\)? [ \t]+\\([*!]\\s-+\\)?\\([[(]?" seed ".+?\\)\\(\t\\|$\\| [ \t]\\)"))
-
 (defconst ledger-account-pending-regex
   "\\(^[ \t]+\\)\\(!\\s-*.*?\\)\\(  \\|\t\\|$\\)")
 
