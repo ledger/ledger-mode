@@ -31,6 +31,7 @@
 (declare-function ledger-read-account-with-prompt "ledger-mode" (prompt))
 
 (require 'easymenu)
+(require 'ansi-color)
 
 (defvar ledger-buf)
 
@@ -85,6 +86,11 @@ text that should replace the format specifier."
 (defcustom ledger-report-links-in-register t
   "When non-nil, attempt to link transactions in \"register\"
 reports to their location in the currrent ledger file buffer."
+  :type 'boolean
+  :group 'ledger-report)
+
+(defcustom ledger-report-use-native-highlighting t
+  "When non-nil, use ledger's native highlighting in reports."
   :type 'boolean
   :group 'ledger-report)
 
@@ -372,7 +378,11 @@ Optional EDIT the command."
                                (not (string-match "--subtotal" cmd)))))
     (when links-in-report
       (setq cmd (concat cmd " --prepend-format='%(filename):%(beg_line):'")))
+    (when ledger-report-use-native-highlighting
+      (setq cmd (concat cmd " --color --force-color")))
     (shell-command cmd t nil)
+    (when ledger-report-use-native-highlighting
+      (ansi-color-apply-on-region data-pos (point-max)))
     (when links-in-report
       (goto-char data-pos)
       (while (re-search-forward "^\\(/[^:]+\\)?:\\([0-9]+\\)?:" nil t)
