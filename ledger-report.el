@@ -149,7 +149,6 @@ in the `header-line'."
       'ledger-report-kill)
     (define-key map [(control ?c) (control ?l) (control ?e)]
       'ledger-report-edit)
-    (define-key map [return] 'ledger-report-visit-source)
     map)
   "Keymap for `ledger-report-mode'.")
 
@@ -349,6 +348,11 @@ Optional EDIT the command."
           (ledger-reports-custom-save)))
     report-cmd))
 
+(define-button-type 'ledger-report-register-entry
+  'follow-link t
+  'face 'ledger-font-report-clickable-face
+  'action (lambda (_button) (ledger-report-visit-source)))
+
 (defun ledger-do-report (cmd)
   "Run a report command line CMD."
   (goto-char (point-min))
@@ -359,19 +363,17 @@ Optional EDIT the command."
             (format "Command: %s\n" cmd)
             (make-string (- (window-width) 1) ?=)
             "\n\n"))
-  (let ((data-pos (point))
-        (register-report (string-match " reg\\(ister\\)? " cmd))
-        files-in-report)
-    (shell-command
-     ;; --subtotal does not produce identifiable transactions, so don't
-     ;; prepend location information for them
-     (if (and register-report
-              ledger-report-links-in-register
-              (not (string-match "--subtotal" cmd)))
-         (concat cmd " --prepend-format='%(filename):%(beg_line):'")
-       cmd)
-     t nil)
-    (when (and register-report ledger-report-links-in-register)
+  (let* ((data-pos (point))
+         (register-report (string-match " reg\\(ister\\)? " cmd))
+         ;; --subtotal reports do not produce identifiable transactions, so
+         ;; don't prepend location information for them
+         (links-in-report (and register-report
+                               ledger-report-links-in-register
+                               (not (string-match "--subtotal" cmd)))))
+    (when links-in-report
+      (setq cmd (concat cmd " --prepend-format='%(filename):%(beg_line):'")))
+    (shell-command cmd t nil)
+    (when links-in-report
       (goto-char data-pos)
       (while (re-search-forward "^\\(/[^:]+\\)?:\\([0-9]+\\)?:" nil t)
         (let ((file (match-string 1))
@@ -385,8 +387,10 @@ Optional EDIT the command."
                                                                      (widen)
                                                                      (ledger-navigate-to-line line)
                                                                      (point-marker))))))
-            (add-text-properties (line-beginning-position) (line-end-position)
-                                 (list 'font-lock-face 'ledger-font-report-clickable-face))
+            (make-text-button
+             (line-beginning-position) (line-end-position)
+             'type 'ledger-report-register-entry
+             'help-echo (format "mouse-2, RET: Visit %s:%d" file line))
             (end-of-line)))))
     (goto-char data-pos)))
 
