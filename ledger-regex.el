@@ -72,10 +72,10 @@
   "^--.+?\\($\\|[ ]\\)")
 
 (defconst ledger-account-any-status-regex
-  "^[ \t]+\\([*!]\\s-+\\)?\\([[(]?.+?\\)\\(\t\\|\n\\| [ \t]\\)")
+  "^\\(?:account\\)? [ \t]+\\([*!]\\s-+\\)?\\([[(]?.+?\\)\\(\t\\|$\\| [ \t]\\)")
 
 (defun ledger-account-any-status-with-seed-regex (seed)
-  (concat "^[ \t]+\\([*!]\\s-+\\)?\\([[(]?" seed ".+?\\)\\(\t\\|\n\\| [ \t]\\)"))
+  (concat "^\\(?:account\\)? [ \t]+\\([*!]\\s-+\\)?\\([[(]?" seed ".+?\\)\\(\t\\|$\\| [ \t]\\)"))
 
 (defconst ledger-account-pending-regex
   "\\(^[ \t]+\\)\\(!\\s-*.*?\\)\\(  \\|\t\\|$\\)")
