@@ -25,10 +25,9 @@ Getting started
 ===============
 
 `ledger-mode` will automatically associate itself with `.ledger` files when
-installed as a package. We don't have a full guide to using `ledger-mode`,
-sorry, but we suggest starting with the general Emacs tricks of
-<kbd>C-h m</kbd> (`describe-mode`) and browsing the `ledger` customization
-group with `M-x customize-group`.
+installed as a package. `ledger-mode` includes documentation in info format,
+accessible through Emacs with <kbd>C-h i</kbd>. The info chapter includes a
+quick demo as well as more extensive documentation.
 
 Related packages
 ================
