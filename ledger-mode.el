@@ -350,7 +350,8 @@ With a prefix argument, remove the effective date."
 
   (setq-local indent-region-function 'ledger-post-align-postings))
 
-
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.ledger\\'" . ledger-mode))
 
 (provide 'ledger-mode)
 
