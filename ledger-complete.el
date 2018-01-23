@@ -90,7 +90,7 @@ Considers both accounts listed in postings and those declared with \"account\" d
     (goto-char (point-min))
     (let (results)
       (while (re-search-forward ledger-account-any-status-regex nil t)
-        (setq results (cons (match-string 2) results)))
+        (setq results (cons (match-string-no-properties 2) results)))
       (sort (cl-delete-duplicates results :test 'string=) #'string-greaterp))))
 
 (defun ledger-accounts-list ()
