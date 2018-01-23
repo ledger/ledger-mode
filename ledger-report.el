@@ -61,15 +61,17 @@ specifier."
 
 (defcustom ledger-report-format-specifiers
   '(("ledger-file" . ledger-report-ledger-file-format-specifier)
-    ("binary" . (lambda () ledger-binary-path))
+    ("binary" . ledger-report-binary-format-specifier)
     ("payee" . ledger-report-payee-format-specifier)
     ("account" . ledger-report-account-format-specifier)
     ("tagname" . ledger-report-tagname-format-specifier)
     ("tagvalue" . ledger-report-tagvalue-format-specifier))
   "An alist mapping ledger report format specifiers to implementing functions.
 
-The function is called with no parameters and expected to return the
-text that should replace the format specifier."
+The function is called with no parameters and expected to return
+a string, or a list of strings, that should replace the format
+specifier.  The resulting string or strings are quoted with
+`shell-quote-argument'."
   :type 'alist
   :group 'ledger-report)
 
@@ -178,6 +180,14 @@ in the `header-line'."
 
 (define-derived-mode ledger-report-mode text-mode "Ledger-Report"
   "A mode for viewing ledger reports.")
+
+(defvar ledger-report-extra-args nil
+  "List of args added after ledger-binary-path.
+This variable is populated dynamically by `ledger-report-cmd'.")
+
+(defun ledger-report-binary-format-specifier ()
+  "Return the path to ledger, plus args from `ledger-report-extra-args'."
+  (cons ledger-binary-path ledger-report-extra-args))
 
 (defun ledger-report-tagname-format-specifier ()
   "Return a valid meta-data tag name."
@@ -320,32 +330,50 @@ used to generate the buffer, navigating the buffer, etc."
   (ledger-read-account-with-prompt "Account"))
 
 (defun ledger-report-expand-format-specifiers (report-cmd)
-  "Expand %(account) and %(payee) appearing in REPORT-CMD with thing under point."
+  "Expand format specifiers in REPORT-CMD with thing under point."
   (save-match-data
     (let ((expanded-cmd report-cmd))
       (set-match-data (list 0 0))
-      (while (string-match "%(\\([^)]*\\))" expanded-cmd (if (> (length expanded-cmd) (match-end 0))
-                                                             (match-end 0)
-                                                           (1- (length expanded-cmd))))
+      (while (string-match "%(\\([^)]*\\))" expanded-cmd
+                           (if (> (length expanded-cmd) (match-end 0))
+                               (match-end 0)
+                             (1- (length expanded-cmd))))
         (let* ((specifier (match-string 1 expanded-cmd))
                (f (cdr (assoc specifier ledger-report-format-specifiers))))
           (if f
-              (setq expanded-cmd (replace-match
-                                  (save-match-data
-                                    (with-current-buffer ledger-buf
-                                      (shell-quote-argument (funcall f))))
-                                  t t expanded-cmd)))))
+              (let* ((args (save-match-data
+                             (with-current-buffer ledger-buf
+                               (funcall f))))
+                     (args-list (if (listp args) args (list args)))
+                     (quoted (mapconcat #'shell-quote-argument args-list " ")))
+                (setq expanded-cmd (replace-match quoted t t expanded-cmd))))))
       expanded-cmd)))
+
+(defun ledger-report--cmd-needs-links-p (cmd)
+  "Check links should be added to the report produced by CMD."
+  ;; --subtotal reports do not produce identifiable transactions, so
+  ;; don't prepend location information for them
+  (and (string-match " reg\\(ister\\)? " cmd)
+       ledger-report-links-in-register
+       (not (string-match "--subtotal" cmd))))
+
+(defun ledger-report--compute-extra-args (report-cmd)
+  "Compute extra args to add to REPORT-CMD."
+  `(,@(when (ledger-report--cmd-needs-links-p report-cmd)
+        '("--prepend-format=%(filename):%(beg_line):"))
+    ,@(when ledger-report-use-native-highlighting
+        '("--color" "--force-color"))))
 
 (defun ledger-report-cmd (report-name edit)
   "Get the command line to run the report name REPORT-NAME.
-Optional EDIT the command."
+Optionally EDIT the command."
   (let ((report-cmd (car (cdr (assoc report-name ledger-reports)))))
     ;; logic for substitution goes here
     (when (or (null report-cmd) edit)
       (setq report-cmd (ledger-report-read-command report-cmd))
       (setq ledger-report-saved nil)) ;; this is a new report, or edited report
-    (setq report-cmd (ledger-report-expand-format-specifiers report-cmd))
+    (let ((ledger-report-extra-args (ledger-report--compute-extra-args report-cmd)))
+      (setq report-cmd (ledger-report-expand-format-specifiers report-cmd)))
     (set (make-local-variable 'ledger-report-cmd) report-cmd)
     (or (ledger-report-string-empty-p report-name)
         (ledger-report-name-exists report-name)
@@ -369,21 +397,11 @@ Optional EDIT the command."
             (format "Command: %s\n" cmd)
             (make-string (- (window-width) 1) ?=)
             "\n\n"))
-  (let* ((data-pos (point))
-         (register-report (string-match " reg\\(ister\\)? " cmd))
-         ;; --subtotal reports do not produce identifiable transactions, so
-         ;; don't prepend location information for them
-         (links-in-report (and register-report
-                               ledger-report-links-in-register
-                               (not (string-match "--subtotal" cmd)))))
-    (when links-in-report
-      (setq cmd (concat cmd " --prepend-format='%(filename):%(beg_line):'")))
-    (when ledger-report-use-native-highlighting
-      (setq cmd (concat cmd " --color --force-color")))
+  (let* ((data-pos (point)))
     (shell-command cmd t nil)
     (when ledger-report-use-native-highlighting
       (ansi-color-apply-on-region data-pos (point-max)))
-    (when links-in-report
+    (when (ledger-report--cmd-needs-links-p cmd)
       (goto-char data-pos)
       (while (re-search-forward "^\\(/[^:]+\\)?:\\([0-9]+\\)?:" nil t)
         (let ((file (match-string 1))
