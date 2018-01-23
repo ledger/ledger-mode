@@ -354,41 +354,50 @@ Optional EDIT the command."
   (goto-char (point-min))
   (setq header-line-format (when ledger-report-use-header-line
                              '(:eval (funcall ledger-report-header-line-fn))))
-  (unless ledger-report-use-header-line
-    (insert (format "Report: %s\n" ledger-report-name)
-            (format "Command: %s\n" cmd)
-            (make-string (- (window-width) 1) ?=)
-            "\n\n"))
-  (let ((data-pos (point))
-        (register-report (string-match " reg\\(ister\\)? " cmd))
-        files-in-report)
-    (shell-command
-     ;; --subtotal does not produce identifiable transactions, so don't
-     ;; prepend location information for them
-     (if (and register-report
-              ledger-report-links-in-register
-              (not (string-match "--subtotal" cmd)))
-         (concat cmd " --prepend-format='%(filename):%(beg_line):'")
-       cmd)
-     t nil)
-    (when (and register-report ledger-report-links-in-register)
-      (goto-char data-pos)
-      (while (re-search-forward "^\\(/[^:]+\\)?:\\([0-9]+\\)?:" nil t)
-        (let ((file (match-string 1))
-              (line (string-to-number (match-string 2))))
-          (delete-region (match-beginning 0) (match-end 0))
-          (when file
-            (set-text-properties (line-beginning-position) (line-end-position)
-                                 (list 'ledger-source (cons file (save-window-excursion
-                                                                   (save-excursion
-                                                                     (find-file file)
-                                                                     (widen)
-                                                                     (ledger-navigate-to-line line)
-                                                                     (point-marker))))))
-            (add-text-properties (line-beginning-position) (line-end-position)
-                                 (list 'font-lock-face 'ledger-font-report-clickable-face))
-            (end-of-line)))))
-    (goto-char data-pos)))
+  (let ((ledger-report-text-width
+         (- (if (fboundp 'window-text-width)
+                (window-text-width)
+                (window-width))
+            (if (display-graphic-p) 1 2))))
+    (unless ledger-report-use-header-line
+      (insert (format "Report: %s\n" ledger-report-name)
+              (format "Command: %s\n" cmd)
+              (make-string ledger-report-text-width ?=)
+              "\n\n"))
+    (let ((data-pos (point))
+          (register-report (string-match " reg\\(ister\\)? " cmd))
+          files-in-report)
+      (shell-command
+       ;; --subtotal does not produce identifiable transactions, so don't
+       ;; prepend location information for them
+       (replace-regexp-in-string (concat "^\\([:blank:]*" ledger-binary-path "\\)")
+                                 ;; will fail if ledger-binary-path contains whitespace
+                                 (concat "\\1"
+                                         " --columns " (int-to-string ledger-report-text-width))
+                                 (if (and register-report
+                                          ledger-report-links-in-register
+                                          (not (string-match "--subtotal" cmd)))
+                                     (concat cmd " --prepend-format='%(filename):%(beg_line):'")
+                                   cmd))
+       t nil)
+      (when (and register-report ledger-report-links-in-register)
+        (goto-char data-pos)
+        (while (re-search-forward "^\\(/[^:]+\\)?:\\([0-9]+\\)?:" nil t)
+          (let ((file (match-string 1))
+                (line (string-to-number (match-string 2))))
+            (delete-region (match-beginning 0) (match-end 0))
+            (when file
+              (set-text-properties (line-beginning-position) (line-end-position)
+                                   (list 'ledger-source (cons file (save-window-excursion
+                                                                     (save-excursion
+                                                                       (find-file file)
+                                                                       (widen)
+                                                                       (ledger-navigate-to-line line)
+                                                                       (point-marker))))))
+              (add-text-properties (line-beginning-position) (line-end-position)
+                                   (list 'font-lock-face 'ledger-font-report-clickable-face))
+              (end-of-line)))))
+      (goto-char data-pos))))
 
 
 (defun ledger-report-visit-source ()
