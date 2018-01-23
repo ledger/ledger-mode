@@ -1022,6 +1022,10 @@ Definition of reports to run.
 An alist mapping ledger report format specifiers to implementing
 functions.
 
+@item ledger-report-use-native-highlighting
+Whether reports should be displayed using the same colors as when calling ledger
+on the command line.
+
 @end ftable
 
 @node Ledger Faces Customization Group, Ledger Post Customization Group, Ledger Report Customization Group, Customization Variables
@@ -1080,7 +1084,7 @@ Default face for pending @samp{!} transactions in the @file{*Reconcile*}
 buffer.
 
 @item ledger-font-report-clickable-face
-Face for transactions in the @file{*Report*} buffer.
+Face applied to clickable entries in the @file{*Report*} buffer.
 
 @end ftable
 
