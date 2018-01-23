@@ -261,8 +261,8 @@
   :group 'ledger-faces)
 
 (defface ledger-font-report-clickable-face
-  `((t :foreground "#cb4b16" :weight normal ))
-  "Default face for pending (!) transactions in the reconcile window"
+  `((t :inherit ledger-font-default-face))
+  "Face for transactions in the report buffer."
   :group 'ledger-faces)
 
 (defface ledger-font-code-face

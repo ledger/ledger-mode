@@ -1080,7 +1080,7 @@ Default face for pending @samp{!} transactions in the @file{*Reconcile*}
 buffer.
 
 @item ledger-font-report-clickable-face
-FIXME
+Face for transactions in the @file{*Report*} buffer.
 
 @end ftable
 
