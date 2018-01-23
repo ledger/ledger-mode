@@ -103,7 +103,7 @@ Requires empty line separating xacts."
   (let ((begin (progn (beginning-of-line)
                       (point)))
         (end (progn (end-of-line)
-                    (+ 1 (point)))))
+                    (point))))
     ;; handle block comments here
     (beginning-of-line)
     (if (looking-at " *;")
