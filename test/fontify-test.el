@@ -195,9 +195,8 @@ P 2006/03/06 BAR £1.50
    "  Assets:X  "                 ledger-font-posting-account-face
    "£4000"                        ledger-font-posting-amount-face
    "  Equity:Opening Balance"     ledger-font-posting-account-face
-   "P 2006/03/05 FOO £1.40
-P 2006/03/06 BAR £1.50
-"                                 ledger-font-price-directive-face
+   "P 2006/03/05 FOO £1.40"       ledger-font-price-directive-face
+   "P 2006/03/06 BAR £1.50"       ledger-font-price-directive-face
    "2006/05/15"                   ledger-font-posting-date-face
    " Interest"                    ledger-font-payee-uncleared-face
    "  Income:Taxable:Interest  "  ledger-font-posting-account-face
@@ -213,7 +212,7 @@ https://groups.google.com/d/msg/ledger-cli/yNHQHN60qo0/XaDLxAHF92UJ"
   :tags '(font regress)
 
   (ledger-test-font-lock
- "
+   "
 account Assets:Bank1:Checking
     note foo
     ; country: it
@@ -227,10 +226,8 @@ account Assets:Bank5:LDD
     ; cmut-id: XXX
     ; boobank-id: YYY
 "
- '("account Assets:Bank1:Checking
-"                                  ledger-font-account-directive-face ; FIXME try to fontify the full directive, note included?
-   "account Assets:Bank5:LDD
-"                                  ledger-font-account-directive-face)))
+ '("account Assets:Bank1:Checking" ledger-font-account-directive-face ; FIXME try to fontify the full directive, note included?
+   "account Assets:Bank5:LDD"      ledger-font-account-directive-face)))
 
 
 (ert-deftest ledger-fontify/test-008 ()
@@ -335,11 +332,10 @@ P 2014-01-01 WBDES $100.00
     df0fcf15" ledger-font-periodic-xact-face
     "; Pricing =======================================================
 " ledger-font-comment-face
-"P 2014-01-01 WRCOM $100.00
-P 2014-01-01 VFDAY $100.00
-P 2014-01-01 VHDAY $100.00
-P 2014-01-01 WBDES $100.00
-" ledger-font-price-directive-face
+"P 2014-01-01 WRCOM $100.00" ledger-font-price-directive-face
+"P 2014-01-01 VFDAY $100.00" ledger-font-price-directive-face
+"P 2014-01-01 VHDAY $100.00" ledger-font-price-directive-face
+"P 2014-01-01 WBDES $100.00" ledger-font-price-directive-face
 "; 2014-11 =======================================================
 " ledger-font-comment-face
 "2014-11-01" ledger-font-posting-date-face
@@ -431,8 +427,7 @@ account Assets:StarOne Savings
     cash      -$45.13
     starone    $45.13
 "
- '("account Assets:StarOne Savings
-"                              ledger-font-account-directive-face
+ '("account Assets:StarOne Savings" ledger-font-account-directive-face
    "2014/05/07"                ledger-font-posting-date-face
    "   CoinStar Jar of Coins"  ledger-font-payee-uncleared-face
    "    cash  "                ledger-font-posting-account-face
@@ -1409,8 +1404,7 @@ define ten_dollars(s, date, t) = market($10, date, t)
     Assets:Brokerage            -5 AAPL {$50.00} ((ten_dollars)) @@ $375.00
     Income:Capital Gains       $-125.00
 "
-   '("define ten_dollars(s, date, t) = market($10, date, t)
-"                                                        ledger-font-define-directive-face
+   '("define ten_dollars(s, date, t) = market($10, date, t)" ledger-font-define-directive-face
 "2012-04-10"                                             ledger-font-posting-date-face
 " My Broker"                                             ledger-font-payee-uncleared-face
 "    Assets:Brokerage:Cash  "                            ledger-font-posting-account-face
@@ -1705,11 +1699,10 @@ define ten_dollars(s, date, t) = market($10, date, t)
 "
    '("
 ; This is a single line comment,
-#  and this,
-%   and this,
-|    and this,
-*     and this.
-"  ledger-font-comment-face)))
+#  and this,"         ledger-font-comment-face
+   "%   and this,"    ledger-font-comment-face
+   "|    and this,"   ledger-font-comment-face
+   "*     and this."  ledger-font-comment-face)))
 
 
 
@@ -1747,8 +1740,7 @@ account Expenses:Food
     eval print(\"Hello!\")
     default
 "
-   '("account Expenses:Food
-"  ledger-font-account-directive-face)))
+   '("account Expenses:Food" ledger-font-account-directive-face)))
 
 
 
@@ -1764,15 +1756,13 @@ apply account Personal
     Assets:Checking
 end apply account
 "
-   '("apply account Personal
-"                           ledger-font-apply-directive-face
-"2011/11/15"                ledger-font-posting-date-face
-"  Supermarket"             ledger-font-payee-uncleared-face
-"    Expenses:Groceries  "  ledger-font-posting-account-face
-"    $ 50.00"               ledger-font-posting-amount-face
-"    Assets:Checking"       ledger-font-posting-account-face
-"end apply account
-"                           ledger-font-end-directive-face)))
+   '("apply account Personal"    ledger-font-apply-directive-face
+     "2011/11/15"                ledger-font-posting-date-face
+     "  Supermarket"             ledger-font-payee-uncleared-face
+     "    Expenses:Groceries  "  ledger-font-posting-account-face
+     "    $ 50.00"               ledger-font-posting-amount-face
+     "    Assets:Checking"       ledger-font-posting-account-face
+     "end apply account"         ledger-font-end-directive-face)))
 
 
 
@@ -1790,15 +1780,14 @@ alias Checking=Assets:Credit Union:Joint Checking Account
   Dining          $10.00
   Checking
 "
-   '("alias Entertainment=Expenses:Entertainment
-alias Dining=Entertainment:Dining
-alias Checking=Assets:Credit Union:Joint Checking Account
-"                 ledger-font-alias-directive-face
-"2011/11/30"      ledger-font-posting-date-face
-" ChopChop"       ledger-font-payee-uncleared-face
-"  Dining  "      ledger-font-posting-account-face
-"        $10.00"  ledger-font-posting-amount-face
-"  Checking"      ledger-font-posting-account-face)))
+   '("alias Entertainment=Expenses:Entertainment"                 ledger-font-alias-directive-face
+     "alias Dining=Entertainment:Dining"                          ledger-font-alias-directive-face
+     "alias Checking=Assets:Credit Union:Joint Checking Account"  ledger-font-alias-directive-face
+     "2011/11/30"                                                 ledger-font-posting-date-face
+     " ChopChop"                                                  ledger-font-payee-uncleared-face
+     "  Dining  "                                                 ledger-font-posting-account-face
+     "        $10.00"                                             ledger-font-posting-amount-face
+     "  Checking"                                                 ledger-font-posting-account-face)))
 
 
 
@@ -1811,9 +1800,8 @@ alias Checking=Assets:Credit Union:Joint Checking Account
 assert commodity == 'VIFSX'
 assert comment =~ /REGEX/
 "
-   '("assert commodity == 'VIFSX'
-assert comment =~ /REGEX/
-"  ledger-font-assert-directive-face)))
+   '("assert commodity == 'VIFSX'" ledger-font-assert-directive-face
+     "assert comment =~ /REGEX/" ledger-font-assert-directive-face)))
 
 
 
@@ -1833,20 +1821,19 @@ bucket Assets:Checking
 2011/12/01 Sale
     Assets:Checking:Business            $ 30.00
 "
-   '("bucket Assets:Checking
-"                                 ledger-font-bucket-directive-face
-"2011/01/25"                      ledger-font-posting-date-face
-" Tom's Used Cars"                ledger-font-payee-uncleared-face
-"    Expenses:Auto  "             ledger-font-posting-account-face
-"                  $ 5,500.00"    ledger-font-posting-amount-face
-"2011/01/27"                      ledger-font-posting-date-face
-" Book Store"                     ledger-font-payee-uncleared-face
-"    Expenses:Books  "            ledger-font-posting-account-face
-"                     $20.00"     ledger-font-posting-amount-face
-"2011/12/01"                      ledger-font-posting-date-face
-" Sale"                           ledger-font-payee-uncleared-face
-"    Assets:Checking:Business  "  ledger-font-posting-account-face
-"          $ 30.00"               ledger-font-posting-amount-face)))
+   '("bucket Assets:Checking"          ledger-font-bucket-directive-face
+     "2011/01/25"                      ledger-font-posting-date-face
+     " Tom's Used Cars"                ledger-font-payee-uncleared-face
+     "    Expenses:Auto  "             ledger-font-posting-account-face
+     "                  $ 5,500.00"    ledger-font-posting-amount-face
+     "2011/01/27"                      ledger-font-posting-date-face
+     " Book Store"                     ledger-font-payee-uncleared-face
+     "    Expenses:Books  "            ledger-font-posting-account-face
+     "                     $20.00"     ledger-font-posting-amount-face
+     "2011/12/01"                      ledger-font-posting-date-face
+     " Sale"                           ledger-font-payee-uncleared-face
+     "    Assets:Checking:Business  "  ledger-font-posting-account-face
+     "          $ 30.00"               ledger-font-posting-amount-face)))
 
 
 
@@ -1858,8 +1845,7 @@ bucket Assets:Checking
    "
 capture  Expenses:Deductible:Medical  Medical
 "
-   '("capture  Expenses:Deductible:Medical  Medical
-"  ledger-font-capture-directive-face)))
+   '("capture  Expenses:Deductible:Medical  Medical" ledger-font-capture-directive-face)))
 
 
 
@@ -1872,9 +1858,8 @@ capture  Expenses:Deductible:Medical  Medical
 check amount == $20
 check account =~ /REGEX/
 "
-   '("check amount == $20
-check account =~ /REGEX/
-"  ledger-font-check-directive-face)))
+   '("check amount == $20" ledger-font-check-directive-face
+     "check account =~ /REGEX/" ledger-font-check-directive-face)))
 
 
 
@@ -1889,10 +1874,8 @@ comment
     multiple lines
 end comment
 "
-   '("comment
-"  ledger-font-comment-face
-"end comment
-"  ledger-font-end-directive-face)))
+   '("comment" ledger-font-comment-face
+     "end comment" ledger-font-end-directive-face)))
 
 
 
@@ -1908,8 +1891,7 @@ commodity $
    nomarket
    default
 "
-   '("commodity $
-"  ledger-font-commodity-directive-face)))
+   '("commodity $" ledger-font-commodity-directive-face)))
 
 
 
@@ -1925,13 +1907,12 @@ define var_name=$100
     Expenses  (var_name*4)
     Assets
 "
-   '("define var_name=$100
-"                 ledger-font-define-directive-face
-"2011/12/01"      ledger-font-posting-date-face
-" Test"           ledger-font-payee-uncleared-face
-"    Expenses  "  ledger-font-posting-account-face
-"(var_name*4)"    ledger-font-posting-amount-face
-"    Assets"      ledger-font-posting-account-face)))
+   '("define var_name=$100"  ledger-font-define-directive-face
+     "2011/12/01"            ledger-font-posting-date-face
+     " Test"                 ledger-font-payee-uncleared-face
+     "    Expenses  "        ledger-font-posting-account-face
+     "(var_name*4)"          ledger-font-posting-amount-face
+     "    Assets"            ledger-font-posting-account-face)))
 
 
 
@@ -1943,8 +1924,7 @@ define var_name=$100
    "
 end
 "
-   '("end
-"  ledger-font-end-directive-face)))
+   '("end" ledger-font-end-directive-face)))
 
 
 
@@ -1954,12 +1934,8 @@ end
 
   ;; WARNING: do NOT remove the space after expr
   (ledger-test-font-lock
-   "
-expr 
-"
-   ;; WARNING: do NOT remove the space after expr
-   '("expr 
-"  ledger-font-expr-directive-face)))
+   "\nexpr \n"
+   '("expr " ledger-font-expr-directive-face)))
 
 
 
@@ -1979,22 +1955,20 @@ fixed CAD $0.90
     Expenses:Food            25.75 CAD
 endfixed CAD
 "
-   '("fixed CAD $0.90
-"                               ledger-font-fixed-directive-face
-"2012-04-10"                    ledger-font-posting-date-face
-" Lunch in Canada"              ledger-font-payee-uncleared-face
-"    Assets:Wallet  "           ledger-font-posting-account-face
-"          -15.50 CAD"          ledger-font-posting-amount-face
-"    Expenses:Food  "           ledger-font-posting-account-face
-"          15.50 CAD"           ledger-font-posting-amount-face
-"2012-04-11"                    ledger-font-posting-date-face
-" Second day Dinner in Canada"  ledger-font-payee-uncleared-face
-"    Assets:Wallet  "           ledger-font-posting-account-face
-"          -25.75 CAD"          ledger-font-posting-amount-face
-"    Expenses:Food  "           ledger-font-posting-account-face
-"          25.75 CAD"           ledger-font-posting-amount-face
-"endfixed CAD
-"                               ledger-font-end-directive-face)))
+   '("fixed CAD $0.90"               ledger-font-fixed-directive-face
+     "2012-04-10"                    ledger-font-posting-date-face
+     " Lunch in Canada"              ledger-font-payee-uncleared-face
+     "    Assets:Wallet  "           ledger-font-posting-account-face
+     "          -15.50 CAD"          ledger-font-posting-amount-face
+     "    Expenses:Food  "           ledger-font-posting-account-face
+     "          15.50 CAD"           ledger-font-posting-amount-face
+     "2012-04-11"                    ledger-font-posting-date-face
+     " Second day Dinner in Canada"  ledger-font-payee-uncleared-face
+     "    Assets:Wallet  "           ledger-font-posting-account-face
+     "          -25.75 CAD"          ledger-font-posting-amount-face
+     "    Expenses:Food  "           ledger-font-posting-account-face
+     "          25.75 CAD"           ledger-font-posting-amount-face
+     "endfixed CAD"                  ledger-font-end-directive-face)))
 
 
 
@@ -2006,8 +1980,7 @@ endfixed CAD
    "
 include file.ledger
 "
-   '("include file.ledger
-"  ledger-font-include-directive-face)))
+   '("include file.ledger" ledger-font-include-directive-face)))
 
 
 
@@ -2021,8 +1994,7 @@ payee KFC
     alias KENTUCKY FRIED CHICKEN
     uuid 2a2e21d434356f886c84371eebac6e44f1337fda
 "
-   '("payee KFC
-"  ledger-font-payee-directive-face)))
+   '("payee KFC" ledger-font-payee-directive-face)))
 
 
 
@@ -2052,29 +2024,26 @@ end apply tag
 
 end apply tag
 "
-   '("apply tag hastag
-apply tag nestedtag: true
-"                                 ledger-font-apply-directive-face
-"2011/01/25"                      ledger-font-posting-date-face
-" Tom's Used Cars"                ledger-font-payee-uncleared-face
-"    Expenses:Auto  "             ledger-font-posting-account-face
-"                  $ 5,500.00"    ledger-font-posting-amount-face
-"    ; :nobudget:"                ledger-font-comment-face
-"    Assets:Checking"             ledger-font-posting-account-face
-"2011/01/27"                      ledger-font-posting-date-face
-" Book Store"                     ledger-font-payee-uncleared-face
-"    Expenses:Books  "            ledger-font-posting-account-face
-"                     $20.00"     ledger-font-posting-amount-face
-"    Liabilities:MasterCard"      ledger-font-posting-account-face
-"end apply tag
-"                                 ledger-font-end-directive-face
-"2011/12/01"                      ledger-font-posting-date-face
-" Sale"                           ledger-font-payee-uncleared-face
-"    Assets:Checking:Business  "  ledger-font-posting-account-face
-"          $ 30.00"               ledger-font-posting-amount-face
-"    Income:Sales"                ledger-font-posting-account-face
-"end apply tag
-"                                 ledger-font-end-directive-face)))
+   '("apply tag hastag"                ledger-font-apply-directive-face
+     "apply tag nestedtag: true"       ledger-font-apply-directive-face
+     "2011/01/25"                      ledger-font-posting-date-face
+     " Tom's Used Cars"                ledger-font-payee-uncleared-face
+     "    Expenses:Auto  "             ledger-font-posting-account-face
+     "                  $ 5,500.00"    ledger-font-posting-amount-face
+     "    ; :nobudget:"                ledger-font-comment-face
+     "    Assets:Checking"             ledger-font-posting-account-face
+     "2011/01/27"                      ledger-font-posting-date-face
+     " Book Store"                     ledger-font-payee-uncleared-face
+     "    Expenses:Books  "            ledger-font-posting-account-face
+     "                     $20.00"     ledger-font-posting-amount-face
+     "    Liabilities:MasterCard"      ledger-font-posting-account-face
+     "end apply tag"                   ledger-font-end-directive-face
+     "2011/12/01"                      ledger-font-posting-date-face
+     " Sale"                           ledger-font-payee-uncleared-face
+     "    Assets:Checking:Business  "  ledger-font-posting-account-face
+     "          $ 30.00"               ledger-font-posting-amount-face
+     "    Income:Sales"                ledger-font-posting-account-face
+     "end apply tag"                   ledger-font-end-directive-face)))
 
 
 
@@ -2088,8 +2057,7 @@ tag Receipt
   check value =~ /pattern/
   assert value != 'foobar'
 "
-   '("tag Receipt
-"  ledger-font-tag-directive-face)))
+   '("tag Receipt" ledger-font-tag-directive-face)))
 
 
 
@@ -2104,9 +2072,8 @@ test reg --now 2014-05-14 -p 'this month'
                                 Assets:Cash                   $-500            0
 end test
 "
-   '("test reg --now 2014-05-14 -p 'this month'
-" ledger-font-comment-face "end test
-" ledger-font-end-directive-face)))
+   '("test reg --now 2014-05-14 -p 'this month'" ledger-font-comment-face
+     "end test" ledger-font-end-directive-face)))
 
 
 
@@ -2118,8 +2085,7 @@ end test
    "
 year 2004
 "
-   '("year 2004
-"  ledger-font-year-directive-face)))
+   '("year 2004" ledger-font-year-directive-face)))
 
 
 
@@ -2131,8 +2097,7 @@ year 2004
    "
 A Assets:Checking
 "
-   '("A Assets:Checking
-"  ledger-font-bucket-directive-face)))
+   '("A Assets:Checking" ledger-font-bucket-directive-face)))
 
 
 
@@ -2144,8 +2109,7 @@ A Assets:Checking
    "
 Y 2016
 "
-   '("Y 2016
-"  ledger-font-year-directive-face)))
+   '("Y 2016" ledger-font-year-directive-face)))
 
 
 
@@ -2157,8 +2121,7 @@ Y 2016
    "
 N SYMBOL
 "
-   '("N SYMBOL
-"  ledger-font-N-directive-face)))
+   '("N SYMBOL" ledger-font-N-directive-face)))
 
 
 
@@ -2170,8 +2133,7 @@ N SYMBOL
    "
 D $1,000.00
 "
-   '("D $1,000.00
-"  ledger-font-D-directive-face)))
+   '("D $1,000.00" ledger-font-D-directive-face)))
 
 
 
@@ -2183,8 +2145,7 @@ D $1,000.00
    "
 C 1.00 Kb = 1024 bytes
 "
-   '("C 1.00 Kb = 1024 bytes
-"  ledger-font-C-directive-face)))
+   '("C 1.00 Kb = 1024 bytes" ledger-font-C-directive-face)))
 
 
 
@@ -2201,13 +2162,12 @@ O 2013/03/29 18:39:00
 i 2013/03/28 22:13:00
 o 2013/03/29 03:39:00
 "
-   '("h 2013/03/28 7 Account
-b 2013/03/27 3600 Account
-I 2013/03/28 17:01:30 Account  PAYEE
-O 2013/03/29 18:39:00
-i 2013/03/28 22:13:00
-o 2013/03/29 03:39:00
-" ledger-font-timeclock-directive-face)))
+   '("h 2013/03/28 7 Account" ledger-font-timeclock-directive-face
+     "b 2013/03/27 3600 Account" ledger-font-timeclock-directive-face
+     "I 2013/03/28 17:01:30 Account  PAYEE" ledger-font-timeclock-directive-face
+     "O 2013/03/29 18:39:00" ledger-font-timeclock-directive-face
+     "i 2013/03/28 22:13:00" ledger-font-timeclock-directive-face
+     "o 2013/03/29 03:39:00" ledger-font-timeclock-directive-face)))
 
 
 (ert-deftest ledger-fontify/test-097 ()
@@ -2218,8 +2178,7 @@ o 2013/03/29 03:39:00
    "
 YY 2015
 "
-   '("YY 2015
-"  ledger-font-default-face)))
+   '("YY 2015" ledger-font-default-face)))
 
 
 (ert-deftest ledger-fontify/test-098 ()
@@ -2230,8 +2189,7 @@ YY 2015
    "
 payeee Charity
 "
-   '("payeee Charity
-"  ledger-font-default-face)))
+   '("payeee Charity" ledger-font-default-face)))
 
 
 (provide 'fontify-test)
