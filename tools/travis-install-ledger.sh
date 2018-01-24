@@ -10,6 +10,7 @@ if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
         sudo apt-get update -qq
         sudo apt-get install -qq ledger
     else
+        sudo apt-get install -qq git
         sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
         sudo apt-get update -qq
         sudo apt-get install -qq gcc-4.8 g++-4.8
@@ -19,11 +20,18 @@ if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
         sudo apt-get install -qq libboost-all-dev
         sudo apt-get install -qq libgmp-dev libmpfr-dev libedit-dev
 
-        curl -sL https://github.com/ledger/ledger/archive/$BRANCH.tar.gz | tar xz
-        cd ledger-$BRANCH
+        if [ ! -d "ledger-$BRANCH/.git" ]; then
+            git clone --depth 1 -b "$BRANCH" "https://github.com/ledger/ledger/" "ledger-$BRANCH"
+        fi
+
+        cd "ledger-$BRANCH"
+        git fetch origin
+        git reset --hard "origin/$BRANCH"
+        git pull origin "$BRANCH"
 
         cmake .
         make -j2
+        touch travis-done
     fi
 fi
 

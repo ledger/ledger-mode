@@ -2,6 +2,11 @@ sudo: required
 
 language: generic
 
+cache:
+  directories:
+    - ledger-master
+    - ledger-next
+
 os:
     - linux
     # - osx # Travis is saturated; see https://www.traviscistatus.com/
