@@ -1026,6 +1026,9 @@ functions.
 Whether reports should be displayed using the same colors as when calling ledger
 on the command line.
 
+@item ledger-report-auto-width
+Whether reports should fill the whole width of the @file{*Report*} window
+
 @end ftable
 
 @node Ledger Faces Customization Group, Ledger Post Customization Group, Ledger Report Customization Group, Customization Variables
