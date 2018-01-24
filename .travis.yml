@@ -9,6 +9,7 @@ os:
 env:
   matrix:
     - EMACS_VERSION=emacs24 LEDGER_BRANCH=master
+    # - EMACS_VERSION=emacs24 LEDGER_BRANCH=apt-get # apt-get's ledger is too old
     - EMACS_VERSION=emacs25 LEDGER_BRANCH=next
 
 matrix:
