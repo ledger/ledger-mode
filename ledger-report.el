@@ -69,9 +69,9 @@ specifier."
   "An alist mapping ledger report format specifiers to implementing functions.
 
 The function is called with no parameters and expected to return
-a string, or a list of strings, that should replace the format
-specifier.  The resulting string or strings are quoted with
-`shell-quote-argument'."
+a string, or a list of strings, that should replace the format specifier.
+Single strings are quoted with `shell-quote-argument'; lists of strings are
+simply concatenated (no quoting)."
   :type 'alist
   :group 'ledger-report)
 
@@ -186,13 +186,12 @@ in the `header-line'."
 (define-derived-mode ledger-report-mode text-mode "Ledger-Report"
   "A mode for viewing ledger reports.")
 
-(defvar ledger-report-extra-args nil
-  "List of args added after ledger-binary-path.
-This variable is populated dynamically by `ledger-report-cmd'.")
+(defconst ledger-report--extra-args-marker "[[ledger-mode-flags]]")
 
 (defun ledger-report-binary-format-specifier ()
-  "Return the path to ledger, plus args from `ledger-report-extra-args'."
-  (cons ledger-binary-path ledger-report-extra-args))
+  "Return the path to ledger, plus a marker for extra arguments."
+  (list (shell-quote-argument ledger-binary-path)
+        ledger-report--extra-args-marker))
 
 (defun ledger-report-tagname-format-specifier ()
   "Return a valid meta-data tag name."
@@ -346,11 +345,12 @@ used to generate the buffer, navigating the buffer, etc."
         (let* ((specifier (match-string 1 expanded-cmd))
                (f (cdr (assoc specifier ledger-report-format-specifiers))))
           (if f
-              (let* ((args (save-match-data
-                             (with-current-buffer ledger-buf
-                               (funcall f))))
-                     (args-list (if (listp args) args (list args)))
-                     (quoted (mapconcat #'shell-quote-argument args-list " ")))
+              (let* ((arg (save-match-data
+                            (with-current-buffer ledger-buf
+                              (funcall f))))
+                     (quoted (if (listp arg)
+                                 (mapconcat #'identity arg " ")
+                               (shell-quote-argument arg))))
                 (setq expanded-cmd (replace-match quoted t t expanded-cmd))))))
       expanded-cmd)))
 
@@ -379,8 +379,7 @@ Optionally EDIT the command."
     (when (or (null report-cmd) edit)
       (setq report-cmd (ledger-report-read-command report-cmd))
       (setq ledger-report-saved nil)) ;; this is a new report, or edited report
-    (let ((ledger-report-extra-args (ledger-report--compute-extra-args report-cmd)))
-      (setq report-cmd (ledger-report-expand-format-specifiers report-cmd)))
+    (setq report-cmd (ledger-report-expand-format-specifiers report-cmd))
     (set (make-local-variable 'ledger-report-cmd) report-cmd)
     (or (ledger-report-string-empty-p report-name)
         (ledger-report-name-exists report-name)
@@ -394,40 +393,59 @@ Optionally EDIT the command."
   'face 'ledger-font-report-clickable-face
   'action (lambda (_button) (ledger-report-visit-source)))
 
+(defun ledger-report--add-links ()
+  "Replace file and line annotations with buttons."
+  (while (re-search-forward "^\\(/[^:]+\\)?:\\([0-9]+\\)?:" nil t)
+    (let ((file (match-string 1))
+          (line (string-to-number (match-string 2))))
+      (delete-region (match-beginning 0) (match-end 0))
+      (when file
+        (set-text-properties (line-beginning-position) (line-end-position)
+                             (list 'ledger-source (cons file (save-window-excursion
+                                                               (save-excursion
+                                                                 (find-file file)
+                                                                 (widen)
+                                                                 (ledger-navigate-to-line line)
+                                                                 (point-marker))))))
+        (make-text-button
+         (line-beginning-position) (line-end-position)
+         'type 'ledger-report-register-entry
+         'help-echo (format "mouse-2, RET: Visit %s:%d" file line))
+        (end-of-line)))))
+
+(defun ledger-report--compute-header-line (cmd)
+  "Call `ledger-report-header-line-fn' with `ledger-report-cmd' bound to CMD."
+  (let ((ledger-report-cmd cmd))
+    (funcall ledger-report-header-line-fn)))
+
 (defun ledger-do-report (cmd)
-  "Run a report command line CMD."
+  "Run a report command line CMD.
+CMD may contain a (shell-quoted) version of
+`ledger-report--extra-args-marker', wich will be replaced by
+arguments returned by `ledger-report--compute-extra-args'."
   (goto-char (point-min))
-  (setq header-line-format (when ledger-report-use-header-line
-                             '(:eval (funcall ledger-report-header-line-fn))))
-  (unless ledger-report-use-header-line
-    (insert (format "Report: %s\n" ledger-report-name)
-            (format "Command: %s\n" cmd)
-            (make-string (- (window-width) 1) ?=)
-            "\n\n"))
-  (let* ((data-pos (point)))
-    (shell-command cmd t nil)
-    (when ledger-report-use-native-highlighting
-      (ansi-color-apply-on-region data-pos (point-max)))
-    (when (ledger-report--cmd-needs-links-p cmd)
+  (let* ((marker ledger-report--extra-args-marker)
+         (marker-re (concat " *" (regexp-quote marker)))
+         (args (ledger-report--compute-extra-args cmd))
+         (args-str (concat " " (mapconcat #'shell-quote-argument args " ")))
+         (clean-cmd (replace-regexp-in-string marker-re "" cmd t t))
+         (real-cmd (replace-regexp-in-string marker-re args-str cmd t t)))
+    (setq header-line-format
+          (and ledger-report-use-header-line
+               `(:eval (ledger-report--compute-header-line ,clean-cmd))))
+    (unless ledger-report-use-header-line
+      (insert (format "Report: %s\n" ledger-report-name)
+              (format "Command: %s\n" clean-cmd)
+              (make-string (- (window-width) 1) ?=)
+              "\n\n"))
+    (let* ((data-pos (point)))
+      (shell-command real-cmd t nil)
+      (when ledger-report-use-native-highlighting
+        (ansi-color-apply-on-region data-pos (point-max)))
       (goto-char data-pos)
-      (while (re-search-forward "^\\(/[^:]+\\)?:\\([0-9]+\\)?:" nil t)
-        (let ((file (match-string 1))
-              (line (string-to-number (match-string 2))))
-          (delete-region (match-beginning 0) (match-end 0))
-          (when file
-            (set-text-properties (line-beginning-position) (line-end-position)
-                                 (list 'ledger-source (cons file (save-window-excursion
-                                                                   (save-excursion
-                                                                     (find-file file)
-                                                                     (widen)
-                                                                     (ledger-navigate-to-line line)
-                                                                     (point-marker))))))
-            (make-text-button
-             (line-beginning-position) (line-end-position)
-             'type 'ledger-report-register-entry
-             'help-echo (format "mouse-2, RET: Visit %s:%d" file line))
-            (end-of-line)))))
-    (goto-char data-pos)))
+      (when (ledger-report--cmd-needs-links-p cmd)
+        (save-excursion
+          (ledger-report--add-links))))))
 
 
 (defun ledger-report-visit-source ()
