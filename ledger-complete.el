@@ -25,6 +25,13 @@
 (require 'pcomplete)
 (require 'cl-lib)
 
+(unless (fboundp 'string-greaterp) ;; Emacs 24.3 compatibility
+  (defun string-greaterp (string1 string2)
+    "Return non-nil if STRING1 is greater than STRING2 in lexicographic order.
+Case is significant.
+Symbols are also allowed; their print names are used instead."
+    (string-lessp string2 string1)))
+
 ;; In-place completion support
 
 ;;; Code:
