@@ -68,7 +68,7 @@
   (ledger-tests-with-temp-file
    "    Dépense:Impôt:Local                      48,00 €  ; TH 2013"
    (should (equal (ledger-context-at-point)
-                  '(acct-transaction indent ((indent "   " 1) (status nil nil) (account "Dépense:Impôt:Local" 5) (separator "                      " 24) (commoditized-amount "48,00 €" 46) (separator nil nil) (comment nil nil))))))) ; FIXME: in the result of ledger-context-at-point, at the end, purely speaking we should be able to detect the values of separator and comment. As it is not used in any other part of the code, this bug can be let as is for the moment
+                  '(acct-transaction indent ((indent "   " 1) (status nil nil) (account "Dépense:Impôt:Local" 5) (separator "                      " 24) (commoditized-amount "48,00 €" 46) (separator "  " 53) (comment "TH 2013" 57)))))))
 
 
 (ert-deftest ledger-context/test-004 ()
