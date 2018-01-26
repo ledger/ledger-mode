@@ -1,4 +1,4 @@
-;;; ledger-mode.el --- Helper code for use with the "ledger" command-line tool
+;;; ledger-mode.el --- Helper code for use with the "ledger" command-line tool  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2003-2016 John Wiegley (johnw AT gnu DOT org)
 

@@ -1,4 +1,4 @@
-;;; ledger-fontify.el --- Provide custom fontification for ledger-mode
+;;; ledger-fontify.el --- Provide custom fontification for ledger-mode  -*- lexical-binding: t; -*-
 
 
 ;; Copyright (C) 2014 Craig P. Earls (enderw88 at gmail dot com)

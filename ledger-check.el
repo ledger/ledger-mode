@@ -1,4 +1,4 @@
-;;; ledger-check.el --- Helper code for use with the "ledger" command-line tool
+;;; ledger-check.el --- Helper code for use with the "ledger" command-line tool  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015 Craig Earls (enderw88 AT gmail DOT com)
 

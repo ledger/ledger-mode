@@ -1,4 +1,4 @@
-;;; ledger-complete.el --- Helper code for use with the "ledger" command-line tool
+;;; ledger-complete.el --- Helper code for use with the "ledger" command-line tool  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2003-2016 John Wiegley (johnw AT gnu DOT org)
 
@@ -165,7 +165,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
 
 (defun ledger-complete-date (month-string day-string)
   "Complete a date."
-  (lexical-let*
+  (let*
       ((now (current-time))
        (decoded (decode-time now))
        (to-day (nth 3 decoded))
@@ -188,9 +188,9 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
 
 (defun ledger-complete-effective-date
     (tx-year-string tx-month-string tx-day-string
-     month-string day-string)
+                    month-string day-string)
   "Complete an effective date."
-  (lexical-let*
+  (let*
       ((tx-year (string-to-number tx-year-string))
        (tx-month (string-to-number tx-month-string))
        (tx-day (string-to-number tx-day-string))

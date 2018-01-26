@@ -1,4 +1,4 @@
-;;; ledger-schedule.el --- Helper code for use with the "ledger" command-line tool
+;;; ledger-schedule.el --- Helper code for use with the "ledger" command-line tool  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2013 Craig Earls (enderw88 at gmail dot com)
 
