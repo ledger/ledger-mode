@@ -1,4 +1,4 @@
-;;; ledger-schedule.el --- Helper code for use with the "ledger" command-line tool
+;;; ledger-schedule.el --- Helper code for use with the "ledger" command-line tool  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2013 Craig Earls (enderw88 at gmail dot com)
 
@@ -285,7 +285,7 @@ date descriptor."
                    (setq items (append items (list (list test-date (cadr candidate))))))))
     items))
 
-(defun ledger-schedule-create-auto-buffer (candidate-items early horizon ledger-buf)
+(defun ledger-schedule-create-auto-buffer (candidate-items early horizon)
   "Format CANDIDATE-ITEMS for display."
   (let ((candidates (ledger-schedule-list-upcoming-xacts candidate-items early horizon))
         (schedule-buf (get-buffer-create ledger-schedule-buffer-name)))
@@ -318,8 +318,7 @@ Use a prefix arg to change the default value"
         (ledger-schedule-create-auto-buffer
          (ledger-schedule-scan-transactions file)
          look-backward
-         look-forward
-         (current-buffer))
+         look-forward)
         (pop-to-buffer ledger-schedule-buffer-name))
     (error "Could not find ledger schedule file at %s" file)))
 

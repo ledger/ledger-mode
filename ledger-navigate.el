@@ -1,4 +1,4 @@
-;;; ledger-navigate.el --- Provide navigation services through the ledger buffer.
+;;; ledger-navigate.el --- Provide navigation services through the ledger buffer.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014-2015 Craig Earls (enderw88 AT gmail DOT com)
 
