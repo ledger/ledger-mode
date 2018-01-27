@@ -31,6 +31,7 @@
 (declare-function ledger-read-account-with-prompt "ledger-mode" (prompt))
 
 (require 'easymenu)
+(require 'ansi-color)
 
 (defvar ledger-buf)
 
@@ -60,15 +61,17 @@ specifier."
 
 (defcustom ledger-report-format-specifiers
   '(("ledger-file" . ledger-report-ledger-file-format-specifier)
-    ("binary" . (lambda () ledger-binary-path))
+    ("binary" . ledger-report-binary-format-specifier)
     ("payee" . ledger-report-payee-format-specifier)
     ("account" . ledger-report-account-format-specifier)
     ("tagname" . ledger-report-tagname-format-specifier)
     ("tagvalue" . ledger-report-tagvalue-format-specifier))
   "An alist mapping ledger report format specifiers to implementing functions.
 
-The function is called with no parameters and expected to return the
-text that should replace the format specifier."
+The function is called with no parameters and expected to return
+a string, or a list of strings, that should replace the format specifier.
+Single strings are quoted with `shell-quote-argument'; lists of strings are
+simply concatenated (no quoting)."
   :type 'alist
   :group 'ledger-report)
 
@@ -85,6 +88,16 @@ text that should replace the format specifier."
 (defcustom ledger-report-links-in-register t
   "When non-nil, attempt to link transactions in \"register\"
 reports to their location in the currrent ledger file buffer."
+  :type 'boolean
+  :group 'ledger-report)
+
+(defcustom ledger-report-use-native-highlighting t
+  "When non-nil, use ledger's native highlighting in reports."
+  :type 'boolean
+  :group 'ledger-report)
+
+(defcustom ledger-report-auto-width t
+  "When non-nil, tell ledger about the width of the report window."
   :type 'boolean
   :group 'ledger-report)
 
@@ -149,7 +162,6 @@ in the `header-line'."
       'ledger-report-kill)
     (define-key map [(control ?c) (control ?l) (control ?e)]
       'ledger-report-edit)
-    (define-key map [return] 'ledger-report-visit-source)
     map)
   "Keymap for `ledger-report-mode'.")
 
@@ -173,6 +185,13 @@ in the `header-line'."
 
 (define-derived-mode ledger-report-mode text-mode "Ledger-Report"
   "A mode for viewing ledger reports.")
+
+(defconst ledger-report--extra-args-marker "[[ledger-mode-flags]]")
+
+(defun ledger-report-binary-format-specifier ()
+  "Return the path to ledger, plus a marker for extra arguments."
+  (list (shell-quote-argument ledger-binary-path)
+        ledger-report--extra-args-marker))
 
 (defun ledger-report-tagname-format-specifier ()
   "Return a valid meta-data tag name."
@@ -315,26 +334,46 @@ used to generate the buffer, navigating the buffer, etc."
   (ledger-read-account-with-prompt "Account"))
 
 (defun ledger-report-expand-format-specifiers (report-cmd)
-  "Expand %(account) and %(payee) appearing in REPORT-CMD with thing under point."
+  "Expand format specifiers in REPORT-CMD with thing under point."
   (save-match-data
     (let ((expanded-cmd report-cmd))
       (set-match-data (list 0 0))
-      (while (string-match "%(\\([^)]*\\))" expanded-cmd (if (> (length expanded-cmd) (match-end 0))
-                                                             (match-end 0)
-                                                           (1- (length expanded-cmd))))
+      (while (string-match "%(\\([^)]*\\))" expanded-cmd
+                           (if (> (length expanded-cmd) (match-end 0))
+                               (match-end 0)
+                             (1- (length expanded-cmd))))
         (let* ((specifier (match-string 1 expanded-cmd))
                (f (cdr (assoc specifier ledger-report-format-specifiers))))
           (if f
-              (setq expanded-cmd (replace-match
-                                  (save-match-data
-                                    (with-current-buffer ledger-buf
-                                      (shell-quote-argument (funcall f))))
-                                  t t expanded-cmd)))))
+              (let* ((arg (save-match-data
+                            (with-current-buffer ledger-buf
+                              (funcall f))))
+                     (quoted (if (listp arg)
+                                 (mapconcat #'identity arg " ")
+                               (shell-quote-argument arg))))
+                (setq expanded-cmd (replace-match quoted t t expanded-cmd))))))
       expanded-cmd)))
+
+(defun ledger-report--cmd-needs-links-p (cmd)
+  "Check links should be added to the report produced by CMD."
+  ;; --subtotal reports do not produce identifiable transactions, so
+  ;; don't prepend location information for them
+  (and (string-match " reg\\(ister\\)? " cmd)
+       ledger-report-links-in-register
+       (not (string-match "--subtotal" cmd))))
+
+(defun ledger-report--compute-extra-args (report-cmd)
+  "Compute extra args to add to REPORT-CMD."
+  `(,@(when (ledger-report--cmd-needs-links-p report-cmd)
+        '("--prepend-format=%(filename):%(beg_line):"))
+    ,@(when ledger-report-auto-width
+        `("--columns" ,(format "%d" (- (window-width) 1))))
+    ,@(when ledger-report-use-native-highlighting
+        '("--color" "--force-color"))))
 
 (defun ledger-report-cmd (report-name edit)
   "Get the command line to run the report name REPORT-NAME.
-Optional EDIT the command."
+Optionally EDIT the command."
   (let ((report-cmd (car (cdr (assoc report-name ledger-reports)))))
     ;; logic for substitution goes here
     (when (or (null report-cmd) edit)
@@ -349,46 +388,64 @@ Optional EDIT the command."
           (ledger-reports-custom-save)))
     report-cmd))
 
+(define-button-type 'ledger-report-register-entry
+  'follow-link t
+  'face 'ledger-font-report-clickable-face
+  'action (lambda (_button) (ledger-report-visit-source)))
+
+(defun ledger-report--add-links ()
+  "Replace file and line annotations with buttons."
+  (while (re-search-forward "^\\(/[^:]+\\)?:\\([0-9]+\\)?:" nil t)
+    (let ((file (match-string 1))
+          (line (string-to-number (match-string 2))))
+      (delete-region (match-beginning 0) (match-end 0))
+      (when file
+        (set-text-properties (line-beginning-position) (line-end-position)
+                             (list 'ledger-source (cons file (save-window-excursion
+                                                               (save-excursion
+                                                                 (find-file file)
+                                                                 (widen)
+                                                                 (ledger-navigate-to-line line)
+                                                                 (point-marker))))))
+        (make-text-button
+         (line-beginning-position) (line-end-position)
+         'type 'ledger-report-register-entry
+         'help-echo (format "mouse-2, RET: Visit %s:%d" file line))
+        (end-of-line)))))
+
+(defun ledger-report--compute-header-line (cmd)
+  "Call `ledger-report-header-line-fn' with `ledger-report-cmd' bound to CMD."
+  (let ((ledger-report-cmd cmd))
+    (funcall ledger-report-header-line-fn)))
+
 (defun ledger-do-report (cmd)
-  "Run a report command line CMD."
+  "Run a report command line CMD.
+CMD may contain a (shell-quoted) version of
+`ledger-report--extra-args-marker', wich will be replaced by
+arguments returned by `ledger-report--compute-extra-args'."
   (goto-char (point-min))
-  (setq header-line-format (when ledger-report-use-header-line
-                             '(:eval (funcall ledger-report-header-line-fn))))
-  (unless ledger-report-use-header-line
-    (insert (format "Report: %s\n" ledger-report-name)
-            (format "Command: %s\n" cmd)
-            (make-string (- (window-width) 1) ?=)
-            "\n\n"))
-  (let ((data-pos (point))
-        (register-report (string-match " reg\\(ister\\)? " cmd))
-        files-in-report)
-    (shell-command
-     ;; --subtotal does not produce identifiable transactions, so don't
-     ;; prepend location information for them
-     (if (and register-report
-              ledger-report-links-in-register
-              (not (string-match "--subtotal" cmd)))
-         (concat cmd " --prepend-format='%(filename):%(beg_line):'")
-       cmd)
-     t nil)
-    (when (and register-report ledger-report-links-in-register)
+  (let* ((marker ledger-report--extra-args-marker)
+         (marker-re (concat " *" (regexp-quote marker)))
+         (args (ledger-report--compute-extra-args cmd))
+         (args-str (concat " " (mapconcat #'shell-quote-argument args " ")))
+         (clean-cmd (replace-regexp-in-string marker-re "" cmd t t))
+         (real-cmd (replace-regexp-in-string marker-re args-str cmd t t)))
+    (setq header-line-format
+          (and ledger-report-use-header-line
+               `(:eval (ledger-report--compute-header-line ,clean-cmd))))
+    (unless ledger-report-use-header-line
+      (insert (format "Report: %s\n" ledger-report-name)
+              (format "Command: %s\n" clean-cmd)
+              (make-string (- (window-width) 1) ?=)
+              "\n\n"))
+    (let* ((data-pos (point)))
+      (shell-command real-cmd t nil)
+      (when ledger-report-use-native-highlighting
+        (ansi-color-apply-on-region data-pos (point-max)))
       (goto-char data-pos)
-      (while (re-search-forward "^\\(/[^:]+\\)?:\\([0-9]+\\)?:" nil t)
-        (let ((file (match-string 1))
-              (line (string-to-number (match-string 2))))
-          (delete-region (match-beginning 0) (match-end 0))
-          (when file
-            (set-text-properties (line-beginning-position) (line-end-position)
-                                 (list 'ledger-source (cons file (save-window-excursion
-                                                                   (save-excursion
-                                                                     (find-file file)
-                                                                     (widen)
-                                                                     (ledger-navigate-to-line line)
-                                                                     (point-marker))))))
-            (add-text-properties (line-beginning-position) (line-end-position)
-                                 (list 'font-lock-face 'ledger-font-report-clickable-face))
-            (end-of-line)))))
-    (goto-char data-pos)))
+      (when (ledger-report--cmd-needs-links-p cmd)
+        (save-excursion
+          (ledger-report--add-links))))))
 
 
 (defun ledger-report-visit-source ()

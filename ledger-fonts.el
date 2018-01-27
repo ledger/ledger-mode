@@ -261,8 +261,8 @@
   :group 'ledger-faces)
 
 (defface ledger-font-report-clickable-face
-  `((t :inherit ledger-font-default-face))
-  "Face for transactions in the report buffer."
+  `((t))
+  "Face applied to clickable entries in the report window"
   :group 'ledger-faces)
 
 (defface ledger-font-code-face
