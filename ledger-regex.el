@@ -75,7 +75,7 @@
   "^account [ \t]*\\(?2:.+?\\)\\(?3:[ \t]*\\)$")
 
 (defconst ledger-account-any-status-regex
-  "^[ \t]+\\(?1:[*!]\\s-+\\)?\\(?2:[[(]?.+?\\)\\(?3:\t\\|\n\\| [ \t]\\)")
+  "^[ \t]+\\(?1:[*!]\\s-+\\)?\\(?2:[[(]?[^ ].+?\\)\\(?3:\t\\|\n\\| [ \t]\\)")
 
 (defconst ledger-account-name-or-directive-regex
   (format "\\(?:%s\\|%s\\)"
@@ -83,10 +83,10 @@
           ledger-account-any-status-regex))
 
 (defconst ledger-account-pending-regex
-  "\\(^[ \t]+\\)\\(!\\s-*.*?\\)\\(  \\|\t\\|$\\)")
+  "\\(^[ \t]+\\)\\(!\\s-*[^ ].*?\\)\\(  \\|\t\\|$\\)")
 
 (defconst ledger-account-cleared-regex
-  "\\(^[ \t]+\\)\\(*\\s-*.*?\\)\\(  \\|\t\\|$\\)")
+  "\\(^[ \t]+\\)\\(*\\s-*[^ ].*?\\)\\(  \\|\t\\|$\\)")
 
 
 (defmacro ledger-define-regexp (name regex docs &rest args)
