@@ -95,7 +95,7 @@ Considers both accounts listed in postings and those declared with \"account\" d
   (save-excursion
     (goto-char (point-min))
     (let (results)
-      (while (re-search-forward ledger-account-any-status-regex nil t)
+      (while (re-search-forward ledger-account-name-or-directive-regex nil t)
         (setq results (cons (match-string-no-properties 2) results)))
       (sort (cl-delete-duplicates results :test 'string=)
             #'ledger-string-greaterp))))
