@@ -71,8 +71,16 @@
 (defconst ledger-init-string-regex
   "^--.+?\\($\\|[ ]\\)")
 
+(defconst ledger-account-directive-regex
+  "^account [ \t]*\\(?2:.+?\\)\\(?3:[ \t]*\\)$")
+
 (defconst ledger-account-any-status-regex
-  "^\\(?:account\\| \\)?[ \t]+\\([*!]\\s-+\\)?\\([[(]?.+?\\)\\(\t\\|$\\| [ \t]\\)")
+  "^[ \t]+\\(?1:[*!]\\s-+\\)?\\(?2:[[(]?.+?\\)\\(?3:\t\\|\n\\| [ \t]\\)")
+
+(defconst ledger-account-name-or-directive-regex
+  (format "\\(?:%s\\|%s\\)"
+          ledger-account-directive-regex
+          ledger-account-any-status-regex))
 
 (defconst ledger-account-pending-regex
   "\\(^[ \t]+\\)\\(!\\s-*.*?\\)\\(  \\|\t\\|$\\)")
