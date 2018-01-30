@@ -134,12 +134,14 @@ in the `header-line'."
   (setq ledger-report-is-reversed (not ledger-report-is-reversed)))
 
 (defun ledger-report-reverse-lines ()
-  (goto-char (point-min))
-  (forward-paragraph)
-  (forward-line)
-  (save-excursion
-    (setq inhibit-read-only t)
-    (reverse-region (point) (point-max))))
+  "Reverse the lines in the ledger report buffer."
+  (let ((inhibit-read-only t))
+    (goto-char (point-min))
+    (unless ledger-report-use-header-line
+      (forward-paragraph)
+      (forward-line))
+    (save-excursion
+      (reverse-region (point) (point-max)))))
 
 (defvar ledger-report-mode-map
   (let ((map (make-sparse-keymap)))
