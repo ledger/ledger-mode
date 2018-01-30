@@ -480,20 +480,18 @@ arguments returned by `ledger-report--compute-extra-args'."
 (defun ledger-report-redo ()
   "Redo the report in the current ledger report buffer."
   (interactive)
-  (let ((cur-buf (current-buffer)))
+  (let ((cur-buf (current-buffer))
+        (inhibit-read-only t))
     (if (and ledger-report-auto-refresh
              (or (string= (format-mode-line 'mode-name) "Ledger")
                  (string= (format-mode-line 'mode-name) "Ledger-Report"))
              (get-buffer ledger-report-buffer-name))
         (progn
-
           (pop-to-buffer (get-buffer ledger-report-buffer-name))
           (shrink-window-if-larger-than-buffer)
-          (setq buffer-read-only nil)
           (setq ledger-report-cursor-line-number (line-number-at-pos))
           (erase-buffer)
           (ledger-do-report ledger-report-cmd)
-          (setq buffer-read-only nil)
           (if ledger-report-is-reversed (ledger-report-reverse-lines))
           (if ledger-report-auto-refresh-sticky-cursor (forward-line (- ledger-report-cursor-line-number 5)))
           (pop-to-buffer cur-buf)))))
