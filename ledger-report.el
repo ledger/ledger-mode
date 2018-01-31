@@ -32,6 +32,7 @@
 
 (require 'easymenu)
 (require 'ansi-color)
+(require 'font-lock)
 
 (defvar ledger-buf)
 
@@ -392,7 +393,7 @@ Optionally EDIT the command."
 
 (define-button-type 'ledger-report-register-entry
   'follow-link t
-  'face 'ledger-font-report-clickable-face
+  'face nil ;; Otherwise make-text-button replaces Ledger's native highlighting
   'action (lambda (_button) (ledger-report-visit-source)))
 
 (defun ledger-report--add-links ()
@@ -402,7 +403,7 @@ Optionally EDIT the command."
           (line (string-to-number (match-string 2))))
       (delete-region (match-beginning 0) (match-end 0))
       (when file
-        (set-text-properties (line-beginning-position) (line-end-position)
+        (add-text-properties (line-beginning-position) (line-end-position)
                              (list 'ledger-source (cons file (save-window-excursion
                                                                (save-excursion
                                                                  (find-file file)
@@ -413,6 +414,9 @@ Optionally EDIT the command."
          (line-beginning-position) (line-end-position)
          'type 'ledger-report-register-entry
          'help-echo (format "mouse-2, RET: Visit %s:%d" file line))
+        ;; Appending the face preserves Ledger's native highlighting
+        (font-lock-append-text-property (line-beginning-position) (line-end-position)
+                                'face 'ledger-font-report-clickable-face)
         (end-of-line)))))
 
 (defun ledger-report--compute-header-line (cmd)
@@ -440,15 +444,14 @@ arguments returned by `ledger-report--compute-extra-args'."
               (format "Command: %s\n" clean-cmd)
               (make-string (- (window-width) 1) ?=)
               "\n\n"))
-    (let* ((data-pos (point)))
-      (shell-command real-cmd t nil)
+    (let* ((report (shell-command-to-string real-cmd)))
       (when ledger-report-use-native-highlighting
-        (ansi-color-apply-on-region data-pos (point-max)))
-      (goto-char data-pos)
+        (setq report (ansi-color-apply report)))
+      (save-excursion
+        (insert report))
       (when (ledger-report--cmd-needs-links-p cmd)
         (save-excursion
           (ledger-report--add-links))))))
-
 
 (defun ledger-report-visit-source ()
   "Visit the transaction under point in the report window."
