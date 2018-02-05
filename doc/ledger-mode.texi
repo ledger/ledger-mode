@@ -220,7 +220,7 @@ finally cleared.  Type @kbd{q} to close out the reconciliation buffer.
 @kindex C-c C-o C-r
 @kindex C-c C-c
 
-The real power of Ledger is in it reporting capabilities.  Reports can
+The real power of Ledger is in its reporting capabilities.  Reports can
 be run and displayed in a separate Emacs buffer.  In the
 @file{demo.ledger} buffer, type @kbd{C-c C-o C-r}.  In the Minibuffer
 Emacs will prompt for a report name.  There are a few built-in reports,
