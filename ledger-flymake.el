@@ -27,6 +27,7 @@
 ;;; Code:
 
 (defvar-local ledger--flymake-proc nil)
+(defvar ledger-binary-path)
 
 ;; Based on the example from Flymake's info:
 (defun ledger-flymake (report-fn &rest _args)
@@ -100,7 +101,7 @@ Flymake calls this with REPORT-FN as needed."
               (kill-buffer (process-buffer proc))))))))))
 
 (defun ledger-enable-flymake ()
-  "Enable `flymake-mode' in ledger-mode buffers.
+  "Enable function `flymake-mode' in `ledger-mode' buffers.
 
 Don't enable flymake if flycheck is on and flycheck-ledger is
 available."
