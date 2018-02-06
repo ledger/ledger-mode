@@ -85,9 +85,7 @@ Flymake calls this with REPORT-FN as needed."
                        for (beg . end) = (flymake-diag-region
                                           source
                                           (string-to-number (match-string 2)))
-                       for type = (if nil
-                                      :warning
-                                    :error)
+                       for type = :error
                        collect (flymake-make-diagnostic source
                                                         beg
                                                         end
@@ -102,7 +100,7 @@ Flymake calls this with REPORT-FN as needed."
               (kill-buffer (process-buffer proc))))))))))
 
 ;; Automatically enable flymake in ledger-mode buffers when using Emacs 26+
-(when (version<= "26" emacs-version)
+(when (<= 26 emacs-major-version)
   ;; Add `ledger-flymake' to `flymake-diagnostic-functions' so that flymake can
   ;; work in ledger-mode:
   (add-hook 'flymake-diagnostic-functions 'ledger-flymake nil t)
