@@ -33,7 +33,7 @@
   "A Flymake backend for `ledger-mode'.
 
 Flymake calls this with REPORT-FN as needed."
-  (unless (executable-find "ledger")
+  (unless (executable-find ledger-binary-path)
     (error "Cannot find ledger"))
   ;; If a live process launched in an earlier check was found, that
   ;; process is killed.  When that process's sentinel eventually runs,
@@ -54,7 +54,7 @@ Flymake calls this with REPORT-FN as needed."
        (make-process
         :name "ledger-flymake" :noquery t :connection-type 'pipe
         :buffer (generate-new-buffer " *ledger-flymake*")
-        :command `("ledger" "-f" ,file "balance")
+        :command `(,ledger-binary-path "-f" ,file "balance")
         :sentinel
         (lambda (proc _event)
           ;; Check that the process has indeed exited, as it might
