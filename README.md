@@ -32,8 +32,10 @@ quick demo as well as more extensive documentation.
 Related packages
 ================
 
-In-buffer checking of formatting and balancing of transactions is
-available using [`flycheck-ledger`][flycheck-ledger].
+In-buffer checking of formatting and balancing of transactions is available
+built-in for Emacs version 26 and later using `flymake-mode`. For flycheck users
+(and users of Emacses earlier and 26), [`flycheck-ledger`][flycheck-ledger] is
+available.
 
 
 
