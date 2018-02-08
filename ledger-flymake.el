@@ -21,7 +21,7 @@
 
 ;;; Commentary:
 ;; Flymake is the built-in Emacs package to support on-the-fly syntax checking.
-;; This file adds support for flymake to `ledger-mode'. Enable it by calling
+;; This file adds support for flymake to `ledger-mode'.  Enable it by calling
 ;; `flymake-mode' from a file-visiting ledger buffer.
 
 ;;; Code:
@@ -90,7 +90,7 @@ Flymake calls this with REPORT-FN as needed."
                       ;; of objects, and call `report-fn'.
                       (cl-loop
                        while (search-forward-regexp
-                              ;; This regex needs to match the whole error. We
+                              ;; This regex needs to match the whole error.  We
                               ;; also need a capture group for the error message
                               ;; (that's group 1 here) and the line number
                               ;; (group 2).
