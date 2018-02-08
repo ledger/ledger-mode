@@ -37,7 +37,7 @@
   :type 'boolean
   :group 'ledger)
 
-(defun ledger-fontify-buffer-part (&optional beg end len)
+(defun ledger-fontify-buffer-part (&optional beg end _len)
   "Fontify buffer from BEG to END, length LEN."
   (save-excursion
     (unless beg (setq beg (point-min)))
@@ -105,7 +105,7 @@ Fontify the first line of an xact"
                                      (match-end 4)) 'ledger-font-comment-face))
     (forward-line)))
 
-(defun ledger-fontify-posting (pos)
+(defun ledger-fontify-posting (_pos)
   "Fontify the posting at POS."
   (let* ((state nil)
          (end-of-line-comment nil)

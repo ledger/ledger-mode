@@ -86,7 +86,7 @@ MOMENT is an encoded date"
     (catch 'found
       (ledger-xact-iterate-transactions
        (function
-        (lambda (start date mark desc)
+        (lambda (start date _mark _desc)
           (setq last-xact-start start)
           (if (ledger-time-less-p moment date)
               (throw 'found t))))))
@@ -111,7 +111,6 @@ MOMENT is an encoded date"
                   (month (string-to-number (match-string 5)))
                   (day (string-to-number (match-string 6)))
                   (mark (match-string 7))
-                  (code (match-string 8))
                   (desc (match-string 9)))
               (if (and year (> (length year) 0))
                   (setq year (string-to-number year)))
@@ -122,11 +121,12 @@ MOMENT is an encoded date"
       (forward-line))))
 
 (defun ledger-copy-transaction-at-point (date)
-  "Ask for a new DATE and copy the transaction under point to that date.  Leave point on the first amount."
+  "Ask for a new DATE and copy the transaction under point to that date.
+Leave point on the first amount."
   (interactive  (list
                  (ledger-read-date "Copy to date: ")))
   (let* ((here (point))
-         (extents (ledger-navigate-find-xact-extents (point)))
+         (extents (ledger-navigate-find-xact-extents here))
          (transaction (buffer-substring-no-properties (car extents) (cadr extents)))
          (encoded-date (ledger-parse-iso-date date)))
     (ledger-xact-find-slot encoded-date)
@@ -174,8 +174,7 @@ correct chronological place in the buffer."
   (let* ((args (with-temp-buffer
                  (insert transaction-text)
                  (eshell-parse-arguments (point-min) (point-max))))
-         (ledger-buf (current-buffer))
-         exit-code)
+         (ledger-buf (current-buffer)))
     (unless insert-at-point
       (let* ((date (car args))
              (parsed-date (ledger-parse-iso-date date)))
