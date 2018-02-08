@@ -107,13 +107,13 @@ Don't enable flymake if flycheck is on and flycheck-ledger is
 available."
   (unless (and (featurep 'flycheck-ledger)
                (bound-and-true-p flycheck-mode)))
+  ;; Add `ledger-flymake' to `flymake-diagnostic-functions' so that flymake can
+  ;; work in ledger-mode:
+  (add-hook 'flymake-diagnostic-functions 'ledger-flymake nil t)
   (flymake-mode))
 
 ;; Automatically enable flymake in ledger-mode buffers when using Emacs 26+
 (when (<= 26 emacs-major-version)
-  ;; Add `ledger-flymake' to `flymake-diagnostic-functions' so that flymake can
-  ;; work in ledger-mode:
-  (add-hook 'flymake-diagnostic-functions 'ledger-flymake nil t)
   ;; Enable it!
   (add-hook 'ledger-mode-hook #'ledger-enable-flymake))
 
