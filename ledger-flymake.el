@@ -29,6 +29,20 @@
 (defvar-local ledger--flymake-proc nil)
 (defvar ledger-binary-path)
 
+(defcustom ledger-flymake-be-pedantic nil
+  "If non-nil, pass the --pedantic flag for ledger to the flymake backend.
+If --pedantic is in your ledgerrc file, then --pedantic gets
+passed regardless of the value."
+  :type 'boolean
+  :group 'ledger)
+
+(defcustom ledger-flymake-be-explicit nil
+  "If non-nil, pass the --explicit flag for ledger to the flymake backend.
+If --explicit is in your ledgerrc file, then --explicit gets
+passed regardless of the value."
+  :type 'boolean
+  :group 'ledger)
+
 ;; Based on the example from Flymake's info:
 (defun ledger-flymake (report-fn &rest _args)
   "A Flymake backend for `ledger-mode'.
@@ -55,7 +69,10 @@ Flymake calls this with REPORT-FN as needed."
        (make-process
         :name "ledger-flymake" :noquery t :connection-type 'pipe
         :buffer (generate-new-buffer " *ledger-flymake*")
-        :command `(,ledger-binary-path "-f" ,file "balance")
+        :command `(,ledger-binary-path "-f" ,file
+                                       (when ledger-flymake-be-pedantic "--pedantic")
+                                       (when ledger-flymake-be-explicit "--explicit")
+                                       "balance")
         :sentinel
         (lambda (proc _event)
           ;; Check that the process has indeed exited, as it might
