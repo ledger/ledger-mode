@@ -70,8 +70,8 @@ Flymake calls this with REPORT-FN as needed."
         :name "ledger-flymake" :noquery t :connection-type 'pipe
         :buffer (generate-new-buffer " *ledger-flymake*")
         :command `(,ledger-binary-path "-f" ,file
-                                       (when ledger-flymake-be-pedantic "--pedantic")
-                                       (when ledger-flymake-be-explicit "--explicit")
+                                       ,(when ledger-flymake-be-pedantic "--pedantic")
+                                       ,(when ledger-flymake-be-explicit "--explicit")
                                        "balance")
         :sentinel
         (lambda (proc _event)
