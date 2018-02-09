@@ -126,6 +126,8 @@ Don't enable flymake if flycheck is on and flycheck-ledger is
 available."
   (unless (and (featurep 'flycheck-ledger)
                (bound-and-true-p flycheck-mode)))
+  (when (< 26 emacs-major-version)
+    (error "Ledger-flymake requires Emacs version 26 or higher"))
   ;; Add `ledger-flymake' to `flymake-diagnostic-functions' so that flymake can
   ;; work in ledger-mode:
   (add-hook 'flymake-diagnostic-functions 'ledger-flymake nil t)
@@ -133,7 +135,6 @@ available."
 
 ;; Automatically enable flymake in ledger-mode buffers when using Emacs 26+
 (when (<= 26 emacs-major-version)
-  ;; Enable it!
   (add-hook 'ledger-mode-hook #'ledger-enable-flymake))
 
 (provide 'ledger-flymake)
