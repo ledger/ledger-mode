@@ -25,9 +25,11 @@
 ;; `flymake-mode' from a file-visiting ledger buffer.
 
 ;;; Code:
+(eval-when-compile
+  (require 'cl-lib))
+(require 'ledger-exec)                  ; for `ledger-binary-path'
 
 (defvar-local ledger--flymake-proc nil)
-(defvar ledger-binary-path)
 
 (defcustom ledger-flymake-be-pedantic nil
   "If non-nil, pass the --pedantic flag for ledger to the flymake backend.
