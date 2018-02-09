@@ -15,11 +15,11 @@ env:
   matrix:
     - EMACS_VERSION=emacs24 LEDGER_BRANCH=master
     # - EMACS_VERSION=emacs24 LEDGER_BRANCH=apt-get # apt-get's ledger is too old
-    - EMACS_VERSION=emacs25 LEDGER_BRANCH=next
+    - EMACS_VERSION=emacs-snapshot LEDGER_BRANCH=next
 
 matrix:
   allow_failures:
-    - env: EMACS=emacs25 LEDGER_BRANCH=next
+    - env: EMACS=emacs-snapshot LEDGER_BRANCH=next
 
 before_install:
   - ./tools/travis-install-ledger.sh $LEDGER_BRANCH
@@ -34,7 +34,7 @@ install:
         sudo apt-get -qq install emacs24 emacs24-el &&
         export EMACS=/usr/bin/emacs;
     fi
-  - if [ "$TRAVIS_OS_NAME-$EMACS_VERSION" = "linux-emacs25" ]; then
+  - if [ "$TRAVIS_OS_NAME-$EMACS_VERSION" = "linux-emacs-snapshot" ]; then
         sudo add-apt-repository -y ppa:ubuntu-elisp/ppa &&
         sudo apt-get -qq update &&
         sudo apt-get -qq install emacs-snapshot &&
@@ -54,6 +54,7 @@ install:
 script:
   - $EMACS --version
   - ledger --version
+  - $EMACS --eval "(setq byte-compile-error-on-warn (>= emacs-major-version 25))" -L .  --batch -f batch-byte-compile ledger-*.el
   - cd test && make test-batch EMACS="$EMACS"
 
 after_script:
