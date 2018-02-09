@@ -21,7 +21,7 @@
 
 
 ;;; Commentary:
-;;  Provide facilities for running and saving reports in emacs
+;;  Provide facilities for running and saving reports in Emacs
 
 ;;; Code:
 
@@ -77,18 +77,17 @@ simply concatenated (no quoting)."
   :group 'ledger-report)
 
 (defcustom ledger-report-auto-refresh t
-  "If t then automatically rerun the report when the ledger buffer is saved."
+  "If non-nil, automatically rerun the report when the ledger buffer is saved."
   :type 'boolean
   :group 'ledger-report)
 
 (defcustom ledger-report-auto-refresh-sticky-cursor nil
-  "If t then try to place cursor at same relative position as it was before auto-refresh."
+  "If non-nil, place cursor at same relative position as it was before auto-refresh."
   :type 'boolean
   :group 'ledger-report)
 
 (defcustom ledger-report-links-in-register t
-  "When non-nil, attempt to link transactions in \"register\"
-reports to their location in the currrent ledger file buffer."
+  "If non-nil, link entries in \"register\" reports to entries in the ledger buffer."
   :type 'boolean
   :group 'ledger-report)
 
@@ -103,14 +102,16 @@ reports to their location in the currrent ledger file buffer."
   :group 'ledger-report)
 
 (defcustom ledger-report-use-header-line nil
-  "When non-nil, indicate the report name and command in the `header-line'
-instead of in the buffer."
+  "If non-nil, indicate report name/command in the `header-line'.
+The report name/command won't be printed in the buffer.  See
+`ledger-report-header-line-fn' for how to customize the
+information reported."
   :type 'boolean
   :group 'ledger-report)
 
 (defcustom ledger-report-header-line-fn #'ledger-report--header-function
-  "When `ledger-report-use-header-line' is non-nil, evaluate this function
-in the `header-line'."
+  "Evaluate this function in the `header-line' of the report buffer.
+`ledger-report-use-header-line' must be non-nil for this to have any effect."
   :type 'function
   :group 'ledger-report)
 
@@ -259,8 +260,7 @@ used to generate the buffer, navigating the buffer, etc."
       (message "q to quit; r to redo; e to edit; k to kill; s to save; SPC and DEL to scroll"))))
 
 (defun ledger-report--header-function ()
-  "Computes the string to be used as the header in the
-`ledger-report' buffer."
+  "Compute the string to be used as the header in the `ledger-report' buffer."
   (format "Ledger Report: %s -- Buffer: %s -- Command: %s"
           (propertize ledger-report-name 'face 'font-lock-constant-face)
           (propertize (buffer-name ledger-buf) 'face 'font-lock-string-face)
@@ -303,7 +303,9 @@ used to generate the buffer, navigating the buffer, etc."
 
 ;; General helper functions
 
-(defvar ledger-master-file nil)
+(defvar-local ledger-master-file nil
+  "The master file for the current buffer.
+See documentation for the function `ledger-master-file'")
 
 (defun ledger-master-file ()
   "Return the master file for a ledger file.
