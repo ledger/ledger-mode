@@ -303,7 +303,9 @@ used to generate the buffer, navigating the buffer, etc."
 
 ;; General helper functions
 
-(defvar ledger-master-file nil)
+(defvar-local ledger-master-file nil
+  "The master file for the current buffer.
+See documentation for the function `ledger-master-file'")
 
 (defun ledger-master-file ()
   "Return the master file for a ledger file.
