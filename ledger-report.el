@@ -61,7 +61,7 @@ specifier."
   :group 'ledger-report)
 
 (defcustom ledger-report-format-specifiers
-  '(("ledger-file" . ledger-report-ledger-file-format-specifier)
+  '(("ledger-file" . ledger-master-file)
     ("binary" . ledger-report-binary-format-specifier)
     ("payee" . ledger-report-payee-format-specifier)
     ("account" . ledger-report-account-format-specifier)
@@ -292,14 +292,9 @@ used to generate the buffer, navigating the buffer, etc."
                         (if (null report-cmd) "ledger " report-cmd)
                         nil nil 'ledger-report-cmd-prompt-history))
 
-(defun ledger-report-ledger-file-format-specifier ()
-  "Substitute the full path to master or current ledger file.
-
-   The master file name is determined by the variable `ledger-master-file'
-   buffer-local variable which can be set using file variables.
-   If it is set, it is used, otherwise the current buffer file is
-   used."
-  (ledger-master-file))
+(define-obsolete-function-alias 'ledger-report-ledger-file-format-specifier
+  #'ledger-master-file
+  "2018-02-09")
 
 ;; General helper functions
 
@@ -308,7 +303,7 @@ used to generate the buffer, navigating the buffer, etc."
 See documentation for the function `ledger-master-file'")
 
 (defun ledger-master-file ()
-  "Return the master file for a ledger file.
+  "Return the full path to the master file for a ledger file.
 
    The master file is either the file for the current ledger buffer or the
    file specified by the buffer-local variable `ledger-master-file'.  Typically
