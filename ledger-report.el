@@ -149,6 +149,8 @@ information reported."
   (let ((map (make-sparse-keymap)))
     (define-key map [? ] 'scroll-up)
     (define-key map [backspace] 'scroll-down)
+    (define-key map [?n] 'next-line)
+    (define-key map [?p] 'previous-line)
     (define-key map [?r] 'ledger-report-redo)
     (define-key map [(shift ?r)] 'ledger-report-reverse-report)
     (define-key map [?s] 'ledger-report-save)
