@@ -120,7 +120,7 @@ Flymake calls this with REPORT-FN as needed."
               (kill-buffer (process-buffer proc))))))))))
 
 (defun ledger-enable-flymake ()
-  "Enable function `flymake-mode' in `ledger-mode' buffers.
+  "Enable `flymake-mode' in `ledger-mode' buffers.
 
 Don't enable flymake if flycheck is on and flycheck-ledger is
 available."
