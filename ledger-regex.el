@@ -95,7 +95,8 @@
           (list
            `(defconst
               ,(intern (concat "ledger-" (symbol-name name) "-regexp"))
-              ,(eval regex))))
+              ,(eval regex)
+              ,docs)))
         (addend 0) last-group)
     (if (null args)
         (progn

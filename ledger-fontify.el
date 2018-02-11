@@ -37,8 +37,9 @@
   :type 'boolean
   :group 'ledger)
 
-(defun ledger-fontify-buffer-part (&optional beg end len)
-  "Fontify buffer from BEG to END, length LEN."
+(defun ledger-fontify-buffer-part (beg end &rest _ignored)
+  "Fontify buffer from BEG to END.
+This is for use as a `font-lock-fontify-region-function'."
   (save-excursion
     (unless beg (setq beg (point-min)))
     (unless end (setq end (point-max)))
@@ -76,7 +77,7 @@
           (ledger-fontify-set-face (list (point) (progn
                                                    (end-of-line)
                                                    (point))) 'ledger-font-comment-face)
-        (ledger-fontify-posting (point)))
+        (ledger-fontify-posting))
       (forward-line))))
 
 (defun ledger-fontify-xact-start (pos)
@@ -105,8 +106,8 @@ Fontify the first line of an xact"
                                      (match-end 4)) 'ledger-font-comment-face))
     (forward-line)))
 
-(defun ledger-fontify-posting (pos)
-  "Fontify the posting at POS."
+(defun ledger-fontify-posting ()
+  "Fontify the posting at point."
   (let* ((state nil)
          (end-of-line-comment nil)
          (end (progn (end-of-line)

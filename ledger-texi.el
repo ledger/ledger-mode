@@ -38,8 +38,7 @@
 (defun ledger-update-test ()
   (interactive)
   (goto-char (point-min))
-  (let ((command (buffer-substring (point-min) (line-end-position)))
-        input)
+  (let ((command (buffer-substring (point-min) (line-end-position))))
     (re-search-forward "^<<<\n")
     (let ((beg (point)) end)
       (re-search-forward "^>>>")
@@ -133,7 +132,7 @@
     (while (re-search-forward "^@c \\(\\(?:sm\\)?ex\\) \\(\\S-+\\): \\(.*\\)" nil t)
       (let ((section (match-string 1))
             (example-name (match-string 2))
-            (command (match-string 3)) expanded-command
+            (command (match-string 3))
             (data-file ledger-texi-sample-doc-path)
             input output)
         (goto-char (match-end 0))
