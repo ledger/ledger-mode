@@ -27,6 +27,9 @@
 ;;; Code:
 (require 'cl-lib)
 (require 'ledger-exec)                  ; for `ledger-binary-path'
+(declare-function flymake-diag-region "flymake")
+(declare-function flymake-make-diagnostic "flymake")
+(declare-function flymake-log "flymake")
 
 (defvar-local ledger--flymake-proc nil)
 
