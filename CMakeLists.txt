@@ -32,10 +32,10 @@ macro(add_emacs_lisp_target el)
   # add rule (i.e. command) how to generate the byte-compiled file
   add_custom_command(
     OUTPUT ${el}c
-    COMMAND ${EMACS_EXECUTABLE}
+    COMMAND EMACSLOADPATH= ${EMACS_EXECUTABLE}
             -L ${CMAKE_CURRENT_BINARY_DIR}
             -l ${CMAKE_CURRENT_BINARY_DIR}/ledger-regex.el
-            -batch -f batch-byte-compile
+            -batch --no-init-file --no-site-file -f batch-byte-compile
              ${CMAKE_CURRENT_BINARY_DIR}/${el}
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${el}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

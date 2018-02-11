@@ -1,5 +1,5 @@
-EMACS ?= emacs
-EMACS_FLAGS = --quick --directory . --directory ..
+EMACS ?= EMACSLOADPATH= emacs
+EMACS_FLAGS = --quick --directory . --directory .. --no-init-file --no-site-file
 EMACS_BATCH = $(EMACS) --batch $(EMACS_FLAGS)
 EMACS_INTERACTIVE = $(EMACS) $(EMACS_FLAGS)
 
