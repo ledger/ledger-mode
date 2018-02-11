@@ -53,7 +53,6 @@
 (require 'ledger-xact)
 (require 'ledger-schedule)
 (require 'ledger-check)
-(require 'ledger-flymake)
 
 ;;; Code:
 
