@@ -111,8 +111,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
 
 (defun ledger-find-accounts-in-buffer ()
   (interactive)
-  (let (accounts
-        (account-tree (list t))
+  (let ((account-tree (list t))
         (account-elements nil)
         (prefix (or (car pcomplete-args) "")))
     (save-excursion
@@ -168,7 +167,6 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
   (let*
       ((now (current-time))
        (decoded (decode-time now))
-       (to-day (nth 3 decoded))
        (this-month (nth 4 decoded))
        (this-year (nth 5 decoded))
        (last-month (if (> this-month 1) (1- this-month) 12))

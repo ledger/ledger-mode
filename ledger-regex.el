@@ -89,7 +89,7 @@
   "\\(^[ \t]+\\)\\(*\\s-*[^ ].*?\\)\\(  \\|\t\\|$\\)")
 
 
-(defmacro ledger-define-regexp (name regex docs &rest args)
+(defmacro ledger-define-regexp (name regex _docs &rest args)
   "Simplify the creation of a Ledger regex and helper functions."
   (let ((defs
           (list
