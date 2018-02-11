@@ -25,8 +25,7 @@
 ;; `flymake-mode' from a file-visiting ledger buffer.
 
 ;;; Code:
-(eval-when-compile
-  (require 'cl-lib))
+(require 'cl-lib)
 (require 'ledger-exec)                  ; for `ledger-binary-path'
 
 (defvar-local ledger--flymake-proc nil)
