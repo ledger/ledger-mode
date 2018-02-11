@@ -110,7 +110,7 @@
   (kill-buffer (get-buffer ledger-check-buffer-name)))
 
 (defun ledger-check-buffer ()
-  "Run a ledge with --explicit and --strict report errors and assist with fixing them.
+  "Run ledge with --explicit and --strict report errors and assist with fixing them.
 
 The output buffer will be in `ledger-check-mode', which defines
 commands for navigating the buffer to the errors found, etc."
@@ -119,7 +119,7 @@ commands for navigating the buffer to the errors found, etc."
      (when (and (buffer-modified-p)
                 (y-or-n-p "Buffer modified, save it? "))
        (save-buffer))))
-  (let ((buf (find-file-noselect (ledger-master-file)))
+  (let ((_buf (find-file-noselect (ledger-master-file)))
         (cbuf (get-buffer ledger-check-buffer-name))
         (wcfg (current-window-configuration)))
     (if cbuf
