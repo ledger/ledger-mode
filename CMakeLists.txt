@@ -7,7 +7,6 @@ set(EMACS_LISP_SOURCES
   ledger-exec.el
   ledger-fontify.el
   ledger-fonts.el
-  ledger-fontify.el
   ledger-init.el
   ledger-mode.el
   ledger-navigate.el
