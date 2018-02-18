@@ -19,7 +19,7 @@ env:
 
 matrix:
   allow_failures:
-    - env: EMACS=emacs-snapshot LEDGER_BRANCH=next
+    - env: EMACS_VERSION=emacs-snapshot LEDGER_BRANCH=next
 
 before_install:
   - ./tools/travis-install-ledger.sh $LEDGER_BRANCH
