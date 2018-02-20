@@ -115,6 +115,12 @@ information reported."
   :type 'function
   :group 'ledger-report)
 
+(defcustom ledger-report-resize-window t
+  "If non-nil, resize the report window.
+Calls `shrink-window-if-larger-than-buffer'."
+  :type 'boolean
+  :group 'ledger-report)
+
 (defvar ledger-report-buffer-name "*Ledger Report*")
 
 (defvar ledger-report-name nil)
@@ -144,6 +150,11 @@ information reported."
       (forward-line))
     (save-excursion
       (reverse-region (point) (point-max)))))
+
+(defun ledger-report-maybe-shrink-window ()
+  "Shrink window if `ledger-report-resize-window' is non-nil."
+  (when ledger-report-resize-window
+    (shrink-window-if-larger-than-buffer)))
 
 (defvar ledger-report-mode-map
   (let ((map (make-sparse-keymap)))
@@ -254,7 +265,7 @@ used to generate the buffer, navigating the buffer, etc."
       (set (make-local-variable 'ledger-original-window-cfg) wcfg)
       (set (make-local-variable 'ledger-report-is-reversed) nil)
       (ledger-do-report (ledger-report-cmd report-name edit))
-      (shrink-window-if-larger-than-buffer)
+      (ledger-report-maybe-shrink-window)
       (set-buffer-modified-p nil)
       (setq buffer-read-only t)
       (message "q to quit; r to redo; e to edit; k to kill; s to save; SPC and DEL to scroll"))))
@@ -482,7 +493,7 @@ arguments returned by `ledger-report--compute-extra-args'."
     (if (not rbuf)
         (error "There is no ledger report buffer"))
     (pop-to-buffer rbuf)
-    (shrink-window-if-larger-than-buffer)))
+    (ledger-report-maybe-shrink-window)))
 
 (defun ledger-report-redo ()
   "Redo the report in the current ledger report buffer."
@@ -495,7 +506,7 @@ arguments returned by `ledger-report--compute-extra-args'."
              (get-buffer ledger-report-buffer-name))
         (progn
           (pop-to-buffer (get-buffer ledger-report-buffer-name))
-          (shrink-window-if-larger-than-buffer)
+          (ledger-report-maybe-shrink-window)
           (setq ledger-report-cursor-line-number (line-number-at-pos))
           (erase-buffer)
           (ledger-do-report ledger-report-cmd)
