@@ -104,9 +104,10 @@ Considers both accounts listed in postings and those declared with \"account\" d
   "Return a list of all known account names as strings.
 Looks in `ledger-accounts-file' if set, otherwise the current buffer."
   (if ledger-accounts-file
-      (with-temp-buffer
-        (insert-file-contents ledger-accounts-file)
-        (ledger-accounts-list-in-buffer))
+      (let ((f ledger-accounts-file))
+        (with-temp-buffer
+          (insert-file-contents f)
+          (ledger-accounts-list-in-buffer)))
     (ledger-accounts-list-in-buffer)))
 
 (defun ledger-find-accounts-in-buffer ()
