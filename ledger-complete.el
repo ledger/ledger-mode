@@ -44,6 +44,14 @@ This file will then be used as a source for account name completions."
   :type 'file
   :group 'ledger)
 
+(defcustom ledger-accounts-be-pedantic nil
+  "If non-nil, be pedantic in account completion.
+
+In other words, only offer accounts for completion that have been
+specified using an \"account\" directive."
+  :type 'boolean
+  :group 'ledger)
+
 (defun ledger-parse-arguments ()
   "Parse whitespace separated arguments in the current region."
   ;; this is more complex than it appears to need, so that it can work
@@ -95,7 +103,9 @@ Considers both accounts listed in postings and those declared with \"account\" d
   (save-excursion
     (goto-char (point-min))
     (let (results)
-      (while (re-search-forward ledger-account-name-or-directive-regex nil t)
+      (while (re-search-forward (if ledger-accounts-be-pedantic
+                                    ledger-account-directive-regex
+                                  ledger-account-name-or-directive-regex) nil t)
         (setq results (cons (match-string-no-properties 2) results)))
       (sort (cl-delete-duplicates results :test 'string=)
             #'ledger-string-greaterp))))
