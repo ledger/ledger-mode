@@ -173,7 +173,7 @@ Calls `shrink-window-if-larger-than-buffer'."
     (define-key map [(control ?c) (control ?l) (control ?S)]
       #'ledger-report-save)
     (define-key map [(control ?c) (control ?l) (control ?e)]
-      #'ledger-report-edit)
+      #'ledger-report-edit-report)
     map)
   "Keymap for `ledger-report-mode'.")
 
