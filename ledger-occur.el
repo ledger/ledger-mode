@@ -60,8 +60,8 @@
     (ledger-occur-remove-overlays)
     (message "Showing all transactions")))
 
-(define-key ledger-occur-mode-map (kbd "C-c C-g") 'ledger-occur-refresh)
-(define-key ledger-occur-mode-map (kbd "C-c C-f") 'ledger-occur-mode)
+(define-key ledger-occur-mode-map (kbd "C-c C-g") #'ledger-occur-refresh)
+(define-key ledger-occur-mode-map (kbd "C-c C-f") #'ledger-occur-mode)
 
 (defun ledger-occur-refresh ()
   "Re-apply the current narrowing expression."

@@ -158,22 +158,22 @@ Calls `shrink-window-if-larger-than-buffer'."
 
 (defvar ledger-report-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [? ] 'scroll-up)
-    (define-key map [backspace] 'scroll-down)
-    (define-key map [?r] 'ledger-report-redo)
-    (define-key map [(shift ?r)] 'ledger-report-reverse-report)
-    (define-key map [?s] 'ledger-report-save)
-    (define-key map [(shift ?s)] 'ledger-report-select-report)
-    (define-key map [?e] 'ledger-report-edit-report)
-    (define-key map [( shift ?e)] 'ledger-report-edit-reports)
-    (define-key map [?q] 'ledger-report-quit)
-    (define-key map [?g] 'ledger-report-redo)
+    (define-key map [? ] #'scroll-up)
+    (define-key map [backspace] #'scroll-down)
+    (define-key map [?r] #'ledger-report-redo)
+    (define-key map [(shift ?r)] #'ledger-report-reverse-report)
+    (define-key map [?s] #'ledger-report-save)
+    (define-key map [(shift ?s)] #'ledger-report-select-report)
+    (define-key map [?e] #'ledger-report-edit-report)
+    (define-key map [( shift ?e)] #'ledger-report-edit-reports)
+    (define-key map [?q] #'ledger-report-quit)
+    (define-key map [?g] #'ledger-report-redo)
     (define-key map [(control ?c) (control ?l) (control ?r)]
-      'ledger-report-redo)
+      #'ledger-report-redo)
     (define-key map [(control ?c) (control ?l) (control ?S)]
-      'ledger-report-save)
+      #'ledger-report-save)
     (define-key map [(control ?c) (control ?l) (control ?e)]
-      'ledger-report-edit)
+      #'ledger-report-edit)
     map)
   "Keymap for `ledger-report-mode'.")
 

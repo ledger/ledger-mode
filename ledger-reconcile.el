@@ -569,21 +569,21 @@ moved and recentered.  If they aren't strange things happen."
 
 (defvar ledger-reconcile-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [(control ?m)] 'ledger-reconcile-visit)
-    (define-key map [return] 'ledger-reconcile-visit)
-    (define-key map [(control ?x) (control ?s)] 'ledger-reconcile-save)
-    (define-key map [(control ?l)] 'ledger-reconcile-refresh)
-    (define-key map [(control ?c) (control ?c)] 'ledger-reconcile-finish)
-    (define-key map [? ] 'ledger-reconcile-toggle)
-    (define-key map [?a] 'ledger-reconcile-add)
-    (define-key map [?d] 'ledger-reconcile-delete)
-    (define-key map [?g] 'ledger-reconcile);
-    (define-key map [?n] 'next-line)
-    (define-key map [?p] 'previous-line)
-    (define-key map [?t] 'ledger-reconcile-change-target)
-    (define-key map [?s] 'ledger-reconcile-save)
-    (define-key map [?q] 'ledger-reconcile-quit)
-    (define-key map [?b] 'ledger-display-balance)
+    (define-key map [(control ?m)] #'ledger-reconcile-visit)
+    (define-key map [return] #'ledger-reconcile-visit)
+    (define-key map [(control ?x) (control ?s)] #'ledger-reconcile-save)
+    (define-key map [(control ?l)] #'ledger-reconcile-refresh)
+    (define-key map [(control ?c) (control ?c)] #'ledger-reconcile-finish)
+    (define-key map [? ] #'ledger-reconcile-toggle)
+    (define-key map [?a] #'ledger-reconcile-add)
+    (define-key map [?d] #'ledger-reconcile-delete)
+    (define-key map [?g] #'ledger-reconcile);
+    (define-key map [?n] #'next-line)
+    (define-key map [?p] #'previous-line)
+    (define-key map [?t] #'ledger-reconcile-change-target)
+    (define-key map [?s] #'ledger-reconcile-save)
+    (define-key map [?q] #'ledger-reconcile-quit)
+    (define-key map [?b] #'ledger-display-balance)
 
     (define-key map [(control ?c) (control ?o)] (ledger-reconcile-change-sort-key-and-refresh "(0)"))
 
