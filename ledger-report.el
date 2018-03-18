@@ -164,7 +164,6 @@ Calls `shrink-window-if-larger-than-buffer'."
     (define-key map [(shift ?r)] 'ledger-report-reverse-report)
     (define-key map [?s] 'ledger-report-save)
     (define-key map [(shift ?s)] 'ledger-report-select-report)
-    (define-key map [?k] 'ledger-report-kill)
     (define-key map [?e] 'ledger-report-edit-report)
     (define-key map [( shift ?e)] 'ledger-report-edit-reports)
     (define-key map [?q] 'ledger-report-quit)
@@ -173,8 +172,6 @@ Calls `shrink-window-if-larger-than-buffer'."
       'ledger-report-redo)
     (define-key map [(control ?c) (control ?l) (control ?S)]
       'ledger-report-save)
-    (define-key map [(control ?c) (control ?l) (control ?k)]
-      'ledger-report-kill)
     (define-key map [(control ?c) (control ?l) (control ?e)]
       'ledger-report-edit)
     map)
@@ -520,6 +517,8 @@ arguments returned by `ledger-report--compute-extra-args'."
   (ledger-report-goto)
   (set-window-configuration ledger-original-window-cfg)
   (kill-buffer (get-buffer ledger-report-buffer-name)))
+
+(define-obsolete-function-alias 'ledger-report-kill #'ledger-report-quit)
 
 (defun ledger-report-edit-reports ()
   "Edit the defined ledger reports."

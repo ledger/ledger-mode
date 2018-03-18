@@ -273,7 +273,7 @@ With a prefix argument, remove the effective date."
     (define-key map [(control ?c) (control ?o) (control ?a)] 'ledger-report-redo)
     (define-key map [(control ?c) (control ?o) (control ?e)] 'ledger-report-edit)
     (define-key map [(control ?c) (control ?o) (control ?g)] 'ledger-report-goto)
-    (define-key map [(control ?c) (control ?o) (control ?k)] 'ledger-report-kill)
+    (define-key map [(control ?c) (control ?o) (control ?k)] 'ledger-report-quit)
     (define-key map [(control ?c) (control ?o) (control ?r)] 'ledger-report)
     (define-key map [(control ?c) (control ?o) (control ?s)] 'ledger-report-save)
 
@@ -321,7 +321,7 @@ With a prefix argument, remove the effective date."
     ["Re-run Report" ledger-report-redo ledger-works]
     ["Save Report" ledger-report-save ledger-works]
     ["Edit Report" ledger-report-edit ledger-works]
-    ["Kill Report" ledger-report-kill ledger-works]))
+    ["Quit Report" ledger-report-quit ledger-works]))
 
 ;;;###autoload
 (define-derived-mode ledger-mode text-mode "Ledger"
