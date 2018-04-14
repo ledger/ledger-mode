@@ -89,6 +89,15 @@ This file will then be used as a source for account name completions."
     ;; to the list
     (pcomplete-uniqify-list (nreverse payees-list))))
 
+(defun ledger-accounts-deduplicate-sorted (l)
+  "Remove duplicates from a sorted list of strings L."
+  (let ((current l))
+    (while (consp current)
+      (if (string= (car current) (cadr current))
+          (setcdr current (cddr current))
+        (pop current)))
+    l))
+
 (defun ledger-accounts-list-in-buffer ()
   "Return a list of all known account names in the current buffer as strings.
 Considers both accounts listed in postings and those declared with \"account\" directives."
@@ -97,8 +106,8 @@ Considers both accounts listed in postings and those declared with \"account\" d
     (let (results)
       (while (re-search-forward ledger-account-name-or-directive-regex nil t)
         (setq results (cons (match-string-no-properties 2) results)))
-      (sort (cl-delete-duplicates results :test 'string=)
-            #'ledger-string-greaterp))))
+      (ledger-accounts-deduplicate-sorted
+       (sort results #'ledger-string-greaterp)))))
 
 (defun ledger-accounts-list ()
   "Return a list of all known account names as strings.
