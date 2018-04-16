@@ -371,7 +371,7 @@ See documentation for the function `ledger-master-file'")
   "Check links should be added to the report produced by CMD."
   ;; --subtotal reports do not produce identifiable transactions, so
   ;; don't prepend location information for them
-  (and (string-match " reg\\(ister\\)? " cmd)
+  (and (string-match "\\<reg\\(ister\\)?\\>" cmd)
        ledger-report-links-in-register
        (not (string-match "--subtotal" cmd))))
 
