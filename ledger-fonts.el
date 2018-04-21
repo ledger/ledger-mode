@@ -36,37 +36,37 @@
   :group 'ledger-faces)
 
 (defface ledger-font-auto-xact-face
-  `((t :foreground "orange" :weight normal))
+  `((t :inherit font-lock-negation-char-face))
   "Default face for automatic transactions"
   :group 'ledger-faces)
 
 (defface ledger-font-periodic-xact-face
-  `((t :foreground "green" :weight normal))
+  `((t :inherit font-lock-constant-face))
   "Default face for automatic transactions"
   :group 'ledger-faces)
 
 (defface ledger-font-xact-cleared-face
-  `((t :foreground "#AAAAAA" :weight normal))
+  `((t :inherit ledger-font-payee-cleared-face))
   "Default face for cleared transaction"
   :group 'ledger-faces)
 
 (defface ledger-font-xact-pending-face
-  `((t :foreground "#444444" :weight normal))
+  `((t :inherit ledger-font-pending-face))
   "Default face for pending transaction"
   :group 'ledger-faces)
 
 (defface ledger-font-payee-uncleared-face
-  `((t :foreground "#dc322f" :weight bold ))
+  `((t :inherit error))
   "Default face for Ledger"
   :group 'ledger-faces)
 
 (defface ledger-font-payee-cleared-face
-  `((t :inherit ledger-font-other-face))
+  `((t :inherit shadow))
   "Default face for cleared (*) payees"
   :group 'ledger-faces)
 
 (defface ledger-font-payee-pending-face
-  `((t :foreground "#F24B61" :weight normal))
+  `((t :inherit ledger-font-pending-face))
   "Default face for pending (!) payees"
   :group 'ledger-faces)
 
@@ -76,12 +76,12 @@
   :group 'ledger-faces)
 
 (defface ledger-font-pending-face
-  `((t :foreground "#cb4b16" :weight normal ))
+  `((t :inherit warning))
   "Default face for pending (!) transactions"
   :group 'ledger-faces)
 
 (defface ledger-font-other-face
-  `((t :foreground "#657b83" :weight normal))
+  `((t :inherit font-lock-type-face))
   "Default face for other transactions"
   :group 'ledger-faces)
 
@@ -196,12 +196,12 @@
   :group 'ledger-faces)
 
 (defface ledger-font-posting-account-face
-  `((t :foreground "#268bd2" ))
+  `((t :inherit ledger-font-default-face))
   "Face for Ledger accounts"
   :group 'ledger-faces)
 
 (defface ledger-font-posting-account-cleared-face
-  `((t :inherit ledger-font-other-face))
+  `((t :inherit ledger-font-payee-cleared-face))
   "Face for Ledger accounts"
   :group 'ledger-faces)
 
@@ -221,12 +221,12 @@
   :group 'ledger-faces)
 
 (defface ledger-font-posting-amount-face
-  `((t :foreground "#cb4b16" ))
+  `((t :inherit font-lock-constant-face ))
   "Face for Ledger amounts"
   :group 'ledger-faces)
 
 (defface ledger-font-posting-date-face
-  `((t :foreground "#cb4b16" ))
+  `((t :inherit font-lock-keyword-face))
   "Face for Ledger dates"
   :group 'ledger-faces)
 
@@ -251,7 +251,7 @@
   :group 'ledger-faces)
 
 (defface ledger-font-reconciler-cleared-face
-  `((t :inherit ledger-font-other-face))
+  `((t :inherit ledger-font-payee-cleared-face))
   "Default face for cleared (*) transactions in the reconcile window"
   :group 'ledger-faces)
 
