@@ -291,7 +291,7 @@ date descriptor."
         (schedule-buf (get-buffer-create ledger-schedule-buffer-name)))
     (with-current-buffer schedule-buf
       (erase-buffer)
-      (dolist (candidate candidates)
+      (dolist (candidate (reverse candidates))
         (insert (ledger-format-date (car candidate) ) " " (cadr candidate) "\n"))
       (ledger-mode))
     (length candidates)))
