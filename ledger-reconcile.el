@@ -384,7 +384,12 @@ POSTING is used in `ledger-clear-whole-transactions' is nil."
                (find-file-noselect (nth 0 emacs-xact)))))
     (cons
      buf
-     (if ledger-clear-whole-transactions
+     (if (or ledger-clear-whole-transactions
+             ;; The posting might not be part of the ledger buffer. This can
+             ;; happen if the account to reconcile is the default account. In
+             ;; that case, we just behave as if ledger-clear-whole-transactions
+             ;; was turned on. See #58 for more info.
+             (= -1 (nth 0 posting)))
          (nth 1 emacs-xact)  ;; return line-no of xact
        (nth 0 posting))))) ;; return line-no of posting
 
