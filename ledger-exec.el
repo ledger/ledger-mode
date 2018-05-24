@@ -43,6 +43,7 @@
 (defcustom ledger-binary-path "ledger"
   "Path to the ledger executable."
   :type 'file
+  :risky t
   :group 'ledger-exec)
 
 (defun ledger-exec-handle-error (ledger-errfile)
