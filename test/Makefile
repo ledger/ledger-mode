@@ -38,7 +38,7 @@ distclean: clean
 	rm -f $(CHECKDOC_BATCH_EL)
 
 $(CHECKDOC_BATCH_EL):
-	wget --no-verbose ftp://download.tuxfamily.org/user42/checkdoc-batch.el --output-document=$(CHECKDOC_BATCH_EL)
+	wget --no-verbose https://download.tuxfamily.org/user42/checkdoc-batch.el --output-document=$(CHECKDOC_BATCH_EL)
 
 .PHONY: checkdoc
 checkdoc: $(CHECKDOC_BATCH_EL)
