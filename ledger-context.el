@@ -39,7 +39,7 @@
 (defconst ledger-balance-assertion-string ledger-balance-assertion-regexp)
 (defconst ledger-comment-string "[ \t]*;[ \t]*\\(.*?\\)")
 (defconst ledger-nil-string "\\([ \t]+\\)")
-(defconst ledger-date-string "^\\([0-9]\\{4\\}[/-][01]?[0-9][/-][0123]?[0-9]\\)")
+(defconst ledger-date-string "^\\([0-9]\\{4\\}[/-][01]?[0-9][/-][0123]?[0-9]\\(?:=[0-9]\\{4\\}[/-][01]?[0-9][/-][0123]?[0-9]\\)?\\)")
 (defconst ledger-code-string "\\((.*)\\)?")
 (defconst ledger-payee-string "\\(.*[^[:space:]]\\)")
 
