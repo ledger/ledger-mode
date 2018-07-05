@@ -121,6 +121,12 @@ Calls `shrink-window-if-larger-than-buffer'."
   :type 'boolean
   :group 'ledger-report)
 
+(defcustom ledger-report-use-strict nil
+  "Should Ledger-mode pass --strict as a command line parameter
+when running reports?"
+  :type 'boolean
+  :group 'ledger-report)
+
 (defvar ledger-report-buffer-name "*Ledger Report*")
 
 (defvar ledger-report-name nil)
@@ -382,7 +388,9 @@ See documentation for the function `ledger-master-file'")
     ,@(when ledger-report-auto-width
         `("--columns" ,(format "%d" (- (window-width) 1))))
     ,@(when ledger-report-use-native-highlighting
-        '("--color" "--force-color"))))
+        '("--color" "--force-color"))
+    ,@(when ledger-report-use-strict
+        '("--strict"))))
 
 (defun ledger-report-cmd (report-name edit)
   "Get the command line to run the report name REPORT-NAME.
