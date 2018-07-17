@@ -65,6 +65,7 @@ specifier."
     ("binary" . ledger-report-binary-format-specifier)
     ("payee" . ledger-report-payee-format-specifier)
     ("account" . ledger-report-account-format-specifier)
+    ("month" . ledger-report-month-format-specifier)
     ("tagname" . ledger-report-tagname-format-specifier)
     ("tagvalue" . ledger-report-tagvalue-format-specifier))
   "An alist mapping ledger report format specifiers to implementing functions.
@@ -137,6 +138,7 @@ when running reports?"
 (defvar ledger-report-saved nil)
 (defvar ledger-minibuffer-history nil)
 (defvar ledger-report-mode-abbrev-table)
+(defvar ledger-report-current-month nil)
 
 (defvar ledger-report-is-reversed nil)
 (defvar ledger-report-cursor-line-number nil)
@@ -351,6 +353,24 @@ See documentation for the function `ledger-master-file'")
    posting line for an xact, the full account name on that line is
    the default."
   (ledger-read-account-with-prompt "Account"))
+
+(defun ledger-report--current-month ()
+  "Return current month as (YEAR . MONTH-INDEX).
+
+MONTH-INDEX ranges from 1 (January) to 12 (December) and YEAR is
+a number."
+  (let* ((time-parts (decode-time))
+         (year (nth 5 time-parts))
+         (month-index (nth 4 time-parts)))
+    (cons year month-index)))
+
+(defun ledger-report-month-format-specifier ()
+  "Substitute current month."
+  (with-current-buffer (or ledger-report-buffer-name (current-buffer))
+    (let* ((month (or ledger-report-current-month (ledger-report--current-month)))
+           (year (car month))
+           (month-index (cdr month)))
+      (format "%s-%s" year month-index))))
 
 (defun ledger-report-expand-format-specifiers (report-cmd)
   "Expand format specifiers in REPORT-CMD with thing under point."

@@ -768,6 +768,9 @@ Prompt for a meta-data tag name.
 @item tagvalue
 Prompt for a meta-data tag value.
 
+@item month
+Return the current month.
+
 @end table
 
 You can use these expansion values in your ledger report commands.  For
@@ -781,6 +784,14 @@ ledger -f %(ledger-file) reg %(account) \
 @end example
 
 Note how the double-quotes are escaped with back-slashes.
+
+Additionally, if you want a report showing a particular month and be able to
+easily change that month, you can specify a period using the @option{%(month)}
+specifier like this:
+
+@example
+ledger -f %(ledger-file) balance --period %(month) ^Income ^Expenses
+@end example
 
 @node Make Report Transactions Active,  , Expansion Formats, Adding and Editing Reports
 @subsection Make Report Transactions Active
