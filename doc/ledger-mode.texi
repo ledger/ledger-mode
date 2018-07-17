@@ -793,6 +793,9 @@ specifier like this:
 ledger -f %(ledger-file) balance --period %(month) ^Income ^Expenses
 @end example
 
+When you do this, you can use @kbd{M-p} or @kbd{M-n} to re-open the same report
+with the previous or next month.
+
 @node Make Report Transactions Active,  , Expansion Formats, Adding and Editing Reports
 @subsection Make Report Transactions Active
 @cindex report, custom command

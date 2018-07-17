@@ -182,6 +182,8 @@ when running reports?"
       #'ledger-report-save)
     (define-key map [(control ?c) (control ?l) (control ?e)]
       #'ledger-report-edit-report)
+    (define-key map (kbd "M-p") #'ledger-report-previous-month)
+    (define-key map (kbd "M-n") #'ledger-report-next-month)
     map)
   "Keymap for `ledger-report-mode'.")
 
@@ -269,6 +271,7 @@ used to generate the buffer, navigating the buffer, etc."
       (set (make-local-variable 'ledger-report-name) report-name)
       (set (make-local-variable 'ledger-original-window-cfg) wcfg)
       (set (make-local-variable 'ledger-report-is-reversed) nil)
+      (set (make-local-variable 'ledger-report-current-month) nil)
       (ledger-do-report (ledger-report-cmd report-name edit))
       (ledger-report-maybe-shrink-window)
       (set-buffer-modified-p nil)
@@ -364,6 +367,15 @@ a number."
          (month-index (nth 4 time-parts)))
     (cons year month-index)))
 
+(defun ledger-report--shift-month (month shift)
+  "Return (YEAR . NEW-MONTH) where NEW-MONTH is MONTH+SHIFT.
+
+MONTH is of the form (YEAR . INDEX) where INDEX ranges from
+1 (January) to 12 (December) and YEAR is a number."
+  (let* ((year (car month))
+         (new-month (+ (cdr month) shift)))
+    (cons year new-month)))
+
 (defun ledger-report-month-format-specifier ()
   "Substitute current month."
   (with-current-buffer (or ledger-report-buffer-name (current-buffer))
@@ -433,6 +445,14 @@ Optionally EDIT the command."
   'follow-link t
   'face nil ;; Otherwise make-text-button replaces Ledger's native highlighting
   'action (lambda (_button) (ledger-report-visit-source)))
+
+(defun ledger-report--change-month (shift)
+  "Rebuild report with transactions from current month + shift."
+  (let* ((current-month (or ledger-report-current-month (ledger-report--current-month)))
+         (previous-month (ledger-report--shift-month current-month shift)))
+    (set (make-local-variable 'ledger-report-current-month) previous-month)
+    (ledger-report-cmd ledger-report-name nil)
+    (ledger-report-redo)))
 
 (defun ledger-report--add-links ()
   "Replace file and line annotations with buttons."
@@ -599,6 +619,16 @@ arguments returned by `ledger-report--compute-extra-args'."
                  (setq ledger-report-name (ledger-report-read-new-name))
                  (ledger-reports-add ledger-report-name ledger-report-cmd)
                  (ledger-reports-custom-save)))))))
+
+(defun ledger-report-previous-month ()
+  "Rebuild report with transactions from the previous month."
+  (interactive)
+  (ledger-report--change-month -1))
+
+(defun ledger-report-next-month ()
+  "Rebuild report with transactions from the next month."
+  (interactive)
+  (ledger-report--change-month 1))
 
 (provide 'ledger-report)
 
