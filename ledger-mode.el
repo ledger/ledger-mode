@@ -296,6 +296,8 @@ With a prefix argument, remove the effective date."
     ["Delete Transaction" ledger-delete-current-transaction]
     "---"
     ["Calc on Amount" ledger-post-edit-amount]
+    ["Increment xact date" ledger-post-increment-date]
+    ["Decrement xact date" ledger-post-decrement-date]
     "---"
     ["Check Balance" ledger-display-balance-at-point ledger-works]
     ["Reconcile Account" ledger-reconcile ledger-works]

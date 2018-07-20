@@ -168,6 +168,40 @@ regular text."
           (push-mark)
           (calc))))))
 
+(defun ledger-post-increment-date ()
+  "Increment date of current posting by one day"
+  (interactive)
+  (ledger-post-add-to-date 1))
+
+(defun ledger-post-decrement-date ()
+  "Decrement date of current posting by one day"
+  (interactive)
+  (ledger-post-add-to-date -1))
+
+(defun ledger-post-add-to-date (num)
+  "Add num days to the date of the current posting."
+  (save-excursion
+    (ledger-navigate-beginning-of-xact)
+    (let* ((beg (point))
+           (end (re-search-forward ledger-iso-date-regexp))
+           (xact-date (filter-buffer-substring beg end)))
+      (delete-region beg end)
+      (insert
+       (format-time-string
+        (or (cdr (assoc "date-format" ledger-environment-alist))
+            ledger-default-date-format)
+        (time-add (ledger-encoded-date xact-date)
+                  (days-to-time num)))))))
+
+(defun ledger-encoded-date (date)
+  "Given a date in the form described by ledger-iso-date-regexp,
+   return encoded time string"
+  (string-match ledger-iso-date-regexp date)
+  (encode-time 0 0 0
+               (string-to-number (match-string 4 date))
+               (string-to-number (match-string 3 date))
+               (string-to-number (match-string 2 date))))
+
 (provide 'ledger-post)
 
 
