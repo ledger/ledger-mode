@@ -283,11 +283,11 @@
 
 (ledger-define-regexp commodity-no-group
                       (rx (or (and ?\" (+ (not (any ?\"))) ?\")
-                              (not (any blank ?\n
-                                        digit
-                                        ?- ?\[ ?\]
-                                        ?. ?, ?\; ?+ ?* ?/ ?^ ?? ?: ?& ?| ?! ?=
-                                        ?\< ?\> ?\{ ?\} ?\( ?\) ?@))))
+                              (+ (not (any blank ?\n
+                                           digit
+                                           ?- ?\[ ?\]
+                                           ?. ?, ?\; ?+ ?* ?/ ?^ ?? ?: ?& ?| ?! ?=
+                                           ?\< ?\> ?\{ ?\} ?\( ?\) ?@)))))
                       "")
 
 (ledger-define-regexp commodity
@@ -375,18 +375,19 @@
           ))
 
 (defconst ledger-xact-after-date-regex
-  (concat "\\([ \t]+[*!]\\)?"  ;; mark, subexp 1
-          "\\([ \t]+(.*?)\\)?"  ;; code, subexp 2
-          "\\([ \t]+[^;\n]+\\)"   ;; desc, subexp 3
-          "\\(;[^\n]*\\)?" ;; comment, subexp 4
+  (concat "\\(?:[ \t]+\\([*!]\\)\\)?"  ;; mark, subexp 1
+          "\\(?:[ \t]+\\((.*?)\\)\\)?"  ;; code, subexp 2
+          "\\(?:[ \t]+\\(.+?\\)\\)?"   ;; desc, subexp 3
+          "\\(?:\\(?:\t\\|[ \t]\\{2,\\}\\)\\(;[^\n]*\\)\\)?$" ;; comment, subexp 4
           ))
 
 (defconst ledger-posting-regex
-  (concat "^[ \t]+ ?"  ;; initial white space
-          "\\([*!]\\)? ?" ;; state, subexpr 1
-          "\\([[:print:]]+\\([ \t][ \t]\\)\\)"  ;; account, subexpr 2
-          "\\([^;\n]*\\)"  ;; amount, subexpr 4
-          "\\(.*\\)" ;; comment, subexpr 5
+  (concat "^[[:blank:]]+"                 ; initial white space
+          "\\(\\([*!]\\)?"                ; state and account 1, state 2
+          "[[:blank:]]*\\(.*?\\)\\)?"     ; account 3
+          "\\(?:\t\\|[[:blank:]]\\{2,\\}" ; column separator
+          "\\([^;\n]*?\\)"                ; amount 4
+          "[[:blank:]]*\\(;.*\\)?\\)?$"   ; comment 5
           ))
 
 

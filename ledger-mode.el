@@ -328,8 +328,8 @@ With a prefix argument, remove the effective date."
   "A mode for editing ledger data files."
   (ledger-check-version)
   (setq font-lock-defaults
-        '(ledger-font-lock-keywords t nil nil nil
-                                    (font-lock-fontify-region-function . ledger-fontify-buffer-part)))
+        '(ledger-font-lock-keywords t nil nil nil))
+  (add-hook 'font-lock-extend-region-functions 'ledger-fontify-extend-region)
 
   (setq-local pcomplete-parse-arguments-function 'ledger-parse-arguments)
   (setq-local pcomplete-command-completion-function 'ledger-complete-at-point)
