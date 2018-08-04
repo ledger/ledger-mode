@@ -148,12 +148,15 @@ MOMENT is an encoded date"
 
 (defun ledger-read-transaction ()
   "Read the text of a transaction, which is at least the current date."
-  (let ((reference-date (or ledger-add-transaction-last-date (current-time))))
-    (read-string
-     "Transaction: "
-     ;; Pre-fill year and month, but not day: this assumes DD is the last format arg.
-     (ledger-format-date reference-date)
-     'ledger-minibuffer-history)))
+  (let* ((reference-date (or ledger-add-transaction-last-date (current-time)))
+         (full-date-string (ledger-format-date reference-date))
+         ;; Pre-fill year and month, but not day: this assumes DD is the last format arg.
+         (initial-string (replace-regexp-in-string "[0-9]+$" "" full-date-string))
+         (entered-string (read-string "Transaction: "
+                                      initial-string 'ledger-minibuffer-history)))
+    (if (string= initial-string entered-string)
+        full-date-string
+      entered-string)))
 
 (defun ledger-parse-iso-date (date)
   "Try to parse DATE using `ledger-iso-date-regexp' and return a time value or nil."
