@@ -90,48 +90,35 @@ Looks only as far as END, if supplied, otherwise `point-max'."
 (defun ledger-post-align-postings (beg end)
   "Align all accounts and amounts between BEG and END, or the current region, or, if no region, the current line."
   (interactive "r")
-
-  (save-excursion
-    (let ((inhibit-modification-hooks t)
-          acct-start-column acct-end-column acct-adjust amt-width amt-adjust
-          (lines-left 1))
-
-      ;; Extend region to whole lines
-      (let ((start-marker (set-marker (make-marker) (save-excursion
-                                                      (goto-char beg)
-                                                      (line-beginning-position))))
-            (end-marker (set-marker (make-marker) (save-excursion
-                                                    (goto-char end)
-                                                    (line-end-position)))))
-        (untabify start-marker end-marker)
-        (goto-char start-marker)
-
-        ;; This is the guts of the alignment loop
-        (while (and (or (setq acct-start-column (ledger-next-account (line-end-position)))
-                        lines-left)
-                    (< (point) end-marker))
-          (when acct-start-column
-            (setq acct-end-column (save-excursion
-                                    (goto-char (match-end 2))
-                                    (current-column)))
-            (when (/= (setq acct-adjust (- ledger-post-account-alignment-column acct-start-column)) 0)
-              (setq acct-end-column (+ acct-end-column acct-adjust))  ;;adjust the account ending column
-              (if (> acct-adjust 0)
-                  (insert (make-string acct-adjust ? ))
-                (delete-char acct-adjust)))
-            (when (setq amt-width (ledger-next-amount (line-end-position)))
-              (if (/= 0 (setq amt-adjust (- (if (> (- ledger-post-amount-alignment-column amt-width)
-                                                   (+ 2 acct-end-column))
-                                                ledger-post-amount-alignment-column ;;we have room
-                                              (+ acct-end-column 2 amt-width))
-                                            amt-width
-                                            (current-column))))
-                  (if (> amt-adjust 0)
-                      (insert (make-string amt-adjust ? ))
-                    (delete-char amt-adjust)))))
-          (forward-line)
-          (setq lines-left (not (eobp)))))
-      (setq inhibit-modification-hooks nil))))
+  (save-match-data
+    (save-excursion
+      (let ((inhibit-modification-hooks t)
+            ;; Extend region to whole lines
+            (beg (save-excursion (goto-char beg) (line-beginning-position)))
+            (end (save-excursion (goto-char end) (move-end-of-line 1) (point-marker))))
+        (untabify beg end)
+        (goto-char beg)
+        (while (< (point) end)
+          (when (looking-at-p " ")
+            ;; fix spaces at beginning of line:
+            (just-one-space ledger-post-account-alignment-column)
+            ;; fix spaces before amount if any:
+            (when (re-search-forward "\t\\|  \\| \t" (line-end-position) t)
+              (goto-char (match-beginning 0))
+              (let ((acct-end-column (current-column))
+                    (amt-width (ledger-next-amount (line-end-position)))
+                    amt-adjust)
+                (when amt-width
+                  (if (/= 0 (setq amt-adjust (- (if (> (- ledger-post-amount-alignment-column amt-width)
+                                                       (+ 2 acct-end-column))
+                                                    ledger-post-amount-alignment-column ;;we have room
+                                                  (+ acct-end-column 2 amt-width))
+                                                amt-width
+                                                (current-column))))
+                      (if (> amt-adjust 0)
+                          (insert (make-string amt-adjust ? ))
+                        (delete-char amt-adjust)))))))
+          (forward-line 1))))))
 
 (defun ledger-post-align-dwim ()
   "Align all the posting of the current xact or the current region.

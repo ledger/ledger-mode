@@ -81,6 +81,37 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
     account2
 "))))
 
+(ert-deftest ledger-complete/test-find-accounts-in-buffer ()
+  (let ((ledger "*** Expenses
+account Expenses:Accomodation
+account Assets:Cash  ; some comment
+account Assets:Current
+    alias 1187465S022
+commodity EUR
+    format 1,000.00 EUR
+tag ofxid
+2018/05/07 * Company
+    Assets:Current  -38.33 EUR
+    ; ofxid: someid
+    Expenses:Utilities:Insurance  38.00 EUR
+    [Dimensions:Foo]  30.00 EUR
+    [Expenses:Accomodation]  8.33 EUR
+    [Dimensions:Equity]  -38.33 EUR
+    (Something)  43.00 EUR
+"))
+    (with-temp-buffer
+      (insert ledger)
+      (should (equal
+               (ledger-accounts-list-in-buffer)
+               (list ; I don't know why accounts are sorted in reverse order
+                "Something"
+                "Expenses:Utilities:Insurance"
+                "Expenses:Accomodation"
+                "Dimensions:Foo"
+                "Dimensions:Equity"
+                "Assets:Current"
+                "Assets:Cash"))))))
+
 
 (provide 'complete-test)
 
