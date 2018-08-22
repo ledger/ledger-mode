@@ -29,6 +29,7 @@
 (require 'ledger-navigate)
 (require 'ledger-regex)
 (require 'ledger-state)
+(require 'ledger-fontify)
 
 (defgroup ledger-faces nil "Ledger mode highlighting" :group 'ledger)
 
