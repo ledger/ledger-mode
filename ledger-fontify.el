@@ -32,6 +32,10 @@
 (require 'ledger-regex)
 (require 'ledger-state)
 
+;; These are dynamically bound, see `font-lock-extend-region-functions'.
+(defvar font-lock-beg)
+(defvar font-lock-end)
+
 (defcustom ledger-fontify-xact-state-overrides nil
   "If t the highlight entire xact with state."
   :type 'boolean
