@@ -328,6 +328,10 @@ An easy way to copy a transaction is to type @kbd{C-c C-k} or menu entry
 copied transaction, and after having confirmed with @kbd{RET}, new
 transaction will be inserted at @emph{date} position in buffer.
 
+If you prefer to keep blank lines between your transactions, you can
+change the default in
+@option{ledger-copy-transaction-insert-blank-line-after}.
+
 @node Editing Amounts, Marking Transactions, Copying Transactions, The Ledger Buffer
 @section Editing Amounts
 @kindex C-c C-b
