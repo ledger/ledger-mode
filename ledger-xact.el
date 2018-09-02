@@ -132,7 +132,7 @@ MOMENT is an encoded date"
          (encoded-date (ledger-parse-iso-date date)))
     (ledger-xact-find-slot encoded-date)
     (insert transaction
-            (if (bound-and-true-p ledger-copy-transaction-insert-blank-line-after)
+            (if ledger-copy-transaction-insert-blank-line-after
                 "\n\n"
               "\n"))
     (beginning-of-line -1)
