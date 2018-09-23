@@ -172,14 +172,17 @@ correct chronological place in the buffer."
   (let* ((args (with-temp-buffer
                  (insert transaction-text)
                  (eshell-parse-arguments (point-min) (point-max))))
-         (ledger-buf (current-buffer)))
+         (ledger-buf (current-buffer))
+         (separator "\n"))
     (unless insert-at-point
       (let* ((date (car args))
              (parsed-date (ledger-parse-iso-date date)))
         (setq ledger-add-transaction-last-date parsed-date)
         (push-mark)
         ;; TODO: what about when it can't be parsed?
-        (ledger-xact-find-slot (or parsed-date date))))
+        (ledger-xact-find-slot (or parsed-date date))
+        (when (looking-at "\n*\\'")
+          (setq separator ""))))
     (if (> (length args) 1)
         (save-excursion
           (insert
@@ -189,9 +192,9 @@ correct chronological place in the buffer."
              (goto-char (point-min))
              (ledger-post-align-postings (point-min) (point-max))
              (buffer-string))
-           "\n"))
+           separator))
       (progn
-        (insert (car args) " \n\n")
+        (insert (car args) " \n" separator)
         (end-of-line -1)))))
 
 (provide 'ledger-xact)
