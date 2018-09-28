@@ -24,6 +24,9 @@
 
 (require 'pcomplete)
 (require 'cl-lib)
+(unless (fboundp 'pcomplete-uniquify-list)
+  ;; TODO: Remove after dropping support for Emacs < 27
+  (defalias 'pcomplete-uniquify-list 'pcomplete-uniqify-list))
 
 ;; Emacs 24.3 compatibility
 (defun ledger-string-greaterp (string1 string2)
@@ -87,7 +90,7 @@ This file will then be used as a source for account name completions."
           (setq payees-list (cons (match-string-no-properties 3)
                                   payees-list)))))  ;; add the payee
     ;; to the list
-    (pcomplete-uniqify-list (nreverse payees-list))))
+    (pcomplete-uniquify-list (nreverse payees-list))))
 
 (defun ledger-accounts-deduplicate-sorted (l)
   "Remove duplicates from a sorted list of strings L."
