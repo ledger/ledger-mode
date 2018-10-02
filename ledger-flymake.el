@@ -125,7 +125,7 @@ Flymake calls this with REPORT-FN as needed."
 
 Don't enable flymake if flycheck is on and flycheck-ledger is
 available."
-  (when (< 26 emacs-major-version)
+  (unless (> emacs-major-version 25)
     (error "Ledger-flymake requires Emacs version 26 or higher"))
   ;; Add `ledger-flymake' to `flymake-diagnostic-functions' so that flymake can
   ;; work in ledger-mode:
