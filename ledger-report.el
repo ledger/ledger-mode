@@ -367,6 +367,19 @@ a number."
          (month-index (nth 4 time-parts)))
     (cons year month-index)))
 
+(defun ledger-report--normalize-month (month)
+  "Return (YEAR . NEW-MONTH) where NEW-MONTH is between 1 and 12.
+
+MONTH is of the form (YEAR . INDEX) where INDEX is an integer.
+The purpose of this method is then to convert any year/month pair
+to a meaningful date, e.g., from (2018 . -2) to (2017 . 10)."
+  (let* ((month-index (cdr month))
+         (year-shift  (/ (1- month-index) 12)))
+    (when (<= month-index 0)
+      (setq year-shift (1- year-shift)))
+    (cons (+ (car month) year-shift)
+          (1+ (mod (1- month-index) 12)))))
+
 (defun ledger-report--shift-month (month shift)
   "Return (YEAR . NEW-MONTH) where NEW-MONTH is MONTH+SHIFT.
 
@@ -374,7 +387,7 @@ MONTH is of the form (YEAR . INDEX) where INDEX ranges from
 1 (January) to 12 (December) and YEAR is a number."
   (let* ((year (car month))
          (new-month (+ (cdr month) shift)))
-    (cons year new-month)))
+    (ledger-report--normalize-month (cons year new-month))))
 
 (defun ledger-report-month-format-specifier ()
   "Substitute current month."
