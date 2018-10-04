@@ -27,12 +27,15 @@
 
 (require 'ledger-xact)
 (require 'ledger-navigate)
+(require 'ledger-commodities)
 (declare-function ledger-read-string-with-default "ledger-mode" (prompt default))
 (declare-function ledger-read-account-with-prompt "ledger-mode" (prompt))
 
 (require 'easymenu)
 (require 'ansi-color)
 (require 'font-lock)
+(eval-when-compile
+  (require 'rx))
 
 (defvar ledger-buf)
 
@@ -189,6 +192,7 @@ when running reports?"
       #'ledger-report-edit-report)
     (define-key map (kbd "M-p") #'ledger-report-previous-month)
     (define-key map (kbd "M-n") #'ledger-report-next-month)
+    (define-key map (kbd "$") #'ledger-report-toggle-default-commodity)
     map)
   "Keymap for `ledger-report-mode'.")
 
@@ -492,7 +496,7 @@ Optionally EDIT the command."
          'help-echo (format "mouse-2, RET: Visit %s:%d" file line))
         ;; Appending the face preserves Ledger's native highlighting
         (font-lock-append-text-property (line-beginning-position) (line-end-position)
-                                'face 'ledger-font-report-clickable-face)
+                                        'face 'ledger-font-report-clickable-face)
         (end-of-line)))))
 
 (defun ledger-report--compute-header-line (cmd)
@@ -648,6 +652,20 @@ arguments returned by `ledger-report--compute-extra-args'."
   "Rebuild report with transactions from the next month."
   (interactive)
   (ledger-report--change-month 1))
+
+(defun ledger-report-toggle-default-commodity ()
+  "Add or remove \"--exchange `ledger-reconcile-default-commodity' to the current report."
+  (interactive)
+  (unless (derived-mode-p 'ledger-report-mode)
+    (user-error "Not a ledger report buffer"))
+  (if (string-match-p
+       (concat (rx (or "--exchange" "-X") (1+ space))
+               (regexp-quote ledger-reconcile-default-commodity))
+       ledger-report-cmd)
+      (setq ledger-report-cmd (replace-match "" nil nil ledger-report-cmd))
+    (setq ledger-report-cmd (concat ledger-report-cmd
+                                    " --exchange " ledger-reconcile-default-commodity)))
+  (ledger-report-redo))
 
 (provide 'ledger-report)
 
