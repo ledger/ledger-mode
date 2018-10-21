@@ -128,6 +128,11 @@ when running reports?"
   :type 'boolean
   :group 'ledger-report)
 
+(defcustom ledger-report-after-report-hook nil
+  "Hook run after `ledger-report' has created the buffer and report."
+  :type 'boolean
+  :group 'ledger-report)
+
 (defvar ledger-report-buffer-name "*Ledger Report*")
 
 (defvar ledger-report-name nil)
@@ -275,7 +280,7 @@ used to generate the buffer, navigating the buffer, etc."
       (ledger-do-report (ledger-report-cmd report-name edit))
       (ledger-report-maybe-shrink-window)
       (set-buffer-modified-p nil)
-      (setq buffer-read-only t)
+      (run-hooks 'ledger-report-after-report-hook)
       (message "q to quit; r to redo; e to edit; k to kill; s to save; SPC and DEL to scroll"))))
 
 (defun ledger-report--header-function ()
@@ -570,6 +575,7 @@ arguments returned by `ledger-report--compute-extra-args'."
           (ledger-do-report ledger-report-cmd)
           (if ledger-report-is-reversed (ledger-report-reverse-lines))
           (if ledger-report-auto-refresh-sticky-cursor (forward-line (- ledger-report-cursor-line-number 5)))
+          (run-hooks 'ledger-report-after-report-hook)
           (pop-to-buffer cur-buf)))))
 
 (defun ledger-report-quit ()
