@@ -658,13 +658,14 @@ arguments returned by `ledger-report--compute-extra-args'."
   (interactive)
   (unless (derived-mode-p 'ledger-report-mode)
     (user-error "Not a ledger report buffer"))
-  (if (string-match-p
-       (concat (rx (or "--exchange" "-X") (1+ space))
-               (regexp-quote ledger-reconcile-default-commodity))
-       ledger-report-cmd)
-      (setq ledger-report-cmd (replace-match "" nil nil ledger-report-cmd))
-    (setq ledger-report-cmd (concat ledger-report-cmd
-                                    " --exchange " ledger-reconcile-default-commodity)))
+  (save-match-data
+    (if (string-match
+         (concat (rx (or "--exchange" "-X") (1+ space))
+                 (regexp-quote ledger-reconcile-default-commodity))
+         ledger-report-cmd)
+        (setq ledger-report-cmd (replace-match "" nil nil ledger-report-cmd))
+      (setq ledger-report-cmd (concat ledger-report-cmd
+                                      " --exchange " ledger-reconcile-default-commodity))))
   (ledger-report-redo))
 
 (provide 'ledger-report)
