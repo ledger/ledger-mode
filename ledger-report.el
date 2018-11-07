@@ -174,8 +174,6 @@ when running reports?"
 
 (defvar ledger-report-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [? ] #'scroll-up)
-    (define-key map [backspace] #'scroll-down)
     (define-key map [?r] #'ledger-report-redo)
     (define-key map [(shift ?r)] #'ledger-report-reverse-report)
     (define-key map [?s] #'ledger-report-save)
@@ -214,7 +212,7 @@ when running reports?"
     ["Quit" ledger-report-quit]
     ))
 
-(define-derived-mode ledger-report-mode text-mode "Ledger-Report"
+(define-derived-mode ledger-report-mode special-mode "Ledger-Report"
   "A mode for viewing ledger reports.")
 
 (defconst ledger-report--extra-args-marker "[[ledger-mode-flags]]")
@@ -285,7 +283,7 @@ used to generate the buffer, navigating the buffer, etc."
       (ledger-report-maybe-shrink-window)
       (set-buffer-modified-p nil)
       (run-hooks 'ledger-report-after-report-hook)
-      (message "q to quit; r to redo; e to edit; k to kill; s to save; SPC and DEL to scroll"))))
+      (message "q to quit; r to redo; e to edit; s to save; SPC and DEL to scroll"))))
 
 (defun ledger-report--header-function ()
   "Compute the string to be used as the header in the `ledger-report' buffer."
@@ -510,7 +508,8 @@ CMD may contain a (shell-quoted) version of
 `ledger-report--extra-args-marker', wich will be replaced by
 arguments returned by `ledger-report--compute-extra-args'."
   (goto-char (point-min))
-  (let* ((marker ledger-report--extra-args-marker)
+  (let* ((inhibit-read-only t)
+         (marker ledger-report--extra-args-marker)
          (marker-re (concat " *" (regexp-quote marker)))
          (args (ledger-report--compute-extra-args cmd))
          (args-str (concat " " (mapconcat #'shell-quote-argument args " ")))
