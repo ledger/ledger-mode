@@ -131,6 +131,7 @@ Display result in `ledger-import-buffer' and execute CALLBACK when done.
 
 If LEDGER-FILE is non nil, use transactions from this file to
 guess related account names."
+  (interactive (list (ledger-import-choose-account) (current-buffer) #'ledger-import-pop-to-buffer))
   (with-current-buffer in-buffer
     (let* ((ledger-name (ledger-import-account-ledger-name account))
            (fid (ledger-import-account-fid account))
