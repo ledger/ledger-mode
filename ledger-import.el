@@ -136,7 +136,7 @@ guess related account names."
                      (pop-to-buffer-same-window (ledger-import-buffer))
                      (error "There was a problem with ledger-autosync while importing %s" ledger-name)))))))
 
-(defun ledger-import--ofx-fetch-boobank (account &optional callback retry)
+(defun ledger-import-ofx-fetch-boobank (account &optional callback retry)
   "Use boobank to fetch OFX data for ACCOUNT.
 When done, execute CALLBACK with buffer containing OFX data.
 
@@ -170,11 +170,11 @@ to fail often and restarting usually solves the problem."
 (defun ledger-import--ofx-fetch-boobank-error (retry account callback error-buffer)
   "Throw an error if RETRY is 0 or try starting boobank again.
 
-ACCOUNT and CALLBACK are the same as in `ledger-import--ofx-fetch-boobank'.
+ACCOUNT and CALLBACK are the same as in `ledger-import-ofx-fetch-boobank'.
 
 ERROR-BUFFER is a buffer containing an error message explaining the problem."
   (if (>= retry 0)
-      (ledger-import--ofx-fetch-boobank account callback (1- retry))
+      (ledger-import-ofx-fetch-boobank account callback (1- retry))
     (pop-to-buffer-same-window error-buffer)
     (error "There was a problem with boobank while importing %s" account)))
 
@@ -184,7 +184,7 @@ When done, execute CALLBACK.
 
 If LEDGER-FILE is non nil, use transactions from this file to
 guess related account names."
-  (ledger-import--ofx-fetch-boobank
+  (ledger-import-ofx-fetch-boobank
    (ledger-import-account-ofx-name account)
    (lambda (ofx-buffer)
      (ledger-import--ofx-import-file
