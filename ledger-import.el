@@ -125,7 +125,7 @@ The `ledger-import-buffer' is made current before the hook is run."
                                     account-name))
               accounts)))
 
-(defun ledger-import--ofx-import-file (account in-buffer &optional callback ledger-file)
+(defun ledger-import-ofx-import-file (account in-buffer &optional callback ledger-file)
   "Import ofx data for ACCOUNT from IN-BUFFER with ledger-autosync.
 Display result in `ledger-import-buffer' and execute CALLBACK when done.
 
@@ -206,7 +206,7 @@ guess related account names."
   (ledger-import-ofx-fetch-boobank
    (ledger-import-account-ofx-name account)
    (lambda (ofx-buffer)
-     (ledger-import--ofx-import-file
+     (ledger-import-ofx-import-file
       account
       ofx-buffer
       (lambda ()
