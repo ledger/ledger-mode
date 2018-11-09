@@ -73,6 +73,12 @@
   :group 'ledger-import
   :type 'string)
 
+(defcustom ledger-import-fetched-hook nil
+  "Hook run when an OFX file is ready to be imported.
+The OFX buffer is made current before the hook is run."
+  :group 'ledger-import
+  :type 'hook)
+
 (defcustom ledger-import-finished-hook nil
   "Hook run when all transactions have been imported.
 The `ledger-import-buffer' is made current before the hook is run."
@@ -107,6 +113,17 @@ The `ledger-import-buffer' is made current before the hook is run."
     (if (or (null fid) (string= fid ""))
         nil
       fid)))
+
+(defun ledger-import-choose-account ()
+  "Ask the user to choose an account among `ledger-import-accounts'."
+  (let* ((accounts ledger-import-accounts)
+         (account-name (completing-read "Ledger account: "
+                                        (mapcar #'ledger-import-account-ledger-name accounts)
+                                        nil
+                                        t)))
+    (seq-find (lambda (account) (string= (ledger-import-account-ledger-name account)
+                                    account-name))
+              accounts)))
 
 (defun ledger-import--ofx-import-file (account in-buffer &optional callback ledger-file)
   "Import ofx data for ACCOUNT from IN-BUFFER with ledger-autosync.
@@ -143,6 +160,7 @@ When done, execute CALLBACK with buffer containing OFX data.
 RETRY is a number (default 3) indicating the number of times
 boobank is executed if it fails.  This is because boobank tends
 to fail often and restarting usually solves the problem."
+  (interactive (list (ledger-import-account-ofx-name (ledger-import-choose-account)) #'ledger-import-pop-to-buffer))
   (let ((retry (or retry 3))
         (buffer (generate-new-buffer (format "*ledger-import-%s*" account)))
         (error-buffer (generate-new-buffer (format "*ledger-import-%s <stderr>*" account)))
@@ -163,6 +181,7 @@ to fail often and restarting usually solves the problem."
                      (if (not (with-current-buffer error-buffer (= (point-min) (point-max))))
                          (ledger-import--ofx-fetch-boobank-error retry account callback error-buffer)
                        (kill-buffer error-buffer)
+                       (with-current-buffer buffer (run-hooks 'ledger-import-fetched-hook))
                        (when callback (funcall callback buffer))))
                    (when (string-prefix-p "exited abnormally" event)
                      (ledger-import--ofx-fetch-boobank-error retry account callback error-buffer)))))))
