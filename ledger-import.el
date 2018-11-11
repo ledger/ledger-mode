@@ -19,7 +19,32 @@
 
 ;;; Commentary:
 
+;; This file contains code to simplify importing new transactions into your
+;; Ledger file.  Transactions are fetched using a fetcher (only boobank from the
+;; weboob project is supported for now) and the OFX file format.  Then, the OFX
+;; buffers are converted into Ledger format through ledger-autosync.
+
+;; To use ledger-import, you first have to install and configure boobank, from
+;; the weboob project:
 ;;
+;; - http://weboob.org/
+;; - http://weboob.org/applications/boobank
+;;
+;; When you manage to visualize your bank accounts with boobank, you should
+;; configure each in `ledger-import-accounts'.  Use `customize-variable' to do
+;; that if you want to.  You can check that your configuration works with `M-x
+;; ledger-import-ofx-fetch-boobank': after a few tens of seconds, you will get a
+;; buffer with OFX data.
+;;
+;; To convert an OFX file into Ledger format, ledger-import uses ledger-autosync
+;; that you have to install as well:
+;;
+;; - https://github.com/egh/ledger-autosync
+;;
+;; This doesn't require additional configuration.  To test that ledger-autosync
+;; works fine, go back to the buffer containing OFX data (or create a new one),
+;; and type `M-x ledger-import-ofx-import-file'.  After a few seconds, you
+;; should get your transactions in Ledger format.
 
 ;;; Code:
 
