@@ -89,6 +89,7 @@ The `ledger-import-buffer' is made current before the hook is run."
   "Return the buffer containing imported transactions."
   (get-buffer-create "*ledger sync*"))
 
+;;;###autoload
 (defun ledger-import-pop-to-buffer (&optional buffer)
   "Make BUFFER visible, `ledger-import-buffer' if nil."
   (interactive)
@@ -125,6 +126,7 @@ The `ledger-import-buffer' is made current before the hook is run."
                                     account-name))
               accounts)))
 
+;;;###autoload
 (defun ledger-import-ofx-import-file (account in-buffer &optional callback ledger-file)
   "Import ofx data for ACCOUNT from IN-BUFFER with ledger-autosync.
 Display result in `ledger-import-buffer' and execute CALLBACK when done.
@@ -154,6 +156,7 @@ guess related account names."
                      (pop-to-buffer-same-window (ledger-import-buffer))
                      (error "There was a problem with ledger-autosync while importing %s" ledger-name)))))))
 
+;;;###autoload
 (defun ledger-import-ofx-fetch-boobank (account &optional callback retry)
   "Use boobank to fetch OFX data for ACCOUNT.
 When done, execute CALLBACK with buffer containing OFX data.
@@ -230,6 +233,7 @@ guess related account names."
        (ledger-import--accounts (cdr accounts) callback ledger-file))
      ledger-file)))
 
+;;;###autoload
 (defun ledger-import-all-accounts (&optional ledger-file)
   "Import transactions from ofx to Ledger format using \"ledger-autosync\".
 
