@@ -1,4 +1,4 @@
-;;; ledger-import.el --- Fetch and import OFX files into Ledger  -*- lexical-binding: t; -*-
+;;; ledger-import.el --- Fetch OFX files and convert them into Ledger format  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018  Damien Cassou
 
@@ -33,8 +33,9 @@
 ;; When you manage to visualize your bank accounts with boobank, you should
 ;; configure each in `ledger-import-accounts'.  Use `customize-variable' to do
 ;; that if you want to.  You can check that your configuration works with `M-x
-;; ledger-import-ofx-fetch-boobank': after a few tens of seconds, you will get a
-;; buffer with OFX data.
+;; ledger-import-fetch-boobank': after a few tens of seconds, you will get a
+;; buffer with OFX data.  If boobank imports transactions that are too old, you
+;; can configure `ledger-import-boobank-import-from-date'.
 ;;
 ;; To convert an OFX file into Ledger format, ledger-import uses ledger-autosync
 ;; that you have to install as well:
@@ -43,7 +44,7 @@
 ;;
 ;; This doesn't require additional configuration.  To test that ledger-autosync
 ;; works fine, go back to the buffer containing OFX data (or create a new one),
-;; and type `M-x ledger-import-ofx-import-file'.  After a few seconds, you
+;; and type `M-x ledger-import-convert-ofx-to-ledger'.  After a few seconds, you
 ;; should get your transactions in Ledger format.
 
 ;;; Code:
@@ -51,37 +52,35 @@
 (require 'ledger-mode)
 
 (defgroup ledger-import nil
-  "Fetch and import OFX files into Ledger."
+  "Fetch OFX files and convert them into Ledger format."
   :group 'ledger)
 
 (defcustom ledger-import-accounts nil
-  "Alist mapping OFX account names to Ledger account names."
+  "Ledger accounts for which to fetch and convert data."
   :group 'ledger-import
-  :type `(alist
-          :key-type
-          (string
-           :tag "OFX account name"
-           :match ledger-import--non-empty-string-widget-matcher
-           :doc "Account name as known by boobank"
-           :format "%t: %v%h\n")
-          :value-type
+  :type '(repeat
           (group
            (string
             :tag "Ledger account"
             :match ledger-import--non-empty-string-widget-matcher
             :doc "Account name (e.g., \"Assets:Current\") as known by Ledger"
             :format "%t: %v%h\n")
-           (string
-            :tag "FID"
-            :value ""
-            :doc "Use only if ledger-autosync complains about missing FID"
-            :format "%t: %v%h\n")
            (radio
             :tag "Fetcher"
             :value boobank
             :doc "Tool to use to get the account's OFX file"
             :format "%t: %v%h\n"
-            (const :tag "Boobank" boobank)))))
+            (const :tag "Boobank" boobank))
+           (string
+            :tag "Boobank account name"
+            :match ledger-import--non-empty-string-widget-matcher
+            :doc "Account name as known by boobank"
+            :format "%t: %v%h\n")
+           (string
+            :tag "FID"
+            :value ""
+            :doc "Use only if ledger-autosync complains about missing FID"
+            :format "%t: %v%h\n"))))
 
 (defcustom ledger-import-autosync-command '("ledger-autosync" "--assertions")
   "List of strings with ledger-autosync command name and arguments."
@@ -96,16 +95,20 @@
 (defcustom ledger-import-boobank-import-from-date "2018-10-01"
   "String representing a date from which to import OFX data with boobank."
   :group 'ledger-import
-  :type 'string)
+  :type '(string
+          :match (lambda (_ value)
+                   (string-match-p
+                    "[[:digit:]]\\{4\\}-[[:digit:]]\\{2\\}-[[:digit:]]\\{2\\}"
+                    value))))
 
 (defcustom ledger-import-fetched-hook nil
-  "Hook run when an OFX file is ready to be imported.
+  "Hook run when an OFX file is ready to be converted to Ledger format.
 The OFX buffer is made current before the hook is run."
   :group 'ledger-import
   :type 'hook)
 
 (defcustom ledger-import-finished-hook nil
-  "Hook run when all transactions have been imported.
+  "Hook run when all transactions have been converted to Ledger format.
 The `ledger-import-buffer' is made current before the hook is run."
   :group 'ledger-import
   :type 'hook)
@@ -122,20 +125,22 @@ The `ledger-import-buffer' is made current before the hook is run."
 
 (defun ledger-import--non-empty-string-widget-matcher (_widget value)
   "Return non-nil if VALUE is a non-empty string."
-  (message "value: %s" value)
-  (and (stringp value) (> (length value) 0)))
-
-(defun ledger-import-account-ofx-name (account)
-  "Return OFX account name for ACCOUNT as known by the importer."
-  (nth 0 account))
+  (and (stringp value)
+       (> (length value) 0)))
 
 (defun ledger-import-account-ledger-name (account)
-  "Return Ledger account name for ACCOUNT as known by the fetcher."
-  (nth 1 account))
+  "Return Ledger account name for ACCOUNT as known by your Ledger file."
+  (nth 0 account))
+
+(defun ledger-import-account-fetcher-id (account)
+  "Return ACCOUNT identifier as known by the fetcher.
+For example, this is the account ID that boobank uses."
+  (nth 2 account))
 
 (defun ledger-import-account-fid (account)
-  "Return FID for ACCOUNT."
-  (let ((fid (nth 2 account)))
+  "Return FID for ACCOUNT, or nil if none is necessary.
+This can be useful for ledger-autosync if the OFX data does not provide any."
+  (let ((fid (nth 3 account)))
     (if (or (null fid) (string= fid ""))
         nil
       fid)))
@@ -152,9 +157,11 @@ The `ledger-import-buffer' is made current before the hook is run."
               accounts)))
 
 ;;;###autoload
-(defun ledger-import-ofx-import-file (account in-buffer &optional callback ledger-file)
-  "Import ofx data for ACCOUNT from IN-BUFFER with ledger-autosync.
+(defun ledger-import-convert-ofx-to-ledger (account in-buffer &optional callback ledger-file)
+  "Convert ofx data for ACCOUNT in IN-BUFFER to Ledger format.
 Display result in `ledger-import-buffer' and execute CALLBACK when done.
+
+`ledger-import-autosync-command' is used to do the convertion.
 
 If LEDGER-FILE is non nil, use transactions from this file to
 guess related account names."
@@ -182,60 +189,63 @@ guess related account names."
                      (error "There was a problem with ledger-autosync while importing %s" ledger-name)))))))
 
 ;;;###autoload
-(defun ledger-import-ofx-fetch-boobank (account &optional callback retry)
-  "Use boobank to fetch OFX data for ACCOUNT.
+(defun ledger-import-fetch-boobank (fetcher-account &optional callback retry)
+  "Use boobank to fetch OFX data for FETCHER-ACCOUNT, a string.
 When done, execute CALLBACK with buffer containing OFX data.
 
 RETRY is a number (default 3) indicating the number of times
 boobank is executed if it fails.  This is because boobank tends
 to fail often and restarting usually solves the problem."
-  (interactive (list (ledger-import-account-ofx-name (ledger-import-choose-account)) #'ledger-import-pop-to-buffer))
+  (interactive (list (ledger-import-account-fetcher-id (ledger-import-choose-account)) #'ledger-import-pop-to-buffer))
   (let ((retry (or retry 3))
-        (buffer (generate-new-buffer (format "*ledger-import-%s*" account)))
-        (error-buffer (generate-new-buffer (format "*ledger-import-%s <stderr>*" account)))
+        (buffer (generate-new-buffer (format "*ledger-import-%s*" fetcher-account)))
+        (error-buffer (generate-new-buffer (format "*ledger-import-%s <stderr>*" fetcher-account)))
         (command `(,@ledger-import-boobank-command
                    "--formatter=ofx"
                    "history"
-                   ,account
+                   ,fetcher-account
                    ,ledger-import-boobank-import-from-date)))
     (with-current-buffer buffer
-      (message "Starting boobank for %s" account)
+      (message "Starting boobank for %s" fetcher-account)
       (make-process
-       :name (format "boobank %s" account)
+       :name (format "boobank %s" fetcher-account)
        :buffer buffer
        :stderr error-buffer
        :command command
        :sentinel (lambda (_process event)
                    (when (string= event "finished\n")
                      (if (not (with-current-buffer error-buffer (= (point-min) (point-max))))
-                         (ledger-import--ofx-fetch-boobank-error retry account callback error-buffer)
+                         (ledger-import--fetch-boobank-error retry fetcher-account callback error-buffer)
                        (kill-buffer error-buffer)
                        (with-current-buffer buffer (run-hooks 'ledger-import-fetched-hook))
                        (when callback (funcall callback buffer))))
                    (when (string-prefix-p "exited abnormally" event)
-                     (ledger-import--ofx-fetch-boobank-error retry account callback error-buffer)))))))
+                     (ledger-import--fetch-boobank-error retry fetcher-account callback error-buffer)))))))
 
-(defun ledger-import--ofx-fetch-boobank-error (retry account callback error-buffer)
+(defun ledger-import--fetch-boobank-error (retry account callback error-buffer)
   "Throw an error if RETRY is 0 or try starting boobank again.
 
-ACCOUNT and CALLBACK are the same as in `ledger-import-ofx-fetch-boobank'.
+ACCOUNT and CALLBACK are the same as in `ledger-import-fetch-boobank'.
 
 ERROR-BUFFER is a buffer containing an error message explaining the problem."
   (if (>= retry 0)
-      (ledger-import-ofx-fetch-boobank account callback (1- retry))
+      (ledger-import-fetch-boobank account callback (1- retry))
     (pop-to-buffer-same-window error-buffer)
     (error "There was a problem with boobank while importing %s" account)))
 
-(defun ledger-import--account (account &optional callback ledger-file)
-  "Import all of ACCOUNT and put the result in `ledger-import-buffer'.
-When done, execute CALLBACK.
+(defun ledger-import-account (account &optional callback ledger-file)
+  "Fetch and convert transactions of ACCOUNT.
+Write the result in `ledger-import-buffer' and execute CALLBACK when done.
 
 If LEDGER-FILE is non nil, use transactions from this file to
 guess related account names."
-  (ledger-import-ofx-fetch-boobank
-   (ledger-import-account-ofx-name account)
+  (interactive
+   (list (ledger-import-choose-account)
+         (lambda () (ledger-import-pop-to-buffer))))
+  (ledger-import-fetch-boobank
+   (ledger-import-account-fetcher-id account)
    (lambda (ofx-buffer)
-     (ledger-import-ofx-import-file
+     (ledger-import-convert-ofx-to-ledger
       account
       ofx-buffer
       (lambda ()
@@ -252,7 +262,7 @@ If LEDGER-FILE is non nil, use transactions from this file to
 guess related account names."
   (if (null accounts)
       (when callback (funcall callback))
-    (ledger-import--account
+    (ledger-import-account
      (car accounts)
      (lambda ()
        (ledger-import--accounts (cdr accounts) callback ledger-file))
@@ -260,7 +270,8 @@ guess related account names."
 
 ;;;###autoload
 (defun ledger-import-all-accounts (&optional ledger-file)
-  "Import transactions from ofx to Ledger format using \"ledger-autosync\".
+  "Fetch transactions from all accounts and convert to Ledger format.
+Accounts are listed `ledger-import-accounts'.
 
 If LEDGER-FILE is non nil, use transactions from this file to
 guess related account names."
