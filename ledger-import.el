@@ -45,7 +45,11 @@
 ;; This doesn't require additional configuration.  To test that ledger-autosync
 ;; works fine, go back to the buffer containing OFX data (or create a new one),
 ;; and type `M-x ledger-import-convert-ofx-to-ledger'.  After a few seconds, you
-;; should get your transactions in Ledger format.
+;; should get your transactions in Ledger format.  If you instead get a message
+;; saying that the OFX data did not provide any FID, then you can provide a
+;; random one in `ledger-import-accounts'.
+;;
+;;
 
 ;;; Code:
 
