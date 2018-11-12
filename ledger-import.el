@@ -49,6 +49,9 @@
 ;; saying that the OFX data did not provide any FID, then you can provide a
 ;; random one in `ledger-import-accounts'.
 ;;
+;; To fetch transactions from all configured accounts and convert them to Ledger
+;; format, type `M-x ledger-import-all-accounts'.  When this is finished, you
+;; can open the result with `M-x ledger-import-pop-to-buffer'.
 ;;
 
 ;;; Code:
