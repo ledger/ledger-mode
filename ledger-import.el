@@ -53,6 +53,10 @@
 ;; format, type `M-x ledger-import-all-accounts'.  When this is finished, you
 ;; can open the result with `M-x ledger-import-pop-to-buffer'.
 ;;
+;; If you keep manually modifying the Ledger transactions after they have been
+;; converted, you might prefer to let ledger-import do that for you.
+;; ledger-import gives you 2 ways to rewrite OFX data: either through the
+;; `ledger-import-fetched-hook' or through `ledger-import-ofx-rewrite-rules'.
 
 ;;; Code:
 
@@ -108,7 +112,15 @@
                     "[[:digit:]]\\{4\\}-[[:digit:]]\\{2\\}-[[:digit:]]\\{2\\}"
                     value))))
 
-(defcustom ledger-import-fetched-hook nil
+(defcustom ledger-import-ofx-rewrite-rules nil
+  "List of (REGEXP . REPLACEMENT) to apply in an OFX buffer."
+  :group 'ledger-import
+  :type '(repeat
+          (cons
+           (regexp :tag "What to search for" :value "")
+           (string :tag "What to replace it with" :value ""))))
+
+(defcustom ledger-import-fetched-hook '(ledger-import-ofx-rewrite)
   "Hook run when an OFX file is ready to be converted to Ledger format.
 The OFX buffer is made current before the hook is run."
   :group 'ledger-import
@@ -239,6 +251,15 @@ ERROR-BUFFER is a buffer containing an error message explaining the problem."
       (ledger-import-fetch-boobank account callback (1- retry))
     (pop-to-buffer-same-window error-buffer)
     (error "There was a problem with boobank while importing %s" account)))
+
+(defun ledger-import-ofx-rewrite ()
+  "Apply `ledger-import-ofx-rewrite-rules' to current buffer.
+The current buffer should be in the OFX format."
+  (save-match-data
+    (dolist (pair ledger-import-ofx-rewrite-rules)
+      (goto-char (point-min))
+      (while (re-search-forward (car pair) nil t)
+        (replace-match (cdr pair) t)))))
 
 (defun ledger-import-account (account &optional callback ledger-file)
   "Fetch and convert transactions of ACCOUNT.
