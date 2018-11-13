@@ -61,6 +61,7 @@
 ;;; Code:
 
 (require 'ledger-mode)
+(require 'seq)
 
 (defgroup ledger-import nil
   "Fetch OFX files and convert them into Ledger format."
@@ -104,7 +105,8 @@
   :type '(repeat string))
 
 (defcustom ledger-import-boobank-import-from-date "2018-10-01"
-  "String representing a date from which to import OFX data with boobank."
+  "String representing a date from which to import OFX data with boobank.
+The format is YYYY-MM-DD."
   :group 'ledger-import
   :type '(string
           :match (lambda (_ value)
@@ -148,20 +150,25 @@ The `ledger-import-buffer' is made current before the hook is run."
        (> (length value) 0)))
 
 (defun ledger-import-account-ledger-name (account)
-  "Return Ledger account name for ACCOUNT as known by your Ledger file."
+  "Return ACCOUNT's name as known by your Ledger file.
+
+ACCOUNT is a list whose items are defined in `ledger-import-accounts'."
   (nth 0 account))
 
 (defun ledger-import-account-fetcher-id (account)
-  "Return ACCOUNT identifier as known by the fetcher.
-For example, this is the account ID that boobank uses."
+  "Return ACCOUNT's identifier as known by the fetcher.
+For example, this is the account ID that boobank uses.
+
+ACCOUNT is a list whose items are defined in `ledger-import-accounts'."
   (nth 2 account))
 
 (defun ledger-import-account-fid (account)
-  "Return FID for ACCOUNT, or nil if none is necessary.
-This can be useful for ledger-autosync if the OFX data does not provide any."
+  "Return ACCOUNT's fid, or nil if none is necessary.
+This can be useful for ledger-autosync if the OFX data does not provide any.
+
+ACCOUNT is a list whose items are defined in `ledger-import-accounts'."
   (let ((fid (nth 3 account)))
-    (if (or (null fid) (string= fid ""))
-        nil
+    (unless (or (null fid) (string= fid ""))
       fid)))
 
 (defun ledger-import-choose-account ()
@@ -181,6 +188,8 @@ This can be useful for ledger-autosync if the OFX data does not provide any."
 Display result in `ledger-import-buffer' and execute CALLBACK when done.
 
 `ledger-import-autosync-command' is used to do the convertion.
+
+ACCOUNT is a list whose items are defined in `ledger-import-accounts'.
 
 If LEDGER-FILE is non nil, use transactions from this file to
 guess related account names."
@@ -241,16 +250,16 @@ to fail often and restarting usually solves the problem."
                    (when (string-prefix-p "exited abnormally" event)
                      (ledger-import--fetch-boobank-error retry fetcher-account callback error-buffer)))))))
 
-(defun ledger-import--fetch-boobank-error (retry account callback error-buffer)
+(defun ledger-import--fetch-boobank-error (retry fetcher-account callback error-buffer)
   "Throw an error if RETRY is 0 or try starting boobank again.
 
-ACCOUNT and CALLBACK are the same as in `ledger-import-fetch-boobank'.
+FETCHER-ACCOUNT and CALLBACK are the same as in `ledger-import-fetch-boobank'.
 
 ERROR-BUFFER is a buffer containing an error message explaining the problem."
   (if (>= retry 0)
-      (ledger-import-fetch-boobank account callback (1- retry))
+      (ledger-import-fetch-boobank fetcher-account callback (1- retry))
     (pop-to-buffer-same-window error-buffer)
-    (error "There was a problem with boobank while importing %s" account)))
+    (error "There was a problem with boobank while importing %s" fetcher-account)))
 
 (defun ledger-import-ofx-rewrite ()
   "Apply `ledger-import-ofx-rewrite-rules' to current buffer.
@@ -264,6 +273,8 @@ The current buffer should be in the OFX format."
 (defun ledger-import-account (account &optional callback ledger-file)
   "Fetch and convert transactions of ACCOUNT.
 Write the result in `ledger-import-buffer' and execute CALLBACK when done.
+
+ACCOUNT is a list whose items are defined in `ledger-import-accounts'.
 
 If LEDGER-FILE is non nil, use transactions from this file to
 guess related account names."
@@ -286,6 +297,8 @@ guess related account names."
   "Import all of ACCOUNTS and put the result in `ledger-import-buffer'.
 When done, execute CALLBACK.
 
+ACCOUNTs is a list similar to `ledger-import-accounts'.
+
 If LEDGER-FILE is non nil, use transactions from this file to
 guess related account names."
   (if (null accounts)
@@ -306,7 +319,6 @@ guess related account names."
   (interactive (list
                 (when (and (buffer-file-name) (derived-mode-p 'ledger-mode))
                   (buffer-file-name))))
-  (require 'ledger-mode)
   (let ((buffer (ledger-import-buffer)))
     (with-current-buffer buffer (erase-buffer))
     (ledger-import--accounts
@@ -320,7 +332,3 @@ guess related account names."
 
 (provide 'ledger-import)
 ;;; ledger-import.el ends here
-
-;; Local Variables:
-;; eval: (flycheck-mode)
-;; End:
