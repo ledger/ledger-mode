@@ -232,9 +232,9 @@ date descriptor."
    ((string= month-desc "*")
     t)  ;; always match
    ((string= month-desc "E")  ;; Even
-    `(evenp (nth 4 (decode-time date))))
+    `(cl-evenp (nth 4 (decode-time date))))
    ((string= month-desc "O")  ;; Odd
-    `(oddp (nth 4 (decode-time date))))
+    `(cl-oddp (nth 4 (decode-time date))))
    ((/= 0 (string-to-number month-desc)) ;; Starts with number
     `(memq (nth 4 (decode-time date)) ',(mapcar 'string-to-number (split-string month-desc ","))))
    (t
