@@ -202,7 +202,7 @@ Emacs will then prompt for a target value.  The target value is the
 amount you want the cleared transactions in the buffer to total.
 Normally this would be the ending value from your bank statement, or the
 latest value in your on-line transaction summary.  Enter @samp{1710}.
-Note that Ledger-mode assumes your are using @samp{$} (USD) as your
+Note that Ledger-mode assumes you are using @samp{$} (USD) as your
 default commodity, this can be easily changed in the customization
 variables. @xref{Ledger-mode Customization}.
 
@@ -918,8 +918,8 @@ Ledger-mode has several options available for configuration.  All
 options can be configured through the Emacs customization menus, or
 specified in your Emacs initialization file.  The complete list of
 options is shown below. To change the option using the Emacs
-customization menu, simply chose customize in the Options menu and look
-for Ledger under the data options.  Alternately you can choose
+customization menu, simply choose customize in the Options menu and look
+for Ledger under the data options.  Alternatively you can choose
 @samp{Customize Specific Group} and enter @samp{Ledger} as the group.
 
 @node Customization Variables,  , Ledger-mode Customization, Customizing Ledger-mode
