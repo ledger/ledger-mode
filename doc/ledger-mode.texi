@@ -313,7 +313,7 @@ posting.
 @cindex balance
 
 You will often want to quickly check the balance of an account.  The
-easiest way it to position point on the account you are interested in,
+easiest way is to position point on the account you are interested in,
 and type @kbd{C-c C-p}.  The Minibuffer will ask you to verify the name
 of the account you want, if it is already correct hit @kbd{RET}, then
 the balance of the account will be displayed in the Minibuffer.
@@ -347,7 +347,7 @@ type @kbd{y} to yank the value at the top of stack back into the ledger
 buffer.  Note: @command{Calc} does not directly support commas as
 decimal separators.  Ledger-mode will translate values from
 decimal-comma format to decimal-period format for use in @command{Calc},
-but it cannot intercept the value being yanked form the @command{Calc}
+but it cannot intercept the value being yanked from the @command{Calc}
 stack, so decimal-comma users will have to manually replace the period
 with a comma.
 
