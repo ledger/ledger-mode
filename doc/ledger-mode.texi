@@ -159,7 +159,7 @@ Ledger from a convenient command line.
 @kindex C-c C-a
 
 As simple as the Ledger transaction format is, it can still be daunting
-to add many transactions manually.  Ledger provides two way to add
+to add many transactions manually.  Ledger provides two ways to add
 transactions with minimal typing. Both are based on the idea that most
 transactions are repetitions of earlier transactions.
 
