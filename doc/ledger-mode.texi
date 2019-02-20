@@ -47,7 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @end copying
 
-@dircategory Major Modes
+@dircategory Emacs
 @direntry
 * Ledger Mode: (ledger-mode).           Command-Line Accounting
 @end direntry
