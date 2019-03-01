@@ -181,7 +181,7 @@ Possible values are '(date)', '(amount)', '(payee)' or '(0)' for no sorting, i.e
     ;; split arguments like the shell does, so you need to
     ;; specify the individual fields in the command line.
     (ledger-exec-ledger buffer (current-buffer)
-                        "balance" "--limit" "cleared or pending" "--empty" "--collapse"
+                        "balance" "--real" "--limit" "cleared or pending" "--empty" "--collapse"
                         "--format" "%(scrub(display_total))" account)
     (ledger-split-commodity-string
      (buffer-substring-no-properties (point-min) (point-max)))))
