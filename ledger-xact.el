@@ -120,6 +120,9 @@ MOMENT is an encoded date"
                        mark desc)))))
       (forward-line))))
 
+(defvar ledger-copy-transaction-insert-blank-line-after nil
+  "Non-nil means insert blank line after a transaction inserted with ‘ledger-copy-transaction-at-point’.")
+
 (defun ledger-copy-transaction-at-point (date)
   "Ask for a new DATE and copy the transaction under point to that date.  Leave point on the first amount."
   (interactive  (list
@@ -128,7 +131,10 @@ MOMENT is an encoded date"
          (transaction (buffer-substring-no-properties (car extents) (cadr extents)))
          (encoded-date (ledger-parse-iso-date date)))
     (ledger-xact-find-slot encoded-date)
-    (insert transaction "\n")
+    (insert transaction
+            (if ledger-copy-transaction-insert-blank-line-after
+                "\n\n"
+              "\n"))
     (beginning-of-line -1)
     (ledger-navigate-beginning-of-xact)
     (re-search-forward ledger-iso-date-regexp)
