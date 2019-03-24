@@ -200,8 +200,8 @@ correct chronological place in the buffer."
              (buffer-string))
            separator))
       (progn
-        (insert (car args) " \n" separator)
-        (end-of-line -1)))))
+        (insert (car args) " ")
+        (save-excursion (insert "\n" separator))))))
 
 (provide 'ledger-xact)
 
