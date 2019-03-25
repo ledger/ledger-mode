@@ -150,6 +150,9 @@ when running reports?"
 
 (defvar ledger-report-is-reversed nil)
 (defvar ledger-report-cursor-line-number nil)
+(defvar-local ledger-master-file nil
+  "The master file for the current buffer.
+See documentation for the function `ledger-master-file'")
 
 (defun ledger-report-reverse-report ()
   "Reverse the order of the report."
@@ -188,6 +191,7 @@ when running reports?"
       #'ledger-report-save)
     (define-key map [(control ?c) (control ?l) (control ?e)]
       #'ledger-report-edit-report)
+    (define-key map [(control ?c) (control ?o) (control ?r)] #'ledger-report)
     (define-key map (kbd "M-p") #'ledger-report-previous-month)
     (define-key map (kbd "M-n") #'ledger-report-next-month)
     (define-key map (kbd "$") #'ledger-report-toggle-default-commodity)
@@ -265,9 +269,10 @@ used to generate the buffer, navigating the buffer, etc."
      (let ((rname (ledger-report-read-name))
            (edit (not (null current-prefix-arg))))
        (list rname edit))))
-  (let ((buf (find-file-noselect (ledger-master-file)))
-        (rbuf (get-buffer ledger-report-buffer-name))
-        (wcfg (current-window-configuration)))
+  (let* ((file (ledger-master-file))
+         (buf (find-file-noselect file))
+         (rbuf (get-buffer ledger-report-buffer-name))
+         (wcfg (current-window-configuration)))
     (if rbuf
         (kill-buffer rbuf))
     (with-current-buffer
@@ -279,6 +284,7 @@ used to generate the buffer, navigating the buffer, etc."
       (set (make-local-variable 'ledger-original-window-cfg) wcfg)
       (set (make-local-variable 'ledger-report-is-reversed) nil)
       (set (make-local-variable 'ledger-report-current-month) nil)
+      (set 'ledger-master-file file)
       (ledger-do-report (ledger-report-cmd report-name edit))
       (ledger-report-maybe-shrink-window)
       (set-buffer-modified-p nil)
@@ -328,10 +334,6 @@ used to generate the buffer, navigating the buffer, etc."
   (ledger-master-file))
 
 ;; General helper functions
-
-(defvar-local ledger-master-file nil
-  "The master file for the current buffer.
-See documentation for the function `ledger-master-file'")
 
 (defun ledger-master-file ()
   "Return the master file for a ledger file.
