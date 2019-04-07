@@ -75,18 +75,20 @@ otherwise the error output is displayed and an error is raised."
           (outbuf (or output-buffer
                       (generate-new-buffer " *ledger-tmp*")))
           (errfile (make-temp-file "ledger-errors")))
-      (with-current-buffer buf
-        (let ((exit-code
-               (let ((coding-system-for-write 'utf-8)
-                     (coding-system-for-read 'utf-8))
-                 (apply #'call-process-region
-                        (append (list (point-min) (point-max)
-                                      ledger-binary-path nil (list outbuf errfile) nil "-f" "-")
-                                args)))))
-          (if (ledger-exec-success-p exit-code outbuf)
-              outbuf
-            (display-buffer (ledger-exec-handle-error errfile))
-            (error "Ledger execution failed")))))))
+      (unwind-protect
+          (with-current-buffer buf
+            (let ((exit-code
+                   (let ((coding-system-for-write 'utf-8)
+                         (coding-system-for-read 'utf-8))
+                     (apply #'call-process-region
+                            (append (list (point-min) (point-max)
+                                          ledger-binary-path nil (list outbuf errfile) nil "-f" "-")
+                                    args)))))
+              (if (ledger-exec-success-p exit-code outbuf)
+                  outbuf
+                (display-buffer (ledger-exec-handle-error errfile))
+                (error "Ledger execution failed"))))
+        (delete-file errfile)))))
 
 (defun ledger-version-greater-p (needed)
   "Verify the ledger binary is usable for `ledger-mode' (version greater than NEEDED)."
