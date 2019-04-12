@@ -126,7 +126,8 @@ always located at the beginning of buffer."
            (goto-char (point-min))
            ,@body)
        (and ledger-buffer (kill-buffer ledger-buffer))
-       (ledger-tests-reset-custom-values 'ledger))))
+       (ledger-tests-reset-custom-values 'ledger)
+       (delete-file temp-file))))
 
 
 (defun ledger-test-visible-buffer-string ()
