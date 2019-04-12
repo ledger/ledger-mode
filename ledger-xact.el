@@ -62,15 +62,29 @@
             (move-overlay ledger-xact-highlight-overlay b (+ 1 e))
           (move-overlay ledger-xact-highlight-overlay 1 1))))))
 
-(defun ledger-xact-payee ()
-  "Return the payee of the transaction containing point or nil."
+(defun ledger-xact-context ()
+  "Return the context of the transaction containing point or nil."
   (let ((i 0))
     (while (eq (ledger-context-line-type (ledger-context-other-line i)) 'acct-transaction)
       (setq i (- i 1)))
     (let ((context-info (ledger-context-other-line i)))
       (if (eq (ledger-context-line-type context-info) 'xact)
-          (ledger-context-field-value context-info 'payee)
+          context-info
         nil))))
+
+(defun ledger-xact-payee ()
+  "Return the payee of the transaction containing point or nil."
+  (let ((xact-context (ledger-xact-context)))
+    (if xact-context
+        (ledger-context-field-value xact-context 'payee)
+      nil)))
+
+(defun ledger-xact-date ()
+  "Return the date of the transaction containing point or nil."
+  (let ((xact-context (ledger-xact-context)))
+    (if xact-context
+        (ledger-context-field-value xact-context 'date)
+      nil)))
 
 (defun ledger-time-less-p (t1 t2)
   "Say whether time value T1 is less than time value T2."
