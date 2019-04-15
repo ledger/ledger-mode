@@ -47,6 +47,13 @@ This file will then be used as a source for account name completions."
   :type 'file
   :group 'ledger)
 
+(defcustom ledger-complete-in-steps nil
+  "When non-nil, `ledger-complete-at-point' completes account names in steps.
+If nil, full account names are offer for completion."
+  :type 'boolean
+  :group 'ledger
+  :package-version '(ledger-mode . "2019-05-27"))
+
 (defun ledger-parse-arguments ()
   "Parse whitespace separated arguments in the current region."
   ;; this is more complex than it appears to need, so that it can work
@@ -223,37 +230,30 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
 
 (defun ledger-complete-at-point ()
   "Do appropriate completion for the thing at point."
-  (interactive)
-  (while (pcomplete-here
-          (cond
-           ((looking-back (concat "^" ledger-incomplete-date-regexp) nil)
-            (ledger-complete-date (match-string 1) (match-string 2)))
-           ((looking-back (concat "^" ledger-iso-date-regexp "="
-                                  ledger-incomplete-date-regexp) nil)
-            (ledger-complete-effective-date
-             (match-string 2) (match-string 3) (match-string 4)
-             (match-string 5) (match-string 6)))
-           ((eq (save-excursion
-                  (ledger-thing-at-point)) 'transaction)
-            (if (null current-prefix-arg)
-                (delete
-                 (caar (ledger-parse-arguments))
-                 (ledger-payees-in-buffer)) ;; this completes against payee names
-              (progn
-                (let ((text (buffer-substring-no-properties
-                             (line-beginning-position)
-                             (line-end-position))))
-                  (delete-region (line-beginning-position)
-                                 (line-end-position))
-                  (condition-case nil
-                      (ledger-add-transaction text t)
-                    (error nil)))
-                (forward-line)
-                (goto-char (line-end-position))
-                (search-backward ";" (line-beginning-position) t)
-                (skip-chars-backward " \t0123456789.,")
-                (throw 'pcompleted t))))
-           (t (ledger-accounts-tree))))))
+  (let ((end (point))
+        start collection)
+    (cond (;; Date
+           (looking-back (concat "^" ledger-incomplete-date-regexp) (line-beginning-position))
+           (progn (setq start (match-beginning 0))
+                  (setq collection (ledger-complete-date (match-string 1) (match-string 2)))))
+          (;; Effective dates
+           (looking-back (concat "^" ledger-iso-date-regexp "=" ledger-incomplete-date-regexp)
+                         (line-beginning-position))
+           (progn (setq start (line-beginning-position))
+                  (setq collection (ledger-complete-effective-date
+                                    (match-string 2) (match-string 3) (match-string 4)
+                                    (match-string 5) (match-string 6)))))
+          (;; Payees
+           (eq (save-excursion (ledger-thing-at-point)) 'transaction)
+           (progn (setq start (save-excursion (backward-word) (point)))
+                  (setq collection (ledger-payees-in-buffer))))
+          (t ;; Accounts
+           (progn (setq start (save-excursion (backward-word) (point)))
+                  (if ledger-complete-in-steps
+                      (setq collection (ledger-accounts-tree))
+                    (setq collection (ledger-accounts-list-in-buffer))))))
+    (when collection
+      (list start end collection))))
 
 (defun ledger-trim-trailing-whitespace (str)
   (replace-regexp-in-string "[ \t]*$" "" str))
