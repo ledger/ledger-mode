@@ -43,7 +43,7 @@
   :group 'ledger-post)
 
 (defcustom ledger-post-amount-alignment-at :end
-  "Position at which the amount is ailgned.
+  "Position at which the amount is aligned.
 
 Can be :end to align on the last number of the amount (can be
 followed by unaligned commodity) or :decimal to align at the
