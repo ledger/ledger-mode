@@ -244,7 +244,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
            (eq (save-excursion (ledger-thing-at-point)) 'transaction)
            (progn (setq start (save-excursion (backward-word) (point)))
                   (setq collection #'ledger-payees-in-buffer)))
-          (t ;; Accounts
+          ((not (bolp)) ;; Accounts
            (progn (setq start (save-excursion (back-to-indentation) (point)))
                   (if ledger-complete-in-steps
                       (setq collection #'ledger-accounts-tree)
