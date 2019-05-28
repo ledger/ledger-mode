@@ -126,8 +126,10 @@ Looks only as far as END, if supplied, otherwise `point-max'."
         (forward-line -1)
         (beginning-of-line)
         (not (looking-at-p (rx bol (0+ (or "\n" whitespace)) eol))))
-      ;; (equal (point) (line-beginning-position))
-      (indent-to ledger-post-account-alignment-column)
+      (progn (when (not (= ledger-post-account-alignment-column
+                           (current-indentation)))
+               (delete-horizontal-space))
+             (indent-to ledger-post-account-alignment-column))
     (ledger-post-align-postings (line-beginning-position) (line-end-position))))
 
 (defun ledger-post-align-dwim ()
