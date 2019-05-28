@@ -124,12 +124,12 @@ Looks only as far as END, if supplied, otherwise `point-max'."
   "Indent the current line."
   (if (save-excursion
         (forward-line -1)
-        (not (looking-at-p (rx bol (0+ (or "\n" whitespace)) eol))))
-      (progn (when (not (= ledger-post-account-alignment-column
-                           (current-indentation)))
-               (delete-horizontal-space))
-             (indent-to ledger-post-account-alignment-column))
-    (ledger-post-align-postings (line-beginning-position) (line-end-position))))
+        (looking-at-p (rx bol (0+ (or "\n" whitespace)) eol)))
+      (ledger-post-align-postings (line-beginning-position) (line-end-position))
+    (when (not (= ledger-post-account-alignment-column
+                  (current-indentation)))
+      (delete-horizontal-space))
+    (indent-to ledger-post-account-alignment-column)))
 
 (defun ledger-post-align-dwim ()
   "Align all the posting of the current xact or the current region.
