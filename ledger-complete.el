@@ -45,7 +45,7 @@ This file will then be used as a source for account name completions."
 
 (defcustom ledger-complete-in-steps nil
   "When non-nil, `ledger-complete-at-point' completes account names in steps.
-If nil, full account names are offer for completion."
+If nil, full account names are offered for completion."
   :type 'boolean
   :group 'ledger
   :package-version '(ledger-mode . "2019-05-27"))
