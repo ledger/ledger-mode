@@ -231,24 +231,24 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
         start collection)
     (cond (;; Date
            (looking-back (concat "^" ledger-incomplete-date-regexp) (line-beginning-position))
-           (progn (setq start (match-beginning 0))
-                  (setq collection (ledger-complete-date (match-string 1) (match-string 2)))))
+           (setq start (match-beginning 0))
+           (setq collection (ledger-complete-date (match-string 1) (match-string 2))))
           (;; Effective dates
            (looking-back (concat "^" ledger-iso-date-regexp "=" ledger-incomplete-date-regexp)
                          (line-beginning-position))
-           (progn (setq start (line-beginning-position))
-                  (setq collection (ledger-complete-effective-date
-                                    (match-string 2) (match-string 3) (match-string 4)
-                                    (match-string 5) (match-string 6)))))
+           (setq start (line-beginning-position))
+           (setq collection (ledger-complete-effective-date
+                             (match-string 2) (match-string 3) (match-string 4)
+                             (match-string 5) (match-string 6))))
           (;; Payees
            (eq (save-excursion (ledger-thing-at-point)) 'transaction)
-           (progn (setq start (save-excursion (backward-word) (point)))
-                  (setq collection #'ledger-payees-in-buffer)))
+           (setq start (save-excursion (backward-word) (point)))
+           (setq collection #'ledger-payees-in-buffer))
           ((not (bolp)) ;; Accounts
-           (progn (setq start (save-excursion (back-to-indentation) (point)))
-                  (if ledger-complete-in-steps
-                      (setq collection #'ledger-accounts-tree)
-                    (setq collection #'ledger-accounts-list-in-buffer)))))
+           (setq start (save-excursion (back-to-indentation) (point)))
+           (setq collection (if ledger-complete-in-steps
+                                #'ledger-accounts-tree
+                              #'ledger-accounts-list-in-buffer))))
     (when collection
       (list start end (if (functionp collection)
                           (completion-table-dynamic (lambda (_) (funcall collection)))
