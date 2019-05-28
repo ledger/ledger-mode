@@ -273,11 +273,22 @@ current regex.  Cancel the narrowing by typing @kbd{C-c C-f} again.
 @cindex transaction, adding
 
 Beyond the two ways of quickly adding transactions (@pxref{Quick Add})
-Ledger-mode assists you by providing robust @kbd{TAB} completion for
-payees and accounts.  Ledger-mode will scan the existing buffer for
-payees and accounts. Included files are not currently included in the
-completion scan. Repeatedly hitting @kbd{TAB} will cycle through the
-possible completions.
+Ledger-mode assists you by providing robust @kbd{TAB} completion for payees and
+accounts. Ledger-mode will scan the existing buffer for payees and accounts.
+Included files are not currently included in the completion scan. Ledger-mode
+respects Emacs's variables that govern @kbd{TAB} completion, see especially
+@code{tab-always-indent}.
+
+To cycle between completions when hitting @kbd{TAB} multiple times, you can
+adjust the standard completion configuration like this:
+
+@lisp
+(add-hook 'ledger-mode-hook
+          (lambda ()
+            (setq-local tab-always-indent t)
+            (setq-local completion-cycle-threshold t)
+            (setq-local ledger-complete-in-steps t)))
+@end lisp
 
 Ledger-mode can also help you keep your amounts aligned.  Setting
 @option{ledger-post-auto-adjust-amounts} to true tells Ledger-mode to

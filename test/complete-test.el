@@ -35,25 +35,26 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=969
 http://bugs.ledger-cli.org/show_bug.cgi?id=582"
   :tags '(complete regress)
 
-  (ledger-tests-with-temp-file
-   "2013/05/19 Retrait
+  (let ((ledger-complete-in-steps t))
+    (ledger-tests-with-temp-file
+        "2013/05/19 Retrait
     Dépense:Alimentation:Épicerie  35 €  ; Marché
     Dépense:Alimentation:Épicerie  8,1 €  ; Arum café
     Dépense:Liquide
     * Passif:Crédit:BanqueAccord              -60,00 €"
-   (forward-line 1)
-   (move-end-of-line 1)
-   (newline)
-   (insert "    Dé")
-   (call-interactively #'ledger-magic-tab)
-   (should
-    (equal (buffer-string)
-           "2013/05/19 Retrait
+      (forward-line 1)
+      (move-end-of-line 1)
+      (newline)
+      (insert "    Dé")
+      (call-interactively #'completion-at-point)
+      (should
+       (equal (buffer-string)
+              "2013/05/19 Retrait
     Dépense:Alimentation:Épicerie  35 €  ; Marché
     Dépense:
     Dépense:Alimentation:Épicerie  8,1 €  ; Arum café
     Dépense:Liquide
-    * Passif:Crédit:BanqueAccord              -60,00 €"))))
+    * Passif:Crédit:BanqueAccord              -60,00 €")))))
 
 
 (ert-deftest ledger-complete/test-002 ()

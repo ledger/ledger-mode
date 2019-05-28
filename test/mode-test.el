@@ -61,27 +61,19 @@
   "Regress test for Bug 256
 http://bugs.ledger-cli.org/show_bug.cgi?id=256"
   :tags '(mode regress)
-
-  (ledger-tests-with-temp-file
-   ""
-
-   (comment-dwim nil)
-   (should (equal (buffer-string) "; ")) ; Expected: no space before ';'
-   ))
-
+  (ledger-tests-with-temp-file ""
+    (comment-dwim nil)
+    (should (string-match (rx buffer-start ";" (0+ whitespace))
+                          ;; Expected: no space before ';'
+                          (buffer-string)))))
 
 (ert-deftest ledger-mode/test-003 ()
   "Baseline test for comment-start"
   :tags '(mode baseline)
-
-  (ledger-tests-with-temp-file
-   ""
-
-   (setq comment-start "#")
-   (comment-dwim nil)
-   (should (equal (buffer-string) "# "))
-   ))
-
+  (ledger-tests-with-temp-file ""
+    (setq comment-start "#")
+    (comment-dwim nil)
+    (should (string-match (rx buffer-start "#" (0+ whitespace)) (buffer-string)))))
 
 (provide 'mode-test)
 

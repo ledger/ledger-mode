@@ -120,6 +120,18 @@ Looks only as far as END, if supplied, otherwise `point-max'."
                         (delete-char amt-adjust)))))))
           (forward-line 1))))))
 
+(defun ledger-indent-line ()
+  "Indent the current line."
+  (if (save-excursion
+        (forward-line -1)
+        (beginning-of-line)
+        (not (looking-at-p (rx bol (0+ (or "\n" whitespace)) eol))))
+      (progn (when (not (= ledger-post-account-alignment-column
+                           (current-indentation)))
+               (delete-horizontal-space))
+             (indent-to ledger-post-account-alignment-column))
+    (ledger-post-align-postings (line-beginning-position) (line-end-position))))
+
 (defun ledger-post-align-dwim ()
   "Align all the posting of the current xact or the current region.
 
