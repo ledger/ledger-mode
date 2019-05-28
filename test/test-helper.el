@@ -167,7 +167,7 @@ The two arguments START and END are character positions."
 
 
 (defun ledger-test-face-groups (fontified)
-  "Group a fontified string by face.
+  "Group a FONTIFIED string by face.
 Return a list of substrings each followed by its face."
   (cl-loop for start = 0 then end
            while start
