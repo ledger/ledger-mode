@@ -124,7 +124,6 @@ Looks only as far as END, if supplied, otherwise `point-max'."
   "Indent the current line."
   (if (save-excursion
         (forward-line -1)
-        (beginning-of-line)
         (not (looking-at-p (rx bol (0+ (or "\n" whitespace)) eol))))
       (progn (when (not (= ledger-post-account-alignment-column
                            (current-indentation)))
