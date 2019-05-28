@@ -279,6 +279,17 @@ Included files are not currently included in the completion scan. Ledger-mode
 respects Emacs's variables that govern @kbd{TAB} completion, see especially
 @code{tab-always-indent}.
 
+To cycle between completions when hitting @kbd{TAB} multiple times, you can
+adjust the standard completion configuration like this:
+
+@lisp
+(add-hook 'ledger-mode-hook
+          (lambda ()
+            (setq-local tab-always-indent t)
+            (setq-local completion-cycle-threshold t)
+            (setq-local ledger-complete-in-steps t)))
+@end lisp
+
 Ledger-mode can also help you keep your amounts aligned.  Setting
 @option{ledger-post-auto-adjust-amounts} to true tells Ledger-mode to
 automatically place any amounts such that their last digit is aligned to
