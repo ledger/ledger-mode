@@ -135,7 +135,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
       (goto-char (point-min))
 
       (dolist (account
-               (cl-remove-if-not (lambda (c) (string-prefix-p prefix c nil))
+               (cl-remove-if-not (lambda (c) (string-prefix-p prefix c))
                                  (ledger-accounts-list)))
         (let ((root account-tree))
           (setq account-elements
