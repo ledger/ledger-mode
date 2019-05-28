@@ -94,7 +94,7 @@ If nil, full account names are offer for completion."
           (setq payees-list (cons (match-string-no-properties 3)
                                   payees-list)))))  ;; add the payee
     ;; to the list
-    (delete-dups (sort payees-list #'string-lessp))))
+    (sort (delete-dups payees-list) #'string-lessp)))
 
 (defun ledger-accounts-deduplicate-sorted (l)
   "Remove duplicates from a sorted list of strings L."
