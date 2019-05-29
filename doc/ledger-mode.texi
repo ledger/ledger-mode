@@ -285,7 +285,7 @@ adjust the standard completion configuration like this:
 @lisp
 (add-hook 'ledger-mode-hook
           (lambda ()
-            (setq-local tab-always-indent t)
+            (setq-local tab-always-indent 'complete)
             (setq-local completion-cycle-threshold t)
             (setq-local ledger-complete-in-steps t)))
 @end lisp

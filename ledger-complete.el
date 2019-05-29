@@ -248,7 +248,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
            (setq start (save-excursion (back-to-indentation) (point)))
            (setq collection (if ledger-complete-in-steps
                                 #'ledger-accounts-tree
-                              #'ledger-accounts-list-in-buffer))))
+                              #'ledger-accounts-list))))
     (when collection
       (list start end (if (functionp collection)
                           (completion-table-dynamic (lambda (_) (funcall collection)))
