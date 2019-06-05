@@ -228,7 +228,8 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
 (defun ledger-complete-at-point ()
   "Do appropriate completion for the thing at point."
   (let ((end (point))
-        start collection)
+        start collection
+        realign-after)
     (cond (;; Date
            (looking-back (concat "^" ledger-incomplete-date-regexp) (line-beginning-position))
            (setq start (match-beginning 0))
@@ -244,15 +245,24 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
            (eq (save-excursion (ledger-thing-at-point)) 'transaction)
            (setq start (save-excursion (backward-word) (point)))
            (setq collection #'ledger-payees-in-buffer))
-          ((not (bolp)) ;; Accounts
-           (setq start (save-excursion (back-to-indentation) (point)))
-           (setq collection (if ledger-complete-in-steps
+          ((looking-back (rx-to-string `(seq bol (repeat ,ledger-post-account-alignment-column ?\ ) (group (zero-or-more (not space))))) (line-beginning-position))
+           (setq start (match-beginning 1)
+                 end (save-excursion
+                       (search-forward-regexp (rx (zero-or-more (not space))))
+                       (point))
+                 realign-after t
+                 collection (if ledger-complete-in-steps
                                 #'ledger-accounts-tree
                               #'ledger-accounts-list))))
     (when collection
-      (list start end (if (functionp collection)
-                          (completion-table-dynamic (lambda (_) (funcall collection)))
-                        collection)))))
+      (list start end
+            (if (functionp collection)
+                (completion-table-dynamic (lambda (_) (funcall collection)))
+              collection)
+            :exit-function (if realign-after
+                               (lambda (&rest _)
+                                 (ledger-post-align-postings (line-beginning-position) (line-end-position)))
+                             'ignore)))))
 
 (defun ledger-trim-trailing-whitespace (str)
   (replace-regexp-in-string "[ \t]*$" "" str))
