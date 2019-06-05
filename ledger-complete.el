@@ -248,7 +248,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
           ((looking-back (rx-to-string `(seq bol (repeat ,ledger-post-account-alignment-column ?\ ) (group (zero-or-more (not space))))) (line-beginning-position))
            (setq start (match-beginning 1)
                  end (save-excursion
-                       (search-forward-regexp (rx (zero-or-more (not space))))
+                       (search-forward-regexp (rx (zero-or-more (not space))) (line-end-position))
                        (point))
                  realign-after t
                  collection (if ledger-complete-in-steps
