@@ -1,7 +1,7 @@
 EMACS ?= emacs
 EMACS_FLAGS = --quick --directory . --directory ..
-EMACS_BATCH = $(EMACS) --batch $(EMACS_FLAGS)
-EMACS_INTERACTIVE = $(EMACS) $(EMACS_FLAGS)
+EMACS_BATCH = "$(EMACS)" --batch $(EMACS_FLAGS)
+EMACS_INTERACTIVE = "$(EMACS)" $(EMACS_FLAGS)
 
 EL  := $(wildcard *.el)
 ELC := $(patsubst %.el,%.elc,$(EL))
