@@ -122,13 +122,17 @@ Looks only as far as END, if supplied, otherwise `point-max'."
 
 (defun ledger-indent-line ()
   "Indent the current line."
-  (if (save-excursion
-        (forward-line -1)
-        (looking-at-p (rx bol (0+ (or "\n" whitespace)) eol)))
-      (ledger-post-align-postings (line-beginning-position) (line-end-position))
-    (unless (= ledger-post-account-alignment-column (current-indentation))
-      (delete-horizontal-space))
-    (indent-to ledger-post-account-alignment-column)))
+  ;; Ensure indent if the previous line was indented
+  (let ((indent-level (save-excursion (if (or (eq 'posting (ledger-thing-at-point))
+                                              (progn (forward-line -1)
+                                                     (> (current-indentation) 0)))
+                                          ledger-post-account-alignment-column
+                                        0))))
+    (unless (= (current-indentation) indent-level)
+      (back-to-indentation)
+      (delete-horizontal-space t)
+      (indent-to indent-level)))
+  (ledger-post-align-postings (line-beginning-position) (line-end-position)))
 
 (defun ledger-post-align-dwim ()
   "Align all the posting of the current xact or the current region.
