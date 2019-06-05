@@ -267,7 +267,6 @@ current regex.  Cancel the narrowing by typing @kbd{C-c C-f} again.
 
 @node Adding Transactions, Copying Transactions, The Ledger Buffer, The Ledger Buffer
 @section Adding Transactions
-@findex ledger-post-auto-adjust-amounts
 @findex ledger-post-amount-alignment-column
 @kindex TAB
 @cindex transaction, adding
@@ -290,11 +289,11 @@ adjust the standard completion configuration like this:
             (setq-local ledger-complete-in-steps t)))
 @end lisp
 
-Ledger-mode can also help you keep your amounts aligned.  Setting
-@option{ledger-post-auto-adjust-amounts} to true tells Ledger-mode to
-automatically place any amounts such that their last digit is aligned to
-the column specified by @option{ledger-post-amount-alignment-column},
-which defaults to @samp{52}. @xref{Ledger Post Customization Group}.
+Ledger-mode will help you keep your amounts aligned.  When indenting or
+completing, Ledger-mode will automatically place any amounts such that their
+last digit is aligned to the column specified by
+@option{ledger-post-amount-alignment-column}, which defaults to
+@samp{52}. @xref{Ledger Post Customization Group}.
 
 @menu
 * Setting a Transactions Effective Date::
@@ -1127,10 +1126,6 @@ Face applied to clickable entries in the @file{*Report*} buffer.
 Ledger Post:
 
 @ftable @option
-
-@item ledger-post-auto-adjust-amounts
-If non-nil, then automatically align amounts to column specified in
-@option{ledger-post-amount-alignment-column}.
 
 @item ledger-post-amount-alignment-column
 The column Ledger-mode uses to align amounts.
