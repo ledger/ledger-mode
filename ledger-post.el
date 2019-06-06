@@ -123,9 +123,8 @@ Looks only as far as END, if supplied, otherwise `point-max'."
 (defun ledger-indent-line ()
   "Indent the current line."
   ;; Ensure indent if the previous line was indented
-  (let ((indent-level (save-excursion (if (or (eq 'posting (ledger-thing-at-point))
-                                              (progn (forward-line -1)
-                                                     (> (current-indentation) 0)))
+  (let ((indent-level (save-excursion (if (progn (forward-line -1)
+                                                 (memq (ledger-thing-at-point) '(transaction posting)))
                                           ledger-post-account-alignment-column
                                         0))))
     (unless (= (current-indentation) indent-level)
