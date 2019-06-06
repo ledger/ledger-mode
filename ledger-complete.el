@@ -245,7 +245,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
            (eq (save-excursion (ledger-thing-at-point)) 'transaction)
            (setq start (save-excursion (backward-word) (point)))
            (setq collection #'ledger-payees-in-buffer))
-          ((looking-back (rx-to-string `(seq bol (repeat ,ledger-post-account-alignment-column ?\ ) (group (zero-or-more (not space))))) (line-beginning-position))
+          ((looking-back (rx-to-string `(seq bol (one-or-more space) (group (zero-or-more (not space))))) (line-beginning-position))
            (setq start (match-beginning 1)
                  end (save-excursion
                        (search-forward-regexp (rx (zero-or-more (not space))) (line-end-position))
