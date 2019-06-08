@@ -229,11 +229,15 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
   "Do appropriate completion for the thing at point."
   (let ((end (point))
         start collection
-        realign-after)
+        realign-after
+        delete-suffix)
     (cond (;; Date
            (looking-back (concat "^" ledger-incomplete-date-regexp) (line-beginning-position))
-           (setq start (match-beginning 0))
-           (setq collection (ledger-complete-date (match-string 1) (match-string 2))))
+           (setq collection (ledger-complete-date (match-string 1) (match-string 2))
+                 start (match-beginning 0)
+                 delete-suffix (save-match-data
+                                 (when (looking-at (rx (one-or-more (or digit (any ?/ ?-)))))
+                                   (length (match-string 0))))))
           (;; Effective dates
            (looking-back (concat "^" ledger-iso-date-regexp "=" ledger-incomplete-date-regexp)
                          (line-beginning-position))
@@ -247,9 +251,9 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
            (setq collection #'ledger-payees-in-buffer))
           ((looking-back (rx-to-string `(seq bol (one-or-more space) (group (zero-or-more (not space))))) (line-beginning-position))
            (setq start (match-beginning 1)
-                 end (save-excursion
-                       (search-forward-regexp (rx (zero-or-more (not space))) (line-end-position))
-                       (point))
+                 delete-suffix (save-excursion
+                                 (when (search-forward-regexp (rx (or eol (repeat 2 space))) (line-end-position) t)
+                                   (- (match-beginning 0) end)))
                  realign-after t
                  collection (if ledger-complete-in-steps
                                 #'ledger-accounts-tree
@@ -259,10 +263,12 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
             (if (functionp collection)
                 (completion-table-dynamic (lambda (_) (funcall collection)))
               collection)
-            :exit-function (if realign-after
-                               (lambda (&rest _)
-                                 (ledger-post-align-postings (line-beginning-position) (line-end-position)))
-                             'ignore)))))
+            :exit-function (lambda (&rest _)
+                             (when delete-suffix
+                               (delete-char delete-suffix))
+                             (when realign-after
+                               (ledger-post-align-postings (line-beginning-position) (line-end-position))))
+            'ignore))))
 
 (defun ledger-trim-trailing-whitespace (str)
   (replace-regexp-in-string "[ \t]*$" "" str))
