@@ -161,7 +161,8 @@ MOMENT is an encoded date"
   "Delete the transaction surrounging POS."
   (interactive "d")
   (let ((bounds (ledger-navigate-find-xact-extents pos)))
-    (delete-region (car bounds) (cadr bounds))))
+    (delete-region (car bounds) (cadr bounds)))
+  (delete-blank-lines))
 
 (defvar ledger-add-transaction-last-date nil
   "Last date entered using `ledger-read-transaction'.")
