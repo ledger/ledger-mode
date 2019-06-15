@@ -295,6 +295,9 @@ last digit is aligned to the column specified by
 @option{ledger-post-amount-alignment-column}, which defaults to
 @samp{52}. @xref{Ledger Post Customization Group}.
 
+To prevent the automatic realignment of amounts, disable
+@option{ledger-post-auto-align}. @xref{Ledger Post Customization Group}.
+
 @menu
 * Setting a Transactions Effective Date::
 * Quick Balance Display::

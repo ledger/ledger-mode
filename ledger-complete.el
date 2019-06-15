@@ -266,7 +266,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
             :exit-function (lambda (&rest _)
                              (when delete-suffix
                                (delete-char delete-suffix))
-                             (when realign-after
+                             (when (and realign-after ledger-post-auto-align)
                                (ledger-post-align-postings (line-beginning-position) (line-end-position))))
             'ignore))))
 
