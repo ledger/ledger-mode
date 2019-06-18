@@ -174,7 +174,8 @@ Additionally you can use the ledger @command{xact} command, by either typing
 match to the payee. Ledger-mode will call @command{ledger xact} with the data
 you enter and place the transaction in the proper chronological place in the
 ledger. Subsequent calls to @kbd{C-c C-a} remember the last date so entering
-many dates in the past is easy.
+many dates in the past is easy. The date format can be changed by modifying
+@option{ledger-default-date-format}.
 
 @node Reconciliation, Reports, Quick Add, Quick Demo
 @subsection Reconciliation

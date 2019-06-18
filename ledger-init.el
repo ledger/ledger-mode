@@ -37,9 +37,12 @@
 Adding the dotted pair (\"decimal-comma\" . t) will tell ledger
 to treat commas as decimal separator.")
 
-(defvar ledger-default-date-format "%Y/%m/%d"
+(defcustom ledger-default-date-format "%Y/%m/%d"
   "The date format that ledger uses throughout.
-Set this to `ledger-iso-date-format' if you prefer ISO 8601 dates.")
+Set this to the value of `ledger-iso-date-format' if you prefer
+ISO 8601 dates."
+  :type 'string
+  :group 'ledger)
 
 (defconst ledger-iso-date-format "%Y-%m-%d"
   "The format for ISO 8601 dates.")
