@@ -169,18 +169,12 @@ format. Then type the first few characters of another payee in the
 search for a Payee that has the same beginning and copy the rest of the
 transaction to you new entry.
 
-Additionally you can use the ledger @command{xact} command, by either
-typing @kbd{C-c C-a} or using @samp{Add Transaction} menu entry. Then
-typing a close match to the payee. Ledger-mode will call @command{ledger
-xact} with the data you enter and place the transaction in the proper
-chronological place in the ledger.
-
-If you need to add a lot of transactions that are not near your current
-date you can set the current year and month so that using @samp{Add
-Transaction} will prompt you with a more convenient month and year.  To
-set the month type @kbd{C-c RET} and enter the month you want.  @kbd{C-c
-C-y} will prompt you for the year.  These settings only effect the
-@samp{Add Transaction} command.
+Additionally you can use the ledger @command{xact} command, by either typing
+@kbd{C-c C-a} or using @samp{Add Transaction} menu entry. Then typing a close
+match to the payee. Ledger-mode will call @command{ledger xact} with the data
+you enter and place the transaction in the proper chronological place in the
+ledger. Subsequent calls to @kbd{C-c C-a} remember the last date so entering
+many dates in the past is easy.
 
 @node Reconciliation, Reports, Quick Add, Quick Demo
 @subsection Reconciliation
