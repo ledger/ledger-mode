@@ -716,7 +716,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=262"
       (should ;; Expected: this must be ledger buffer
        (equal (buffer-name)           ; current buffer name
               (buffer-name ledger-buffer)))
-      (should (= 1323 (point))))))    ; expected on "Book Store" xact
+      (should (= 1321 (point))))))    ; expected on "Book Store" xact
 
 
 (ert-deftest ledger-reconcile/test-028 ()
