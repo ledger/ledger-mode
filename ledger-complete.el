@@ -117,7 +117,7 @@ Considers both accounts listed in postings and those declared with \"account\" d
     (goto-char (point-min))
     (let (results)
       (while (re-search-forward ledger-account-name-or-directive-regex nil t)
-        (setq results (cons (match-string-no-properties 2) results)))
+        (setq results (cons (match-string-no-properties 1) results)))
       (ledger-accounts-deduplicate-sorted
        (sort results #'ledger-string-greaterp)))))
 

@@ -71,28 +71,23 @@
 (defconst ledger-init-string-regex
   "^--.+?\\($\\|[ ]\\)")
 
-(defconst ledger-account-directive-regex
-  "^account [ \t]*\\(?2:[^;]+?\\)\\(?3:[ \t]*\\)\\(;.*\\)?$")
+(defconst ledger-account-name-regex
+  "\\([^;[:space:]\r\n]+\\(?: [^;[:space:]\r\n]+\\)*\\)")
 
-(defconst ledger-account-any-status-no-trailing-spaces-regex
-  "^[ \t]+\\(?1:[*!]\\s-+\\)?[[(]?\\(?2:[^; ].+?\\)[])]?")
+(defconst ledger-account-directive-regex
+  (concat "^account[ \t]+" ledger-account-name-regex))
 
 (defconst ledger-account-any-status-regex
-  (format "%s%s"
-          ledger-account-any-status-no-trailing-spaces-regex
-          "\\(?3:\t\\| [ \t]\\|$\\)"))
+  (concat "^[[:space:]]+\\(?:[!*][[:space:]]*\\)?" ledger-account-name-regex))
 
 (defconst ledger-account-name-or-directive-regex
-  (format "\\(?:%s\\|%s\\(?3:\t\\| [ \t]\\)\\)"
-          ledger-account-directive-regex
-          ledger-account-any-status-no-trailing-spaces-regex))
+  (concat "^\\(?:[[:space:]]+\\(?:[!*][[:space:]]*\\)?\\|account[ \t]+\\)" ledger-account-name-regex))
 
 (defconst ledger-account-pending-regex
-  "\\(^[ \t]+\\)\\(!\\s-*[^ ].*?\\)\\(  \\|\t\\|$\\)")
+  (concat "\\(^[[:space:]]+\\)!" ledger-account-name-regex))
 
 (defconst ledger-account-cleared-regex
-  "\\(^[ \t]+\\)\\(*\\s-*[^ ].*?\\)\\(  \\|\t\\|$\\)")
-
+  (concat "\\(^[[:space:]]+\\)*" ledger-account-name-regex))
 
 (defmacro ledger-define-regexp (name regex docs &rest args)
   "Simplify the creation of a Ledger regex and helper functions."
