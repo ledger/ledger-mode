@@ -72,22 +72,27 @@
   "^--.+?\\($\\|[ ]\\)")
 
 (defconst ledger-account-name-regex
-  "\\([^;[:space:]\r\n]+\\(?: [^;[:space:]\r\n]+\\)*\\)")
+  "\\(?1:[^][();[:space:]\r\n]+\\(?: [^][();[:space:]]\r\n]+\\)*\\)")
 
 (defconst ledger-account-directive-regex
   (concat "^account[ \t]+" ledger-account-name-regex))
 
-(defconst ledger-account-any-status-regex
-  (concat "^[[:space:]]+\\(?:[!*][[:space:]]*\\)?" ledger-account-name-regex))
+(defconst ledger-account-name-maybe-virtual-regex
+  (concat "[[(]?" ledger-account-name-regex "[])]?"))
 
+(defconst ledger-account-any-status-regex
+  (concat "^[[:space:]]+\\(?:[!*][[:space:]]*\\)?" ledger-account-name-maybe-virtual-regex))
+
+;; This would incorrectly match "account (foo)", but writing the regexp this way
+;; allows us to have just one match result
 (defconst ledger-account-name-or-directive-regex
-  (concat "^\\(?:[[:space:]]+\\(?:[!*][[:space:]]*\\)?\\|account[ \t]+\\)" ledger-account-name-regex))
+  (format "\\(?:%s\\|%s\\)" ledger-account-any-status-regex ledger-account-directive-regex))
 
 (defconst ledger-account-pending-regex
-  (concat "\\(^[[:space:]]+\\)!" ledger-account-name-regex))
+  (concat "\\(^[[:space:]]+\\)!" ledger-account-name-maybe-virtual-regex))
 
 (defconst ledger-account-cleared-regex
-  (concat "\\(^[[:space:]]+\\)*" ledger-account-name-regex))
+  (concat "\\(^[[:space:]]+\\)*" ledger-account-name-maybe-virtual-regex))
 
 (defmacro ledger-define-regexp (name regex docs &rest args)
   "Simplify the creation of a Ledger regex and helper functions."
