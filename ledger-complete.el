@@ -101,15 +101,6 @@ that payee in the buffer."
     ;; to the list
     (sort (delete-dups payees-list) #'string-lessp)))
 
-(defun ledger-accounts-deduplicate-sorted (l)
-  "Remove duplicates from a sorted list of strings L."
-  (let ((current l))
-    (while (consp current)
-      (if (string= (car current) (cadr current))
-          (setcdr current (cddr current))
-        (pop current)))
-    l))
-
 (defun ledger-accounts-list-in-buffer ()
   "Return a list of all known account names in the current buffer as strings.
 Considers both accounts listed in postings and those declared with \"account\" directives."
@@ -118,8 +109,7 @@ Considers both accounts listed in postings and those declared with \"account\" d
     (let (results)
       (while (re-search-forward ledger-account-name-or-directive-regex nil t)
         (setq results (cons (match-string-no-properties 1) results)))
-      (ledger-accounts-deduplicate-sorted
-       (sort results #'ledger-string-greaterp)))))
+      (sort (delete-dups results) #'ledger-string-greaterp))))
 
 (defun ledger-accounts-list ()
   "Return a list of all known account names as strings.
