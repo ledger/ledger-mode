@@ -248,16 +248,19 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
                                 #'ledger-accounts-tree
                               #'ledger-accounts-list))))
     (when collection
-      (list start end
-            (if (functionp collection)
-                (completion-table-dynamic (lambda (_) (funcall collection)))
-              collection)
-            :exit-function (lambda (&rest _)
-                             (when delete-suffix
-                               (delete-char delete-suffix))
-                             (when (and realign-after ledger-post-auto-align)
-                               (ledger-post-align-postings (line-beginning-position) (line-end-position))))
-            'ignore))))
+      (let ((prefix (buffer-substring-no-properties start end)))
+        (list start end
+              (if (functionp collection)
+                  (completion-table-dynamic
+                   (lambda (_)
+                     (cl-remove-if (apply-partially 'string= prefix) (funcall collection))))
+                collection)
+              :exit-function (lambda (&rest _)
+                               (when delete-suffix
+                                 (delete-char delete-suffix))
+                               (when (and realign-after ledger-post-auto-align)
+                                 (ledger-post-align-postings (line-beginning-position) (line-end-position))))
+              'ignore)))))
 
 (defun ledger-trim-trailing-whitespace (str)
   (replace-regexp-in-string "[ \t]*$" "" str))
