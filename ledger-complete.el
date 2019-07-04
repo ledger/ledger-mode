@@ -76,20 +76,15 @@ If nil, full account names are offered for completion."
 
 
 (defun ledger-payees-in-buffer ()
-  "Scan buffer and return list of all payees.
-Omit the payee on the current line if it is the only instance of
-that payee in the buffer."
-  ;; We omit the payee on the current line because this function is part of
-  ;; `ledger-complete'. If we include the current line's payee, then anything
-  ;; matches, which makes it hard to do completion, see bug#181.
+  "Scan buffer and return list of all payees."
   (let ((origin (point))
         payees-list)
     (save-excursion
       (goto-char (point-min))
-      (while (re-search-forward ledger-payee-any-status-regex nil t)  ;; matches first line
-        (unless (or (<= (point-at-bol) origin (point-at-eol))         ; current line
-                    (and (>= origin (match-beginning 0))
-                         (< origin (match-end 0))))
+      (while (re-search-forward
+              ledger-payee-any-status-regex nil t)  ;; matches first line
+        (unless (and (>= origin (match-beginning 0))
+                     (< origin (match-end 0)))
           (setq payees-list (cons (match-string-no-properties 3)
                                   payees-list)))))  ;; add the payee
     ;; to the list

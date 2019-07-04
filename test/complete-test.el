@@ -103,6 +103,25 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
 2010/04/09 payee
     bloop"))))
 
+(ert-deftest ledger-complete/test-complete-single-payee ()
+  "https://github.com/ledger/ledger-mode/issues/181"
+  :tags '(complete regress)
+  (ledger-tests-with-temp-file
+      "2019/06/28 Foobar
+    Expenses:Baz                               11.99 CAD
+    Assets:Cash
+
+2019/06/20 Foo"
+    (goto-char (point-max))
+    (call-interactively 'completion-at-point)
+    (should
+     (equal (buffer-string)
+            "2019/06/28 Foobar
+    Expenses:Baz                               11.99 CAD
+    Assets:Cash
+
+2019/06/20 Foobar"))))
+
 (ert-deftest ledger-complete/test-find-accounts-in-buffer ()
   (let ((ledger "*** Expenses
 account Expenses:Accomodation
