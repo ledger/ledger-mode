@@ -24,12 +24,6 @@
 
 (require 'cl-lib)
 
-;; Emacs 24.3 compatibility
-(defun ledger-string-greaterp (string1 string2)
-  "Return non-nil if STRING1 is greater than STRING2 in lexicographic order.
-Case is significant."
-  (string-lessp string2 string1))
-
 ;; In-place completion support
 
 ;;; Code:
@@ -101,15 +95,6 @@ that payee in the buffer."
     ;; to the list
     (sort (delete-dups payees-list) #'string-lessp)))
 
-(defun ledger-accounts-deduplicate-sorted (l)
-  "Remove duplicates from a sorted list of strings L."
-  (let ((current l))
-    (while (consp current)
-      (if (string= (car current) (cadr current))
-          (setcdr current (cddr current))
-        (pop current)))
-    l))
-
 (defun ledger-accounts-list-in-buffer ()
   "Return a list of all known account names in the current buffer as strings.
 Considers both accounts listed in postings and those declared with \"account\" directives."
@@ -117,9 +102,8 @@ Considers both accounts listed in postings and those declared with \"account\" d
     (goto-char (point-min))
     (let (results)
       (while (re-search-forward ledger-account-name-or-directive-regex nil t)
-        (setq results (cons (match-string-no-properties 2) results)))
-      (ledger-accounts-deduplicate-sorted
-       (sort results #'ledger-string-greaterp)))))
+        (setq results (cons (match-string-no-properties 1) results)))
+      (sort (delete-dups results) #'string-lessp))))
 
 (defun ledger-accounts-list ()
   "Return a list of all known account names as strings.
@@ -264,16 +248,19 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
                                 #'ledger-accounts-tree
                               #'ledger-accounts-list))))
     (when collection
-      (list start end
-            (if (functionp collection)
-                (completion-table-dynamic (lambda (_) (funcall collection)))
-              collection)
-            :exit-function (lambda (&rest _)
-                             (when delete-suffix
-                               (delete-char delete-suffix))
-                             (when (and realign-after ledger-post-auto-align)
-                               (ledger-post-align-postings (line-beginning-position) (line-end-position))))
-            'ignore))))
+      (let ((prefix (buffer-substring-no-properties start end)))
+        (list start end
+              (if (functionp collection)
+                  (completion-table-dynamic
+                   (lambda (_)
+                     (cl-remove-if (apply-partially 'string= prefix) (funcall collection))))
+                collection)
+              :exit-function (lambda (&rest _)
+                               (when delete-suffix
+                                 (delete-char delete-suffix))
+                               (when (and realign-after ledger-post-auto-align)
+                                 (ledger-post-align-postings (line-beginning-position) (line-end-position))))
+              'ignore)))))
 
 (defun ledger-trim-trailing-whitespace (str)
   (replace-regexp-in-string "[ \t]*$" "" str))

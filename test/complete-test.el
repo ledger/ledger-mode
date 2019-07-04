@@ -63,17 +63,17 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
   :tags '(complete regress)
 
   (ledger-tests-with-temp-file
-   "2010/04/08 payee
+      "2010/04/08 payee
     account1                1 €
     account2
 "
-   (goto-char (point-max))
-   (newline)
-   (insert "2016/09/01 payee")
-   (ledger-fully-complete-xact)
-   (should
-    (equal (buffer-string)
-           "2010/04/08 payee
+    (goto-char (point-max))
+    (newline)
+    (insert "2016/09/01 payee")
+    (ledger-fully-complete-xact)
+    (should
+     (equal (buffer-string)
+            "2010/04/08 payee
     account1                1 €
     account2
 
@@ -82,14 +82,35 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
     account2
 "))))
 
+(ert-deftest ledger-complete/test-complete-account-without-amount ()
+  "https://github.com/ledger/ledger-mode/issues/141"
+  :tags '(complete regress)
+  (ledger-tests-with-temp-file
+      "2010/04/08 payee
+    blah                1 €
+    bloop
+
+2010/04/09 payee
+    blo"
+    (goto-char (point-max))
+    (call-interactively 'completion-at-point)
+    (should
+     (equal (buffer-string)
+            "2010/04/08 payee
+    blah                1 €
+    bloop
+
+2010/04/09 payee
+    bloop"))))
+
 (ert-deftest ledger-complete/test-find-accounts-in-buffer ()
   (let ((ledger "*** Expenses
 account Expenses:Accomodation
 account Assets:Cash  ; some comment
 account Assets:Current
-    alias 1187465S022
+;    alias 1187465S022    -- Ideally this line could be uncommented
 commodity EUR
-    format 1,000.00 EUR
+;    format 1,000.00 EUR  -- Ideally this line could be uncommented
 tag ofxid
 2018/05/07 * Company
     Assets:Current  -38.33 EUR
@@ -104,14 +125,14 @@ tag ofxid
       (insert ledger)
       (should (equal
                (ledger-accounts-list-in-buffer)
-               (list ; I don't know why accounts are sorted in reverse order
-                "Something"
-                "Expenses:Utilities:Insurance"
-                "Expenses:Accomodation"
-                "Dimensions:Foo"
-                "Dimensions:Equity"
+               (list
+                "Assets:Cash"
                 "Assets:Current"
-                "Assets:Cash"))))))
+                "Dimensions:Equity"
+                "Dimensions:Foo"
+                "Expenses:Accomodation"
+                "Expenses:Utilities:Insurance"
+                "Something"))))))
 
 
 (provide 'complete-test)
