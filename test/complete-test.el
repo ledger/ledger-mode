@@ -104,14 +104,14 @@ tag ofxid
       (insert ledger)
       (should (equal
                (ledger-accounts-list-in-buffer)
-               (list ; I don't know why accounts are sorted in reverse order
-                "Something"
-                "Expenses:Utilities:Insurance"
-                "Expenses:Accomodation"
-                "Dimensions:Foo"
-                "Dimensions:Equity"
+               (list
+                "Assets:Cash"
                 "Assets:Current"
-                "Assets:Cash"))))))
+                "Dimensions:Equity"
+                "Dimensions:Foo"
+                "Expenses:Accomodation"
+                "Expenses:Utilities:Insurance"
+                "Something"))))))
 
 
 (provide 'complete-test)

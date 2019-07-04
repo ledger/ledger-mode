@@ -24,12 +24,6 @@
 
 (require 'cl-lib)
 
-;; Emacs 24.3 compatibility
-(defun ledger-string-greaterp (string1 string2)
-  "Return non-nil if STRING1 is greater than STRING2 in lexicographic order.
-Case is significant."
-  (string-lessp string2 string1))
-
 ;; In-place completion support
 
 ;;; Code:
@@ -109,7 +103,7 @@ Considers both accounts listed in postings and those declared with \"account\" d
     (let (results)
       (while (re-search-forward ledger-account-name-or-directive-regex nil t)
         (setq results (cons (match-string-no-properties 1) results)))
-      (sort (delete-dups results) #'ledger-string-greaterp))))
+      (sort (delete-dups results) #'string-lessp))))
 
 (defun ledger-accounts-list ()
   "Return a list of all known account names as strings.
