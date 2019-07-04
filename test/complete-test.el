@@ -63,17 +63,17 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
   :tags '(complete regress)
 
   (ledger-tests-with-temp-file
-   "2010/04/08 payee
+      "2010/04/08 payee
     account1                1 €
     account2
 "
-   (goto-char (point-max))
-   (newline)
-   (insert "2016/09/01 payee")
-   (ledger-fully-complete-xact)
-   (should
-    (equal (buffer-string)
-           "2010/04/08 payee
+    (goto-char (point-max))
+    (newline)
+    (insert "2016/09/01 payee")
+    (ledger-fully-complete-xact)
+    (should
+     (equal (buffer-string)
+            "2010/04/08 payee
     account1                1 €
     account2
 
@@ -81,6 +81,27 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
     account1                1 €
     account2
 "))))
+
+(ert-deftest ledger-complete/test-complete-account-without-amount ()
+  "https://github.com/ledger/ledger-mode/issues/141"
+  :tags '(complete regress)
+  (ledger-tests-with-temp-file
+      "2010/04/08 payee
+    blah                1 €
+    bloop
+
+2010/04/09 payee
+    blo"
+    (goto-char (point-max))
+    (call-interactively 'completion-at-point)
+    (should
+     (equal (buffer-string)
+            "2010/04/08 payee
+    blah                1 €
+    bloop
+
+2010/04/09 payee
+    bloop"))))
 
 (ert-deftest ledger-complete/test-find-accounts-in-buffer ()
   (let ((ledger "*** Expenses
