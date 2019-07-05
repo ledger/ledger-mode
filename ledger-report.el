@@ -271,7 +271,6 @@ used to generate the buffer, navigating the buffer, etc."
        (list rname edit))))
   (let* ((file (ledger-master-file))
          (buf (find-file-noselect file))
-         (rbuf (get-buffer ledger-report-buffer-name))
          (wcfg (current-window-configuration)))
     (with-current-buffer
         (pop-to-buffer (get-buffer-create ledger-report-buffer-name))
