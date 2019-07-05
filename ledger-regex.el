@@ -72,7 +72,7 @@
   "^--.+?\\($\\|[ ]\\)")
 
 (defconst ledger-account-name-regex
-  "\\(?1:[^][();[:space:]\r\n]+\\(?: [^][();[:space:]]\r\n]+\\)*\\)")
+  "\\(?1:[^][();[:space:]\r\n]+\\(?: [^][();[:space:]\r\n]+\\)*\\)")
 
 (defconst ledger-account-directive-regex
   (concat "^account[ \t]+" ledger-account-name-regex))

@@ -153,6 +153,16 @@ tag ofxid
                 "Expenses:Utilities:Insurance"
                 "Something"))))))
 
+(ert-deftest ledger-complete/test-find-accounts-with-spaces-in-buffer ()
+  (let ((ledger "*** Expenses
+account Expenses:The Bakery
+"))
+    (with-temp-buffer
+      (insert ledger)
+      (should (equal
+               (ledger-accounts-list-in-buffer)
+               (list
+                "Expenses:The Bakery"))))))
 
 (provide 'complete-test)
 
