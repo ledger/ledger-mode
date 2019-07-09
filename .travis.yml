@@ -1,64 +1,32 @@
 sudo: required
-
 language: generic
-
-cache:
-  directories:
-    - ledger-master
-    - ledger-next
-
-os:
-    - linux
-    # - osx # Travis is saturated; see https://www.traviscistatus.com/
+dist: xenial
 
 env:
   matrix:
-    - EMACS_VERSION=emacs24 LEDGER_BRANCH=master
-    # - EMACS_VERSION=emacs24 LEDGER_BRANCH=apt-get # apt-get's ledger is too old
-    - EMACS_VERSION=emacs-snapshot LEDGER_BRANCH=next
-
-matrix:
-  allow_failures:
-    - env: EMACS_VERSION=emacs-snapshot LEDGER_BRANCH=next
+    - EVM_EMACS=emacs-24.3-travis
+    - EVM_EMACS=emacs-25.1-travis
+    # EVM doesn't support xenial yet, which we need since it has ledger version 3.
+    # See https://github.com/rejeep/evm/issues/125
+    # - EVM_EMACS=emacs-26.1-travis
+    # - EVM_EMACS=emacs-26.2-travis
+    # - EVM_EMACS=emacs-git-snapshot-travis
 
 before_install:
-  - ./tools/travis-install-ledger.sh $LEDGER_BRANCH
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-        export PATH=$TRAVIS_BUILD_DIR/ledger-$LEDGER_BRANCH:$PATH;
-    fi
-
-install:
-  - if [ "$TRAVIS_OS_NAME-$EMACS_VERSION" = "linux-emacs24" ]; then
-        sudo add-apt-repository -y ppa:cassou/emacs &&
-        sudo apt-get -qq update &&
-        sudo apt-get -qq install emacs24 emacs24-el &&
-        export EMACS=/usr/bin/emacs;
-    fi
-  - if [ "$TRAVIS_OS_NAME-$EMACS_VERSION" = "linux-emacs-snapshot" ]; then
-        sudo add-apt-repository -y ppa:ubuntu-elisp/ppa &&
-        sudo apt-get -qq update &&
-        sudo apt-get -qq install emacs-snapshot &&
-        export EMACS=/usr/bin/emacs-snapshot;
-    fi
-  - if [ "$TRAVIS_OS_NAME-$EMACS_VERSION" = "osx-emacs24" ]; then
-        wget https://emacsformacosx.com/emacs-builds/Emacs-24.4-universal.dmg &&
-        hdiutil attach Emacs-24.4-universal.dmg &&
-        export EMACS=/Volumes/Emacs/Emacs.app/Contents/MacOS/Emacs;
-    fi
-  - if [ "$TRAVIS_OS_NAME-$EMACS_VERSION" = "osx-emacs25" ]; then
-        wget https://emacsformacosx.com/emacs-builds/Emacs-25.1-universal.dmg &&
-        hdiutil attach Emacs-25.1-universal.dmg &&
-        export EMACS=/Volumes/Emacs/Emacs.app/Contents/MacOS/Emacs;
-    fi
+  - sudo apt-get install -y ledger
+  - git clone https://github.com/rejeep/evm.git $HOME/.evm
+  - export PATH=$HOME/.evm/bin:$PATH
+  - evm config path /tmp
+  - evm install $EVM_EMACS --use --skip
 
 script:
-  - $EMACS --version
+  - emacs --version
   - ledger --version
-  - $EMACS --eval "(setq byte-compile-error-on-warn (>= emacs-major-version 25))" -L .  --batch -f batch-byte-compile ledger-*.el
-  - cd test && make test-batch EMACS="$EMACS"
+  - emacs --eval "(setq byte-compile-error-on-warn (>= emacs-major-version 25))" -L .  --batch -f batch-byte-compile *.el
+  - make -C test test-batch
 
 after_script:
-  - make checkdoc
+  - make -C test checkdoc
 
 notifications:
   email: false
