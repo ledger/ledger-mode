@@ -173,6 +173,26 @@ Requires empty line separating xacts."
         (ledger-navigate-find-xact-extents pos)
       (ledger-navigate-find-directive-extents pos))))
 
+(defun ledger-navigate-next-uncleared ()
+  "Move point to the next uncleared transaction."
+  (interactive)
+  (when (looking-at ledger-payee-uncleared-regex)
+    (forward-line))
+  (if (re-search-forward ledger-payee-uncleared-regex nil t)
+      (progn (beginning-of-line)
+             (point))
+    (user-error "No next uncleared transactions")))
+
+(defun ledger-navigate-previous-uncleared ()
+  "Move point to the previous uncleared transaction."
+  (interactive)
+  (when (equal (car (ledger-context-at-point)) 'acct-transaction)
+    (ledger-navigate-beginning-of-xact))
+  (if (re-search-backward ledger-payee-uncleared-regex nil t)
+      (progn (beginning-of-line)
+             (point))
+    (user-error "No previous uncleared transactions")))
+
 
 (provide 'ledger-navigate)
 
