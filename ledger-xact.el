@@ -30,7 +30,8 @@
 (require 'ledger-navigate)
 (require 'ledger-exec)
 (require 'ledger-post)
-(declare-function ledger-read-date "ledger-mode")
+(declare-function ledger-read-date "ledger-mode" (prompt))
+(declare-function ledger-format-date "ledger-init" (&optional date))
 
 ;; TODO: This file depends on code in ledger-mode.el, which depends on this.
 

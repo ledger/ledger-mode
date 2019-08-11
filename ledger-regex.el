@@ -22,6 +22,8 @@
 (require 'rx)
 (require 'cl-lib)
 
+(defvar ledger-iso-date-regex)
+
 (defconst ledger-amount-regex
   (concat "\\(  \\|\t\\| \t\\)[ \t]*-?"
           "\\([A-Z$€£₹_(]+ *\\)?"

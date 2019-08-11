@@ -29,6 +29,10 @@
 (require 'flymake)
 (require 'ledger-exec)                  ; for `ledger-binary-path'
 
+;; To silence byte compiler warnings in Emacs 25 and older:
+(declare-function flymake-diag-region "flymake" (buffer line &optional col))
+(declare-function flymake-make-diagnostic "flymake" (buffer beg end type text &optional data overlay-properties))
+
 (defvar-local ledger--flymake-proc nil)
 
 (defcustom ledger-flymake-be-pedantic nil

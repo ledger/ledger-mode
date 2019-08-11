@@ -31,6 +31,7 @@
 ;; These keep the byte-compiler from warning about them, but have no other
 ;; effect:
 (defvar ledger-environment-alist)
+(declare-function ledger-exec-ledger "ledger-exec" (input-buffer &optional output-buffer &rest args))
 
 (defcustom ledger-reconcile-default-commodity "$"
   "The default commodity for use in target calculations in ledger reconcile."
