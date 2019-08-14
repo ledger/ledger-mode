@@ -41,3 +41,7 @@ how to use this.
 New commands ledger-navigate-next-uncleared and
 ledger-navigate-previous-uncleared move to the next and previous uncleared
 transactions. These don't have default keybindings.
+** New option ledger-accounts-exclude-function
+This allows users to exclude some accounts from being offered during completion.
+This is useful if, for example, you have a lot of accounts but only use some of
+them rarely.

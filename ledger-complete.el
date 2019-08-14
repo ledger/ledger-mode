@@ -37,6 +37,14 @@ This file will then be used as a source for account name completions."
   :type 'file
   :group 'ledger)
 
+(defcustom ledger-accounts-exclude-function nil
+  "Function to exclude accounts from completion.
+Should be a predicate function that accepts one argument, an
+element of `ledger-accounts-list-in-buffer'."
+  :type 'function
+  :group 'ledger
+  :package-version '(ledger-mode . "2019-08-14"))
+
 (defcustom ledger-complete-in-steps nil
   "When non-nil, `ledger-complete-at-point' completes account names in steps.
 If nil, full account names are offered for completion."
@@ -149,7 +157,10 @@ Then one of the elements this function returns will be
 (defun ledger-accounts-list-in-buffer ()
   "Return a list of all known account names in the current buffer as strings.
 Considers both accounts listed in postings and those declared with \"account\" directives."
-  (mapcar #'car (ledger-accounts-in-buffer)))
+  (let ((accounts (ledger-accounts-in-buffer)))
+    (when ledger-accounts-exclude-function
+      (setq accounts (cl-remove-if ledger-accounts-exclude-function accounts)))
+    (mapcar #'car accounts)))
 
 (defun ledger-accounts-list ()
   "Return a list of all known account names as strings.

@@ -164,6 +164,26 @@ account Expenses:The Bakery
                (list
                 "Expenses:The Bakery"))))))
 
+(ert-deftest ledger-complete/test-ledger-accounts-exclude-function ()
+  ;; TODO: Why doesn't this work in batch?
+  :tags '(interactive)
+  (with-temp-buffer
+    (insert "account Assets:Checking:Bank A
+    assert date<=[1990-01-01]
+account Assets:Checking:Bank B")
+    (let ((ledger-accounts-exclude-function
+           (lambda (i) "Exclude all entries with a subdirective."
+             (cdr i))))
+      (should (equal (ledger-accounts-list-in-buffer)
+                     (list "Assets:Checking:Bank B"))))
+    (let ((ledger-accounts-exclude-function (lambda (_) t)))
+      (should (equal (ledger-accounts-list-in-buffer)
+                     nil)))
+    (let ((ledger-accounts-exclude-function (lambda (_) nil)))
+      (should (equal (ledger-accounts-list-in-buffer)
+                     (list "Assets:Checking:Bank A"
+                           "Assets:Checking:Bank B"))))))
+
 (provide 'complete-test)
 
 ;;; complete-test.el ends here
