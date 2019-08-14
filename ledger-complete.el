@@ -90,15 +90,66 @@ If nil, full account names are offered for completion."
     ;; to the list
     (sort (delete-dups payees-list) #'string-lessp)))
 
+(defun ledger-accounts-in-buffer ()
+  "Return an alist of accounts in the current buffer.
+The `car' of each element is the account name and the `cdr' is an
+alist where the key is a subdirective such as \"assert\" and the
+value (if any) is the associated data.  In other words, if you've
+declared an account like so:
+
+account Assets:Checking
+    assert commodity == \"$\"
+    default
+
+Then one of the elements this function returns will be
+\(\"Assets:Checking\"
+  (\"default\")
+  (\"assert\" . \"commodity == \"$\"\"))"
+  (save-excursion
+    (goto-char (point-min))
+    (let (account-list)
+      ;; First, consider accounts declared with "account" directives, which may or
+      ;; may not have associated data. The data is on the following lines up to a
+      ;; line not starting with whitespace.
+      (while (re-search-forward ledger-account-directive-regex nil t)
+        (let ((account (match-string-no-properties 1))
+              (lines (buffer-substring-no-properties
+                      (point)
+                      (progn (ledger-navigate-next-xact-or-directive)
+                             (point))))
+              data)
+          (dolist (d (split-string lines "\n"))
+            (setq d
+                  ;; TODO: This is basically (string-trim d) but string-trim
+                  ;; doesn't exist in Emacs 24. Replace once we drop Emacs 24.
+                  (if (string-match "[[:space:]]+" d)
+                      (substring d (match-end 0))
+                    d))
+            (unless (string= d "")
+              (if (string-match " " d)
+                  (push (cons (substring d 0 (match-beginning 0))
+                              (substring d (match-end 0) nil))
+                        data)
+                (push (cons d nil) data))))
+          (push (cons account data) account-list)))
+      ;; Next, gather all accounts declared in postings
+      (unless
+          ;; FIXME: People who have set `ledger-flymake-be-pedantic' to non-nil
+          ;; probably don't want accounts from postings, just those declared
+          ;; with directives.  But the name is a little misleading.  Should we
+          ;; make a ledger-mode-be-pedantic and use that instead?
+          (bound-and-true-p ledger-flymake-be-pedantic)
+        (goto-char (point-min))
+        (while (re-search-forward ledger-account-name-or-directive-regex nil t)
+          (let ((account (match-string-no-properties 1)))
+            (unless (member account (mapcar #'car account-list))
+              (push (cons account nil) account-list)))))
+      (sort account-list (lambda (a b) (string-lessp (car a) (car b)))))))
+
 (defun ledger-accounts-list-in-buffer ()
   "Return a list of all known account names in the current buffer as strings.
 Considers both accounts listed in postings and those declared with \"account\" directives."
-  (save-excursion
-    (goto-char (point-min))
-    (let (results)
-      (while (re-search-forward ledger-account-name-or-directive-regex nil t)
-        (setq results (cons (match-string-no-properties 1) results)))
-      (sort (delete-dups results) #'string-lessp))))
+  (mapcar #'car (ledger-accounts-in-buffer)))
 
 (defun ledger-accounts-list ()
   "Return a list of all known account names as strings.
@@ -233,7 +284,8 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
            (eq (save-excursion (ledger-thing-at-point)) 'transaction)
            (setq start (save-excursion (backward-word) (point)))
            (setq collection #'ledger-payees-in-buffer))
-          ((looking-back (rx-to-string `(seq bol (one-or-more space) (group (zero-or-more (not space))))) (line-beginning-position))
+          (;; Accounts
+           (looking-back (rx-to-string `(seq bol (one-or-more space) (group (zero-or-more (not space))))) (line-beginning-position))
            (setq start (match-beginning 1)
                  delete-suffix (save-excursion
                                  (when (search-forward-regexp (rx (or eol (repeat 2 space))) (line-end-position) t)
