@@ -480,16 +480,13 @@ Optionally EDIT the command."
   "Replace file and line annotations with buttons."
   (while (re-search-forward "^\\(/[^:]+\\)?:\\([0-9]+\\)?:" nil t)
     (let ((file (match-string 1))
-          (line (string-to-number (match-string 2))))
-      (delete-region (match-beginning 0) (match-end 0))
-      (when file
+          (line (string-to-number (match-string 2)))
+          (beg (match-beginning 0))
+          (end (match-end 0)))
+      (when (and file line beg end)
+        (delete-region beg end)
         (add-text-properties (line-beginning-position) (line-end-position)
-                             (list 'ledger-source (cons file (save-window-excursion
-                                                               (save-excursion
-                                                                 (find-file file)
-                                                                 (widen)
-                                                                 (ledger-navigate-to-line line)
-                                                                 (point-marker))))))
+                             (list 'ledger-source (cons file line)))
         (make-text-button
          (line-beginning-position) (line-end-position)
          'type 'ledger-report-register-entry
@@ -538,21 +535,14 @@ arguments returned by `ledger-report--compute-extra-args'."
   "Visit the transaction under point in the report window."
   (interactive)
   (let* ((prop (get-text-property (point) 'ledger-source))
-         (file (if prop (car prop)))
-         (line-or-marker (if prop (cdr prop))))
-    (when (and file line-or-marker)
+         (file (car prop))
+         (line (cdr prop)))
+    (when (and file line)
       (find-file-other-window file)
       (widen)
-      (if (markerp line-or-marker)
-          (goto-char line-or-marker)
-        (goto-char (point-min))
-        (forward-line (1- line-or-marker))
-        (re-search-backward "^[0-9]+")
-        (beginning-of-line)
-        (let ((start-of-txn (point)))
-          (forward-paragraph)
-          (narrow-to-region start-of-txn (point))
-          (backward-paragraph))))))
+      (goto-char (point-min))
+      (forward-line (1- line))
+      (ledger-navigate-beginning-of-xact))))
 
 (defun ledger-report-goto ()
   "Goto the ledger report buffer."
