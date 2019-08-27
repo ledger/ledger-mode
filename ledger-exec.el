@@ -77,7 +77,9 @@ otherwise the error output is displayed and an error is raised."
     (let ((buf (or input-buffer (find-file-noselect (ledger-master-file))))
           (outbuf (or output-buffer
                       (generate-new-buffer " *ledger-tmp*")))
-          (errfile (make-temp-file "ledger-errors")))
+          (errfile (make-temp-file "ledger-errors"))
+          ;; could be ("ledger") or ("wsl" "ledger")
+          (ledger-binary (split-string ledger-binary-path)))
       (unwind-protect
           (with-current-buffer buf
             (let ((exit-code
@@ -85,8 +87,10 @@ otherwise the error output is displayed and an error is raised."
                          (coding-system-for-read 'utf-8))
                      (apply #'call-process-region
                             (append (list (point-min) (point-max)
-                                          ledger-binary-path nil (list outbuf errfile) nil "-f" "-")
-                                    args)))))
+                                          (car ledger-binary) nil (list outbuf errfile) nil)
+                                    ;; arguments list
+                                    (append (cdr ledger-binary)
+                                            (append '("-f" "-") args)))))))
               (if (ledger-exec-success-p exit-code outbuf)
                   outbuf
                 (display-buffer (ledger-exec-handle-error errfile))
