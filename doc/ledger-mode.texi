@@ -249,6 +249,7 @@ current regex.  Cancel the narrowing by typing @kbd{C-c C-f} again.
 @chapter The Ledger Buffer
 
 @menu
+* Navigating Transactions::
 * Adding Transactions::
 * Copying Transactions::
 * Editing Amounts::
@@ -259,8 +260,28 @@ current regex.  Cancel the narrowing by typing @kbd{C-c C-f} again.
 * Narrowing Transactions::
 @end menu
 
+@node Navigating Transactions, Adding Transactions, The Ledger Buffer, The Ledger Buffer
+@section Navigating Transactions
+@cindex transaction, navigation
 
-@node Adding Transactions, Copying Transactions, The Ledger Buffer, The Ledger Buffer
+@findex ledger-navigate-next-xact-or-directive
+@findex ledger-navigate-prev-xact-or-directive
+@kindex M-p
+@kindex M-n
+
+In addition to the usual Emacs navigation commands, ledger-mode offers several
+additional commands to ease navigation. @kbd{M-n} and @kbd{M-p} navigate between
+next and previous xacts or directives.
+
+@findex ledger-navigate-next-uncleared
+@findex ledger-navigate-previous-uncleared
+
+Additionally, M-x ledger-navigate-previous-uncleared and M-x
+ledger-navigate-next-uncleared navigate to the next and precious uncleared
+transactions.
+
+
+@node Adding Transactions, Copying Transactions, Navigating Transactions, The Ledger Buffer
 @section Adding Transactions
 @findex ledger-post-amount-alignment-column
 @kindex TAB
