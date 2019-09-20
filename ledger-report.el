@@ -217,7 +217,8 @@ See documentation for the function `ledger-master-file'")
     ))
 
 (define-derived-mode ledger-report-mode special-mode "Ledger-Report"
-  "A mode for viewing ledger reports.")
+  "A mode for viewing ledger reports."
+  (hack-dir-local-variables-non-file-buffer))
 
 (defconst ledger-report--extra-args-marker "[[ledger-mode-flags]]")
 
