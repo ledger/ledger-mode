@@ -261,9 +261,10 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
   (replace-regexp-in-string "[ \t]*$" "" str))
 
 (defun ledger-fully-complete-xact ()
-  "Completes a transaction if there is another matching payee in the buffer.
-Does not use ledger xact"
+  "Completes a transaction if there is another matching payee in the buffer."
   (interactive)
+  (unless (looking-back ledger-payee-any-status-regex (line-beginning-position))
+    (user-error "Point is not after payee"))
   (let* ((name (ledger-trim-trailing-whitespace (caar (ledger-parse-arguments))))
          (rest-of-name name)
          xacts)
@@ -277,24 +278,16 @@ Does not use ledger xact"
           (setq rest-of-name (match-string 3))
           ;; Start copying the postings
           (forward-line)
-          (while (looking-at ledger-account-any-status-regex)
-            (setq xacts (cons (buffer-substring-no-properties
-                               (line-beginning-position)
-                               (line-end-position))
-                              xacts))
-            (forward-line))
-          (setq xacts (nreverse xacts)))))
+          (setq xacts (buffer-substring-no-properties (point) (ledger-navigate-end-of-xact))))))
     ;; Insert rest-of-name and the postings
-    (when xacts
-      (save-excursion
-        (insert rest-of-name ?\n)
-        (while xacts
-          (insert (car xacts) ?\n)
-          (setq xacts (cdr xacts))))
-      (forward-line)
-      (goto-char (line-end-position))
-      (if (re-search-backward "\\(\t\\| [ \t]\\)" nil t)
-          (goto-char (match-end 0))))))
+    (save-excursion
+      (insert rest-of-name ?\n)
+      (insert xacts)
+      (insert ?\n))
+    (forward-line)
+    (goto-char (line-end-position))
+    (when (re-search-backward "\\(\t\\| [ \t]\\)" nil t)
+      (goto-char (match-end 0)))))
 
 (provide 'ledger-complete)
 
