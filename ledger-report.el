@@ -480,11 +480,9 @@ Optionally EDIT the command."
   "Replace file and line annotations with buttons."
   (while (re-search-forward "^\\(/[^:]+\\)?:\\([0-9]+\\)?:" nil t)
     (let ((file (match-string 1))
-          (line (string-to-number (match-string 2)))
-          (beg (match-beginning 0))
-          (end (match-end 0)))
-      (when (and file line beg end)
-        (delete-region beg end)
+          (line (string-to-number (match-string 2))))
+      (delete-region (match-beginning 0) (match-end 0))
+      (when (and file line)
         (add-text-properties (line-beginning-position) (line-end-position)
                              (list 'ledger-source (cons file line)))
         (make-text-button
