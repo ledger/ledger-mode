@@ -1,21 +1,40 @@
 sudo: required
-language: generic
-dist: xenial
+
+language: nix
+
+cache:
+  directories:
+    - ledger-master
+    - ledger-next
+
+os:
+    - linux
+    # - osx # Travis is saturated; see https://www.traviscistatus.com/
 
 env:
-  matrix:
-    - EVM_EMACS=emacs-24.3-travis
-    - EVM_EMACS=emacs-25.1-travis
-    - EVM_EMACS=emacs-26.1-travis-linux-xenial
-    - EVM_EMACS=emacs-26.3-travis-linux-xenial
-    - EVM_EMACS=emacs-git-snapshot-travis-linux-xenial
+  - EMACS_CI=emacs-24-3 LEDGER_BRANCH=master
+  - EMACS_CI=emacs-24-4 LEDGER_BRANCH=master
+  - EMACS_CI=emacs-24-5 LEDGER_BRANCH=master
+  - EMACS_CI=emacs-25-1 LEDGER_BRANCH=master
+  - EMACS_CI=emacs-25-2 LEDGER_BRANCH=master
+  - EMACS_CI=emacs-25-3 LEDGER_BRANCH=master
+  - EMACS_CI=emacs-26-1 LEDGER_BRANCH=master
+  - EMACS_CI=emacs-26-2 LEDGER_BRANCH=master
+  - EMACS_CI=emacs-26-3 LEDGER_BRANCH=master
+  - EMACS_CI=emacs-snapshot LEDGER_BRANCH=next
+
+matrix:
+  allow_failures:
+    - env: EMACS_CI=emacs-snapshot LEDGER_BRANCH=next
 
 before_install:
-  - sudo apt-get install -y ledger
-  - git clone https://github.com/rejeep/evm.git $HOME/.evm
-  - export PATH=$HOME/.evm/bin:$PATH
-  - evm config path /tmp
-  - evm install $EVM_EMACS --use --skip
+  - ./tools/travis-install-ledger.sh $LEDGER_BRANCH
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+        export PATH=$TRAVIS_BUILD_DIR/ledger-$LEDGER_BRANCH:$PATH;
+    fi
+
+install:
+  - bash <(curl https://raw.githubusercontent.com/purcell/nix-emacs-ci/master/travis-install)
 
 script:
   - emacs --version
