@@ -180,7 +180,6 @@ See documentation for the function `ledger-master-file'")
     (define-key map [?r] #'ledger-report-redo)
     (define-key map [(shift ?r)] #'ledger-report-reverse-report)
     (define-key map [?s] #'ledger-report-save)
-    (define-key map [(shift ?s)] #'ledger-report-select-report)
     (define-key map [?e] #'ledger-report-edit-report)
     (define-key map [( shift ?e)] #'ledger-report-edit-reports)
     (define-key map [?q] #'ledger-report-quit)
@@ -202,7 +201,6 @@ See documentation for the function `ledger-master-file'")
   "Ledger report menu"
   '("Reports"
     ["Select Report" ledger-report-select-report]
-    ["Save Report" ledger-report-save]
     ["Edit Current Report" ledger-report-edit-report]
     ["Edit All Reports" ledger-report-edit-reports]
     ["Re-run Report" ledger-report-redo]
@@ -589,13 +587,6 @@ arguments returned by `ledger-report--compute-extra-args'."
   "Edit the current report command in the mini buffer and re-run the report."
   (interactive)
   (setq ledger-report-cmd (ledger-report-read-command ledger-report-cmd))
-  (ledger-report-redo))
-
-(defun ledger-report-select-report ()
-  "Select and run one of the named reports."
-  (interactive)
-  (setq ledger-report-name (ledger-report-read-name)
-        ledger-report-cmd (ledger-report-cmd ledger-report-name nil))
   (ledger-report-redo))
 
 (defun ledger-report-read-new-name ()
