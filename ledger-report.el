@@ -98,11 +98,13 @@ simply concatenated (no quoting)."
 (defcustom ledger-report-use-native-highlighting t
   "When non-nil, use ledger's native highlighting in reports."
   :type 'boolean
+  :package-version '(ledger-mode . "4.0.0")
   :group 'ledger-report)
 
 (defcustom ledger-report-auto-width t
   "When non-nil, tell ledger about the width of the report window."
   :type 'boolean
+  :package-version '(ledger-mode . "4.0.0")
   :group 'ledger-report)
 
 (defcustom ledger-report-use-header-line nil
@@ -111,29 +113,34 @@ The report name/command won't be printed in the buffer.  See
 `ledger-report-header-line-fn' for how to customize the
 information reported."
   :type 'boolean
+  :package-version '(ledger-mode . "4.0.0")
   :group 'ledger-report)
 
 (defcustom ledger-report-header-line-fn #'ledger-report--header-function
   "Evaluate this function in the `header-line' of the report buffer.
 `ledger-report-use-header-line' must be non-nil for this to have any effect."
   :type 'function
+  :package-version '(ledger-mode . "4.0.0")
   :group 'ledger-report)
 
 (defcustom ledger-report-resize-window t
   "If non-nil, resize the report window.
 Calls `shrink-window-if-larger-than-buffer'."
   :type 'boolean
+  :package-version '(ledger-mode . "4.0.0")
   :group 'ledger-report)
 
 (defcustom ledger-report-use-strict nil
   "Should Ledger-mode pass --strict as a command line parameter
 when running reports?"
   :type 'boolean
+  :package-version '(ledger-mode . "4.0.0")
   :group 'ledger-report)
 
 (defcustom ledger-report-after-report-hook nil
   "Hook run after `ledger-report' has created the buffer and report."
   :type 'boolean
+  :package-version '(ledger-mode . "4.0.0")
   :group 'ledger-report)
 
 (defvar ledger-report-buffer-name "*Ledger Report*")

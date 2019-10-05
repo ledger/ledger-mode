@@ -56,6 +56,7 @@ decimal separator."
   "When non-nil, realign post amounts when indenting or completing."
   :type 'boolean
   :group 'ledger-post
+  :package-version '(ledger-mode . "4.0.0")
   :safe 'booleanp)
 
 (defun ledger-next-amount (&optional end)

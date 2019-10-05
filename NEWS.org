@@ -1,0 +1,43 @@
+* Development (v4.0.0)
+** The completion system now respects whatever completion system the user prefers
+Some users prefer different completion systems such as ivy or helm. To get the
+old behavior back, see the instructions in the ledger manual under the heading
+"Adding Transactions."
+
+Additionally, we now realign transactions after completion, see
+ledger-post-auto-align.
+** New option ledger-post-auto-align controls whether post amounts automatically align
+** New options control whether the report name/command get printed in the report buffer
+New option ledger-report-use-header-line controls this behavior and
+ledger-report-header-line-fn controls how the information is reported.
+** New option ledger-default-date-format is now used consistently
+Ledger-mode uses this option to insert dates whenever it is needed.
+** Report buffers are now highlighted by ledger
+So, for example, debts are usually red and deposits blue.
+
+New option ledger-report-use-native-highlighting controls this behavior.
+
+** Ledger now matches the width of report buffers
+Option ledger-report-auto-width controls whether we pass this information to
+ledger or not.
+** Ledger-mode gained support for flymake
+This supports checking for errors in syntax.
+
+Two new options ledger-flymake-be-pedantic and ledger-flymake-be-explicit
+control which flags get passed to ledger during checking.
+** Report windows can be automatically resized
+See new option ledger-report-resize-window
+** All faces used by ledger now inherit from other faces.
+This should make ledger-mode look better when used with various themes that
+don't provide support for ledger-mode explicitly.
+** New option ledger-report-use-strict controls whether --strict gets passed to reports
+** The fontification system (syntax highlighting) was completly rewritten 
+** In report buffers, M-n and M-p move to the next and previous month
+See the "Expansion Formats" section of the ledger mode manual to see examples on
+how to use this.
+** New hook ledger-report-after-report-hook runs after the report has been created
+** In report buffers, $ toggles converting to the default commodity 
+** Two new commands move between uncleared transactions
+New commands ledger-navigate-next-uncleared and
+ledger-navigate-previous-uncleared move to the next and previous uncleared
+transactions. These don't have default keybindings.
