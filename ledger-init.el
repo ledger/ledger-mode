@@ -42,6 +42,7 @@ to treat commas as decimal separator.")
 Set this to the value of `ledger-iso-date-format' if you prefer
 ISO 8601 dates."
   :type 'string
+  :package-version '(ledger-mode . "4.0.0")
   :group 'ledger)
 
 (defconst ledger-iso-date-format "%Y-%m-%d"

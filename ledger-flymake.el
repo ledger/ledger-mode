@@ -40,6 +40,7 @@
 If --pedantic is in your ledgerrc file, then --pedantic gets
 passed regardless of the value."
   :type 'boolean
+  :package-version '(ledger-mode . "4.0.0")
   :group 'ledger)
 
 (defcustom ledger-flymake-be-explicit nil
@@ -47,6 +48,7 @@ passed regardless of the value."
 If --explicit is in your ledgerrc file, then --explicit gets
 passed regardless of the value."
   :type 'boolean
+  :package-version '(ledger-mode . "4.0.0")
   :group 'ledger)
 
 ;; Based on the example from Flymake's info:
