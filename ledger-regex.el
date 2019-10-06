@@ -19,6 +19,12 @@
 ;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 ;; MA 02110-1301 USA.
 
+
+;;; Commentary:
+;; Regular expressions used by ledger-mode.
+
+;;; Code:
+
 (require 'rx)
 (require 'cl-lib)
 
@@ -404,3 +410,5 @@
 
 
 (provide 'ledger-regex)
+
+;;; ledger-regex.el ends here

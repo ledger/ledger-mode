@@ -131,8 +131,7 @@ Calls `shrink-window-if-larger-than-buffer'."
   :group 'ledger-report)
 
 (defcustom ledger-report-use-strict nil
-  "Should Ledger-mode pass --strict as a command line parameter
-when running reports?"
+  "When non-nil, `ledger-mode' will use --strict when running reports?"
   :type 'boolean
   :package-version '(ledger-mode . "4.0.0")
   :group 'ledger-report)
@@ -476,7 +475,7 @@ Optionally EDIT the command."
   'action (lambda (_button) (ledger-report-visit-source)))
 
 (defun ledger-report--change-month (shift)
-  "Rebuild report with transactions from current month + shift."
+  "Rebuild report with transactions from current month + SHIFT."
   (let* ((current-month (or ledger-report-current-month (ledger-report--current-month)))
          (previous-month (ledger-report--shift-month current-month shift)))
     (set (make-local-variable 'ledger-report-current-month) previous-month)

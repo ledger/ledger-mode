@@ -18,6 +18,10 @@
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
 ;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 ;; MA 02110-1301 USA.
+
+;;; Commentary:
+;;
+
 ;;; Code:
 (defvar ledger-binary-path)
 
@@ -26,12 +30,12 @@
   :group 'ledger)
 
 (defcustom ledger-texi-sample-doc-path "~/ledger/doc/sample.dat"
-  "Location for sample data to be used in texi tests"
+  "Location for sample data to be used in texi tests."
   :type 'file
   :group 'ledger-texi)
 
 (defcustom ledger-texi-normalization-args "--args-only --columns 80"
-  "texi normalization for producing ledger output"
+  "Texi normalization for producing ledger output."
   :type 'string
   :group 'ledger-texi)
 
@@ -171,3 +175,5 @@
                                 "../test/manual")))))
 
 (provide 'ledger-texi)
+
+;;; ledger-texi.el ends here

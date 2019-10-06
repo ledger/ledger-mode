@@ -101,16 +101,14 @@
                         (org-read-date nil t nil prompt))))
 
 (defun ledger-get-minibuffer-prompt (prompt default)
-  "Return a string composing of PROMPT and DEFAULT appropriate
-for a minibuffer prompt."
+  "Return a string composing of PROMPT and DEFAULT appropriate for a minibuffer prompt."
   (concat prompt
           (if default
               (concat " (" default "): ")
             ": ")))
 
 (defun ledger-completing-read-with-default (prompt default collection)
-  "Return a user supplied string after PROMPT, or DEFAULT while
-  providing completions from COLLECTION."
+  "Return a user supplied string after PROMPT, or DEFAULT while providing completions from COLLECTION."
   (completing-read (ledger-get-minibuffer-prompt prompt default)
                    collection nil nil nil 'ledger-minibuffer-history default))
 
@@ -123,7 +121,7 @@ for a minibuffer prompt."
   "Display the cleared-or-pending balance.
 And calculate the target-delta of the account being reconciled.
 
-With prefix argument \\[universal-argument] ask for the target commodity and convert
+With ARG (\\[universal-argument]) ask for the target commodity and convert
 the balance into that."
   (interactive "P")
   (let* ((account (ledger-read-account-with-prompt "Account balance to show"))

@@ -68,9 +68,9 @@
                                        ("Fr" 5)
                                        ("Sa" 6)
                                        ("Su" 0))
-  "List of weekday abbreviations.  There must be exactly seven
-entries each with a two character abbreviation for a day and the
-number of that day in the week. "
+  "List of weekday abbreviations.
+There must be exactly seven entries each with a two character
+abbreviation for a day and the number of that day in the week."
   :type '(alist :value-type (group integer))
   :group 'ledger-schedule)
 
@@ -212,7 +212,7 @@ the transaction should be logged for that day."
 (defun ledger-schedule-constrain-year (year-desc month-desc day-desc)
   "Return a form that constrains the year.
 
-YEAR-DESC, MONT-DESC, and DAY-DESC are the string portions of the
+YEAR-DESC, MONTH-DESC, and DAY-DESC are the string portions of the
 date descriptor."
   (cond
    ((string-match "[A-Za-z]" day-desc) t) ; there is an advanced day descriptor which overrides the year
@@ -225,7 +225,7 @@ date descriptor."
 (defun ledger-schedule-constrain-month (year-desc month-desc day-desc)
   "Return a form that constrains the month.
 
-YEAR-DESC, MONT-DESC, and DAY-DESC are the string portions of the
+YEAR-DESC, MONTH-DESC, and DAY-DESC are the string portions of the
 date descriptor."
   (cond
    ((string-match "[A-Za-z]" day-desc) t) ; there is an advanced day descriptor which overrides the month
@@ -243,7 +243,7 @@ date descriptor."
 (defun ledger-schedule-constrain-day (year-desc month-desc day-desc)
   "Return a form that constrains the day.
 
-YEAR-DESC, MONT-DESC, and DAY-DESC are the string portions of the
+YEAR-DESC, MONTH-DESC, and DAY-DESC are the string portions of the
 date descriptor."
   (cond ((string= day-desc "*")
          t)

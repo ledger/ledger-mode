@@ -53,7 +53,7 @@
   (concat (apply 'concat (mapcar 'ledger-get-regex-str elements)) "[ \t]*$"))
 
 (defmacro ledger-single-line-config (&rest elements)
-  "Take list of ELEMENTS and return regex and element list for use in context-at-point"
+  "Take list of ELEMENTS and return regex and element list for use in context-at-point."
   `(list (ledger-line-regex (quote ,elements)) (quote ,elements)))
 
 (defconst ledger-line-config

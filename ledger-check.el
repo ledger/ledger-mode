@@ -110,7 +110,10 @@
   (kill-buffer (get-buffer ledger-check-buffer-name)))
 
 (defun ledger-check-buffer ()
-  "Run ledge with --explicit and --strict report errors and assist with fixing them.
+  "Check the current buffer for errors.
+
+Runs ledger with --explicit and --strict report errors and assist
+with fixing them.
 
 The output buffer will be in `ledger-check-mode', which defines
 commands for navigating the buffer to the errors found, etc."
@@ -136,3 +139,5 @@ commands for navigating the buffer to the errors found, etc."
 
 
 (provide 'ledger-check)
+
+;;; ledger-check.el ends here

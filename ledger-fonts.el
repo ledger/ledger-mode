@@ -457,7 +457,7 @@ UNCLEARED otherwise."
   "Construct anchored highlighters for subdirectives.
 
 Each element of SUBDIRECTIVES should have the form (MATCHER
-SUBEXP-HIGHLIGHTERS…). The result will be a list of elements of
+SUBEXP-HIGHLIGHTERS…).  The result will be a list of elements of
 the form (MATCHER PRE-FORM POST-FORM SUBEXP-HIGHLIGHTERS) with
 PRE-FORM and POST-FORM set to appropriate values.
 

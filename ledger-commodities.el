@@ -110,7 +110,11 @@ Returns a list with (value commodity)."
   (replace-regexp-in-string char "" str))
 
 (defun ledger-string-to-number (str &optional decimal-comma)
-  "improve builtin string-to-number by handling internationalization, and return nil if number can't be parsed"
+  "Parse STR as a number and return that number.
+
+Improves builtin `string-to-number' by handling
+internationalization, and return nil if number can't be parsed.
+See `ledger-environment-alist' for DECIMAL-COMMA."
   (let ((nstr (if (or decimal-comma
                       (assoc "decimal-comma" ledger-environment-alist))
                   (ledger-strip str "[.]")
@@ -120,7 +124,8 @@ Returns a list with (value commodity)."
     (string-to-number nstr)))
 
 (defun ledger-number-to-string (n &optional decimal-comma)
-  "number-to-string that handles comma as decimal."
+  "See `number-to-string' for N.
+DECIMAL-COMMA is as documented in `ledger-environment-alist'."
   (let ((str (number-to-string n)))
     (when (or decimal-comma
               (assoc "decimal-comma" ledger-environment-alist))
