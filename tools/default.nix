@@ -6,5 +6,9 @@ in
 {
   stable = pkgs.ledger;
 
-  snapshot =  (pkgs.callPackage ledgerFromGit {}).overrideAttrs(a: { doCheck = false; });
+  snapshot =  (pkgs.callPackage ledgerFromGit {})
+    .overrideAttrs(a: {
+      doCheck = false;
+      cmakeFlags = a.cmakeFlags ++ [ "-DCMAKE_INSTALL_MANDIR=share/man" ];
+    });
 }
