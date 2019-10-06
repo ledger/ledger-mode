@@ -4,13 +4,14 @@ set -eu -o pipefail
 set -o xtrace
 
 VERSION=$1
+THISDIR=$(cd "$(dirname "$0")" && pwd)
 
 case "$VERSION" in
     stable)
-        nix-env -iA ledger -f '<nixpkgs>'
+        nix-env -iA stable -f $THISDIR/default.nix
         ;;
     snapshot)
-        echo "$0: snapshot version of ledger currently unsupported"
+        nix-env -iA snapshot -f $THISDIR/default.nix
         ;;
     *)
         echo "$0: Unknown branch: $VERSION"
