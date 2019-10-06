@@ -1,5 +1,3 @@
-sudo: required
-
 language: nix
 
 cache:
@@ -12,29 +10,24 @@ os:
     # - osx # Travis is saturated; see https://www.traviscistatus.com/
 
 env:
-  - EMACS_CI=emacs-24-3 LEDGER_BRANCH=master
-  - EMACS_CI=emacs-24-4 LEDGER_BRANCH=master
-  - EMACS_CI=emacs-24-5 LEDGER_BRANCH=master
-  - EMACS_CI=emacs-25-1 LEDGER_BRANCH=master
-  - EMACS_CI=emacs-25-2 LEDGER_BRANCH=master
-  - EMACS_CI=emacs-25-3 LEDGER_BRANCH=master
-  - EMACS_CI=emacs-26-1 LEDGER_BRANCH=master
-  - EMACS_CI=emacs-26-2 LEDGER_BRANCH=master
-  - EMACS_CI=emacs-26-3 LEDGER_BRANCH=master
-  - EMACS_CI=emacs-snapshot LEDGER_BRANCH=next
+  - EMACS_CI=emacs-24-3 LEDGER_VERSION=stable
+  - EMACS_CI=emacs-24-4 LEDGER_VERSION=stable
+  - EMACS_CI=emacs-24-5 LEDGER_VERSION=stable
+  - EMACS_CI=emacs-25-1 LEDGER_VERSION=stable
+  - EMACS_CI=emacs-25-2 LEDGER_VERSION=stable
+  - EMACS_CI=emacs-25-3 LEDGER_VERSION=stable
+  - EMACS_CI=emacs-26-1 LEDGER_VERSION=stable
+  - EMACS_CI=emacs-26-2 LEDGER_VERSION=stable
+  - EMACS_CI=emacs-26-3 LEDGER_VERSION=stable
+  - EMACS_CI=emacs-snapshot LEDGER_VERSION=snapshot
 
 matrix:
   allow_failures:
-    - env: EMACS_CI=emacs-snapshot LEDGER_BRANCH=next
-
-before_install:
-  - ./tools/travis-install-ledger.sh $LEDGER_BRANCH
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-        export PATH=$TRAVIS_BUILD_DIR/ledger-$LEDGER_BRANCH:$PATH;
-    fi
+    - env: EMACS_CI=emacs-snapshot LEDGER_VERSION=snapshot
 
 install:
   - bash <(curl https://raw.githubusercontent.com/purcell/nix-emacs-ci/master/travis-install)
+  - tools/install-ledger.sh $LEDGER_VERSION
 
 script:
   - emacs --version
