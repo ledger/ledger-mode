@@ -42,7 +42,7 @@ This file will then be used as a source for account name completions."
 If nil, full account names are offered for completion."
   :type 'boolean
   :group 'ledger
-  :package-version '(ledger-mode . "2019-05-27"))
+  :package-version '(ledger-mode . "4.0.0"))
 
 (defun ledger-parse-arguments ()
   "Parse whitespace separated arguments in the current region."
