@@ -27,7 +27,8 @@ matrix:
 
 install:
   - bash <(curl https://raw.githubusercontent.com/purcell/nix-emacs-ci/master/travis-install)
-  - tools/install-ledger.sh $LEDGER_VERSION
+  # TODO: cache builds of this using cachix
+  - nix-env -iA $LEDGER_VERSION -f tools
 
 script:
   - emacs --version
