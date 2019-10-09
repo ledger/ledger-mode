@@ -264,6 +264,9 @@ With a prefix argument, remove the effective date."
 
     (define-key map [(meta ?p)] #'ledger-navigate-prev-xact-or-directive)
     (define-key map [(meta ?n)] #'ledger-navigate-next-xact-or-directive)
+    (define-key map [remap beginning-of-defun] #'ledger-navigate-prev-xact-or-directive)
+    (define-key map [remap end-of-defun] #'ledger-navigate-next-xact-or-directive)
+
     (define-key map [(meta ?q)] #'ledger-post-align-dwim)
     map)
   "Keymap for `ledger-mode'.")

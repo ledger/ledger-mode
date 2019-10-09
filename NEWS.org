@@ -41,3 +41,4 @@ how to use this.
 New commands ledger-navigate-next-uncleared and
 ledger-navigate-previous-uncleared move to the next and previous uncleared
 transactions. These don't have default keybindings.
+** C-M-a and C-M-e move to the next and previous transactions
