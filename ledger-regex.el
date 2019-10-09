@@ -31,19 +31,36 @@
 (defvar ledger-iso-date-regex)
 
 (defconst ledger-amount-regex
-  (concat "\\(  \\|\t\\| \t\\)[ \t]*-?"
-          "\\([A-Z$€£₹_(]+ *\\)?"
-          ;; We either match just a number after the commodity with no
-          ;; decimal or thousand separators or a number with thousand
-          ;; separators.  If we have a decimal part starting with `,'
-          ;; or `.', because the match is non-greedy, it must leave at
-          ;; least one of those symbols for the following capture
-          ;; group, which then finishes the decimal part.
-          "\\(-?\\(?:[0-9]+\\|[0-9,.]+?\\)\\)"
-          "\\([,.][0-9)]+\\)?"
-          "\\( *[[:word:]€£₹_\"]+\\)?"
-          "\\([ \t]*[@={]@?[^\n;]+?\\)?"
-          "\\([ \t]+;.+?\\|[ \t]*\\)?$"))
+
+  (let ((prefix-commodity-re "[A-Z$€£₹_(]+ *")
+        (suffix-commodity-re " *[[:word:]€£₹_\"]+")
+        (value-re "-?\\(?:[0-9]+\\|[0-9,.]+?\\)")
+        (decimal-re "[,.][0-9)]+"))
+    (concat "\\(  \\|\t\\| \t\\)[ \t]*-?"
+            "(?[ \t]*"
+
+            ;; If it's an expression pick the last value.
+            "\\(?:"
+            "\\(?:" prefix-commodity-re "\\)?"
+            "\\(?:" value-re "\\)"
+            "\\(?:" decimal-re "\\)?"
+            "\\(?:" suffix-commodity-re "\\)?"
+            "\\(?:[ \t]*[+*/-][ \t]*\\)?"
+            "\\)*?"
+
+            "\\(" prefix-commodity-re "\\)?"
+            ;; We either match just a number after the commodity with no
+            ;; decimal or thousand separators or a number with thousand
+            ;; separators.  If we have a decimal part starting with `,'
+            ;; or `.', because the match is non-greedy, it must leave at
+            ;; least one of those symbols for the following capture
+            ;; group, which then finishes the decimal part.
+            "\\(" value-re "\\)"
+            "\\(" decimal-re "\\)?"
+            "\\(" suffix-commodity-re "\\)?"
+            "[ \t]*)?"
+            "\\([ \t]*[@={]@?[^\n;]+?\\)?"
+            "\\([ \t]+;.+?\\|[ \t]*\\)?$")))
 
 (defconst ledger-amount-decimal-comma-regex
   "-?[1-9][0-9.]*[,]?[0-9]*")
