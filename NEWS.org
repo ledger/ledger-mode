@@ -1,4 +1,5 @@
-* Development (v4.0.0)
+* Development (v4.1)
+* Release v4.0.0
 ** The completion system now respects whatever completion system the user prefers
 Some users prefer different completion systems such as ivy or helm. To get the
 old behavior back, see the instructions in the ledger manual under the heading
