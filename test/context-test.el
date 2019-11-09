@@ -305,6 +305,22 @@ https://github.com/ledger/ledger-mode/issues/352"
      (should (equal "$100"
                     (ledger-context-field-value context 'cost))))))
 
+(ert-deftest ledger-context/test-011 ()
+  "Regress test for #211
+https://github.com/ledger/ledger-mode/issues/211"
+  :tags '(context regress)
+
+  (ledger-tests-with-temp-file
+   "2004/05/01 * Checking balance
+  Assets:Bank:Checking        -$1,000.00
+  Equity:Opening Balances
+"
+   (goto-char 65)                      ; on the amount 1,000.00
+   (let ((context (ledger-context-at-point)))
+     (should (eq (ledger-context-current-field context) 'commoditized-amount))
+     (should (equal "-$1,000.00"
+                    (ledger-context-field-value context 'commoditized-amount))))))
+
 (provide 'context-test)
 
 ;;; context-test.el ends here

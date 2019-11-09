@@ -299,13 +299,22 @@
 (ledger-define-regexp commoditized-amount
   (macroexpand
    `(rx (group
-         (or (and (regexp ,ledger-commodity-no-group-regexp)
-                  (*? blank)
-                  (regexp ,ledger-amount-no-group-regexp))
-             (and (regexp ,ledger-amount-no-group-regexp)
-                  (*? blank)
-                  (regexp ,ledger-commodity-no-group-regexp))))))
-  "")
+         (or
+          ;; Match commodity before amount, with optional
+          ;; minus sign allowed before commodity.
+
+          ;; Ex: "$100" or "-$100"
+          (and (opt ?-)
+               (regexp ,ledger-commodity-no-group-regexp)
+               (*? blank)
+               (regexp ,ledger-amount-no-group-regexp))
+          ;; Match commodity after amount
+
+          ;; Ex: "100 Dollars"
+          (and (regexp ,ledger-amount-no-group-regexp)
+               (*? blank)
+               (regexp ,ledger-commodity-no-group-regexp))))))
+  "Regexp to match a commodity with amount such as \"$100\" or \"100 Dollars\"")
 
 (ledger-define-regexp commodity-annotations
   (macroexpand
