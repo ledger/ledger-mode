@@ -265,6 +265,9 @@ With a prefix argument, remove the effective date."
     (define-key map (kbd "M-p") #'ledger-navigate-prev-xact-or-directive)
     (define-key map (kbd "M-n") #'ledger-navigate-next-xact-or-directive)
     (define-key map (kbd "M-q") #'ledger-post-align-dwim)
+
+    ;; Reset the `text-mode' override of this standard binding
+    (define-key map (kbd "C-M-i") 'completion-at-point)
     map)
   "Keymap for `ledger-mode'.")
 
