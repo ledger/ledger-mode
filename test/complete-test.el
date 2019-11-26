@@ -124,7 +124,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
 
 (ert-deftest ledger-complete/test-find-accounts-in-buffer ()
   (let ((ledger "*** Expenses
-account Expenses:Accomodation
+account Expenses:Accommodation
 account Assets:Cash  ; some comment
 account Assets:Current
 ;    alias 1187465S022    -- Ideally this line could be uncommented
@@ -136,7 +136,7 @@ tag ofxid
     ; ofxid: someid
     Expenses:Utilities:Insurance  38.00 EUR
     [Dimensions:Foo]  30.00 EUR
-    [Expenses:Accomodation]  8.33 EUR
+    [Expenses:Accommodation]  8.33 EUR
     [Dimensions:Equity]  -38.33 EUR
     (Something)  43.00 EUR
 "))
@@ -149,7 +149,7 @@ tag ofxid
                 "Assets:Current"
                 "Dimensions:Equity"
                 "Dimensions:Foo"
-                "Expenses:Accomodation"
+                "Expenses:Accommodation"
                 "Expenses:Utilities:Insurance"
                 "Something"))))))
 
