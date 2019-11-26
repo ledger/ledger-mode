@@ -508,7 +508,7 @@ Optionally EDIT the command."
 (defun ledger-do-report (cmd)
   "Run a report command line CMD.
 CMD may contain a (shell-quoted) version of
-`ledger-report--extra-args-marker', wich will be replaced by
+`ledger-report--extra-args-marker', which will be replaced by
 arguments returned by `ledger-report--compute-extra-args'."
   (goto-char (point-min))
   (let* ((inhibit-read-only t)

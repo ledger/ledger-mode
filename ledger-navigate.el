@@ -67,7 +67,7 @@
 (defun ledger-navigate-beginning-of-xact ()
   "Move point to the beginning of the current xact."
   (interactive)
-  ;; need to start at the beginning of a line incase we are in the first line of an xact already.
+  ;; need to start at the beginning of a line in case we are in the first line of an xact already.
   (beginning-of-line)
   (let ((sreg (concat "^[=~[:digit:]]")))
     (unless (looking-at sreg)

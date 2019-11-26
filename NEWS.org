@@ -32,7 +32,7 @@ See new option ledger-report-resize-window
 This should make ledger-mode look better when used with various themes that
 don't provide support for ledger-mode explicitly.
 ** New option ledger-report-use-strict controls whether --strict gets passed to reports
-** The fontification system (syntax highlighting) was completly rewritten 
+** The fontification system (syntax highlighting) was completely rewritten
 ** In report buffers, M-n and M-p move to the next and previous month
 See the "Expansion Formats" section of the ledger mode manual to see examples on
 how to use this.

@@ -99,7 +99,7 @@ If non-nil, the name of the account being reconciled will be substituted
   "Format string for the ledger reconcile posting format.
 Available fields are date, status, code, payee, account,
 amount.  The format for each field is %WIDTH(FIELD), WIDTH can be
-preced by a minus sign which mean to left justify and pad the
+preceded by a minus sign which mean to left justify and pad the
 field.  WIDTH is the minimum number of characters to display;
 if string is longer, it is not truncated unless
 `ledger-reconcile-buffer-payee-max-chars' or
