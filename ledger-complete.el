@@ -98,6 +98,23 @@ If nil, full account names are offered for completion."
     ;; to the list
     (sort (delete-dups payees-list) #'string-lessp)))
 
+(defun ledger-tags-in-buffer ()
+  "Return a list of all tags in the current buffer.
+Tags can be defined by either 1) following an indented semicolon
+inside a transaction or 2) by a \"tag\" command directive."
+  (save-excursion
+    (goto-char (point-min))
+    (let ((tags))
+      ;; Get tags declared via "tag" account directive
+      (while (re-search-forward ledger-tag-directive-regex nil t)
+        (push (match-string-no-properties 1) tags))
+      ;; Get tags declared in transactions
+      (goto-char (point-min))
+      (while (re-search-forward (concat "[[:space:]]+;[[:space:]]*" ledger-tag-name-regex) nil t)
+        (push (match-string-no-properties 1) tags))
+      (setq tags (delete-dups tags))
+      (sort tags #'string-lessp))))
+
 (defun ledger-accounts-in-buffer ()
   "Return an alist of accounts in the current buffer.
 The `car' of each element is the account name and the `cdr' is an
@@ -304,7 +321,14 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
                  realign-after t
                  collection (if ledger-complete-in-steps
                                 #'ledger-accounts-tree
-                              #'ledger-accounts-list))))
+                              #'ledger-accounts-list)))
+          (;; Tags
+           (and (eq (save-excursion (ledger-thing-at-point))
+                    'posting)
+                ;; 1- to remove the end colon from `ledger-tag-name-regex'
+                (looking-back (substring ledger-tag-name-regex nil (1- (length ledger-tag-name-regex))) (line-beginning-position)))
+           (setq start (match-beginning 1)
+                 collection #'ledger-tags-in-buffer)))
     (when collection
       (let ((prefix (buffer-substring-no-properties start end)))
         (list start end
