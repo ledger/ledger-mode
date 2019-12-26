@@ -109,7 +109,7 @@ where the \"users\" point was."
 Leave point at the beginning of the thing under point"
   (let ((here (point)))
     (goto-char (line-beginning-position))
-    (cond ((looking-at "^[0-9/.=-]+\\(\\s-+\\*\\)?\\(\\s-+(.+?)\\)?\\s-+")
+    (cond ((looking-at "^\\(?:[~=][ \t]\\|[0-9/.=-]+\\(\\s-+\\*\\)?\\(\\s-+(.+?)\\)?\\s-+\\)")
            (goto-char (match-end 0))
            'transaction)
           ((looking-at "^\\s-+\\([*!]\\s-+\\)?[[(]?\\([^\\s-]\\)")
