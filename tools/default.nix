@@ -1,7 +1,10 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  ledgerFromGit = builtins.fetchGit { url = git://github.com/ledger/ledger; };
+  ledgerFromGit = builtins.fetchGit {
+    url = git://github.com/ledger/ledger;
+    ref = "next";
+  };
 in
 {
   stable = pkgs.ledger;
