@@ -4,6 +4,7 @@ on:
   push:
     paths-ignore:
     - '**/*.md'
+    - '**/*.org'
     - '.dir-locals.el'
 
 jobs:
