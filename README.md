@@ -21,6 +21,16 @@ packages in [MELPA][melpa] or [MELPA Stable][melpa-stable], you'll need to
 add the directory containing `ledger-mode.el` to your `load-path`, and
 then `(require 'ledger-mode)`.
 
+Configuring completion
+======================
+
+Earlier `ledger-mode` versions had an always-on `TAB` completion system,
+but now the code uses the standard Emacs `completion-at-point` system
+for compatibility with all completion UIs, e.g. `company` or `helm`.
+
+See the "Adding Transactions" section of the ledger-mode Info manual for
+more information.
+
 Getting started
 ===============
 
