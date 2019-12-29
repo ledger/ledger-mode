@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    paths-ignore:
+    - '**/*.md'
+    - '**/*.org'
+    - '.dir-locals.el'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ubuntu-latest
+        ledger_version: stable
+        emacs_version: [24.3, 24.4, 24.5, 25.1, 25.2, 25.3, 26.1, 26.2, 26.3, snapshot]
+        include:
+          - os: macOS-latest
+            emacs_version: 26.3
+          - emacs_version: snapshot
+            ledger_version: [snapshot]
+
+    steps:
+    - uses: cachix/install-nix-action@v3
+    - uses: purcell/setup-emacs@master
+      with:
+        version: ${{ matrix.emacs_version }}
+
+    - uses: actions/checkout@v1
+    - name: Install ledger
+      run: nix-env -iA $LEDGER_VERSION -f tools
+    # Byte compilation is known to fail in Emacs < 26.1 due to ledger-flymake.el, which should
+    # be packaged separately
+    - name: Byte compilation
+      run: emacs --eval "(setq byte-compile-error-on-warn (>= emacs-major-version 26))" -L . --batch -f batch-byte-compile *.el
+    - name: Tests
+      run: make -C test test-batch
+    - name: Checkdoc
+      run: make -C test checkdoc
