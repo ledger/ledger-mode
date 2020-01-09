@@ -150,9 +150,8 @@ Then one of the elements this function returns will be
         (goto-char (point-min))
         (while (re-search-forward ledger-account-name-or-directive-regex nil t)
           (let ((account (match-string-no-properties 1)))
-            (unless (member account (mapcar #'car account-list))
-              (push (cons account nil) account-list)))))
-      (sort account-list (lambda (a b) (string-lessp (car a) (car b)))))))
+            (setq account-list (cons (cons account nil) account-list))))
+        (sort (delete-dups account-list) (lambda (a b) (string-lessp (car a) (car b ))))))))
 
 (defun ledger-accounts-list-in-buffer ()
   "Return a list of all known account names in the current buffer as strings.
