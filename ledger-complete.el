@@ -151,7 +151,8 @@ Then one of the elements this function returns will be
         (while (re-search-forward ledger-account-name-or-directive-regex nil t)
           (let ((account (match-string-no-properties 1)))
             (setq account-list (cons (cons account nil) account-list))))
-        (sort (delete-dups account-list) (lambda (a b) (string-lessp (car a) (car b ))))))))
+        (sort (cl-delete-duplicates account-list :test (lambda (a b) (string-equal (car a) (car b))))
+              (lambda (a b) (string-lessp (car a) (car b ))))))))
 
 (defun ledger-accounts-list-in-buffer ()
   "Return a list of all known account names in the current buffer as strings.
