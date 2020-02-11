@@ -30,21 +30,6 @@
 
 (defvar ledger-iso-date-regex)
 
-(defconst ledger-amount-regex
-  (concat "\\(  \\|\t\\| \t\\)[ \t]*-?"
-          "\\([A-Z$€£₹_(]+ *\\)?"
-          ;; We either match just a number after the commodity with no
-          ;; decimal or thousand separators or a number with thousand
-          ;; separators.  If we have a decimal part starting with `,'
-          ;; or `.', because the match is non-greedy, it must leave at
-          ;; least one of those symbols for the following capture
-          ;; group, which then finishes the decimal part.
-          "\\(-?\\(?:[0-9]+\\|[0-9,.]+?\\)\\)"
-          "\\([,.][0-9)]+\\)?"
-          "\\( *[[:word:]€£₹_\"]+\\)?"
-          "\\([ \t]*[@={]@?[^\n;]+?\\)?"
-          "\\([ \t]+;.+?\\|[ \t]*\\)?$"))
-
 (defconst ledger-amount-decimal-comma-regex
   "-?[1-9][0-9.]*[,]?[0-9]*")
 
@@ -370,6 +355,21 @@
                       (account full-account name)
                       (amount full-amount)
                       (note end-note))
+
+(defconst ledger-amount-regex
+  (concat "\\(  \\|\t\\| \t\\)[ \t]*-?"
+          "\\(?:" ledger-commodity-regexp " *\\)?"
+          ;; We either match just a number after the commodity with no
+          ;; decimal or thousand separators or a number with thousand
+          ;; separators.  If we have a decimal part starting with `,'
+          ;; or `.', because the match is non-greedy, it must leave at
+          ;; least one of those symbols for the following capture
+          ;; group, which then finishes the decimal part.
+          "\\(-?\\(?:[0-9]+\\|[0-9,.]+?\\)\\)"
+          "\\([,.][0-9)]+\\)?"
+          "\\(?: *" ledger-commodity-regexp "\\)?"
+          "\\([ \t]*[@={]@?[^\n;]+?\\)?"
+          "\\([ \t]+;.+?\\|[ \t]*\\)?$"))
 
 (defconst ledger-iterate-regex
   (concat "\\(\\(?:Y\\|year\\)\\s-+\\([0-9]+\\)\\|"  ;; Catches a Y/year directive
