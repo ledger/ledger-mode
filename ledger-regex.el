@@ -32,7 +32,7 @@
 
 (defconst ledger-amount-regex
   (concat "\\(  \\|\t\\| \t\\)[ \t]*-?"
-          "\\([A-Z$€£₹_(]+ *\\)?"
+          "\\([A-Z$€£¥₹_(]+ *\\)?"
           ;; We either match just a number after the commodity with no
           ;; decimal or thousand separators or a number with thousand
           ;; separators.  If we have a decimal part starting with `,'
@@ -41,7 +41,7 @@
           ;; group, which then finishes the decimal part.
           "\\(-?\\(?:[0-9]+\\|[0-9,.]+?\\)\\)"
           "\\([,.][0-9)]+\\)?"
-          "\\( *[[:word:]€£₹_\"]+\\)?"
+          "\\( *[[:word:]€£¥₹_\"]+\\)?"
           "\\([ \t]*[@={]@?[^\n;]+?\\)?"
           "\\([ \t]+;.+?\\|[ \t]*\\)?$"))
 
