@@ -295,7 +295,10 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
            (setq start (save-excursion (backward-word) (point)))
            (setq collection #'ledger-payees-in-buffer))
           (;; Accounts
-           (looking-back (rx-to-string `(seq bol (one-or-more space) (group (zero-or-more (not space))))) (line-beginning-position))
+           (looking-back (rx-to-string `(seq bol (one-or-more space)
+                                             (optional (any ?\( ?\[ )) ;; for virtual accounts
+                                             (group (zero-or-more (not space)))))
+                         (line-beginning-position))
            (setq start (match-beginning 1)
                  delete-suffix (save-excursion
                                  (when (search-forward-regexp (rx (or eol (repeat 2 space))) (line-end-position) t)
