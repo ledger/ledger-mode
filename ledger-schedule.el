@@ -247,6 +247,8 @@ YEAR-DESC, MONTH-DESC, and DAY-DESC are the string portions of the
 date descriptor."
   (cond ((string= day-desc "*")
          t)
+        ((string= day-desc "L")
+         `(= (nth 3 (decode-time date)) (ledger-schedule-days-in-month (nth 4 (decode-time date)) (nth 5 (decode-time date)))))
         ((string-match "[A-Za-z]" day-desc)  ;; There is something other than digits and commas
          (ledger-schedule-parse-complex-date year-desc month-desc day-desc))
         ((/= 0 (string-to-number day-desc))
@@ -301,9 +303,9 @@ date descriptor."
 
 FILE is the file containing the scheduled transaction,
 default to `ledger-schedule-file'.
-LOOK-BACKWARD is the number of day in the past to look at
+LOOK-BACKWARD is the number of days in the past to look at
 default to `ledger-schedule-look-backward'
-LOOK-FORWARD is the number of day in the futur to look at
+LOOK-FORWARD is the number of days in the future to look at
 default to `ledger-schedule-look-forward'
 
 Use a prefix arg to change the default value"
