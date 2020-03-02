@@ -179,7 +179,7 @@
                                           "-group--count"))
                  ,(length args)))))
 
-    (cons 'progn defs)))
+    (cons 'eval-and-compile defs)))
 
 (put 'ledger-define-regexp 'lisp-indent-function 1)
 
