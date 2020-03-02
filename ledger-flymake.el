@@ -129,10 +129,7 @@ Flymake calls this with REPORT-FN as needed."
 
 ;;;###autoload
 (defun ledger-flymake-enable ()
-  "Enable `flymake-mode' in `ledger-mode' buffers.
-
-Don't enable flymake if flycheck is on and flycheck-ledger is
-available."
+  "Enable `flymake-mode' in `ledger-mode' buffers."
   (unless (> emacs-major-version 25)
     (error "Ledger-flymake requires Emacs version 26 or higher"))
   ;; Add `ledger-flymake' to `flymake-diagnostic-functions' so that flymake can
