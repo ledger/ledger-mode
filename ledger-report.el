@@ -576,6 +576,7 @@ arguments returned by `ledger-report--compute-extra-args'."
         (ledger-report-reverse-lines))
       (when ledger-report-auto-refresh-sticky-cursor
         (forward-line (- ledger-report-cursor-line-number 5)))
+      (set-buffer-modified-p nil)
       (run-hooks 'ledger-report-after-report-hook)
       (pop-to-buffer cur-buf))))
 
