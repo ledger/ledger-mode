@@ -2,7 +2,7 @@ Tips for contributors
 ---------------------
 
 * In your local repository, ensure that everything compiles by **running
-  `make`** (this will launch byte compilation of lisp files and regression
+  `cmake . && make`** (this will launch byte compilation of lisp files and regression
   tests).
 * You are then ready to make a **pull request**. Please make pull requests
   **against `master`**.
