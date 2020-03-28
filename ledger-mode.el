@@ -63,7 +63,7 @@
 (defconst ledger-version "3.0"
   "The version of ledger.el currently loaded.")
 
-(defconst ledger-mode-version "3.0.0")
+(defconst ledger-mode-version "4.0.0")
 
 (defun ledger-mode-dump-variable (var)
   "Format VAR for dump to buffer."
