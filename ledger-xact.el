@@ -191,7 +191,8 @@ MOMENT is an encoded date"
   "Use ledger xact TRANSACTION-TEXT to add a transaction to the buffer.
 If INSERT-AT-POINT is non-nil insert the transaction there,
 otherwise call `ledger-xact-find-slot' to insert it at the
-correct chronological place in the buffer."
+correct chronological place in the buffer.  Interactively, the
+date is requested via `ledger-read-date'."
   (interactive (list (ledger-read-transaction)))
   (let* ((args (with-temp-buffer
                  (insert transaction-text)
