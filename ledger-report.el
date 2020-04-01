@@ -174,7 +174,8 @@ See documentation for the function `ledger-master-file'")
       (forward-paragraph)
       (forward-line))
     (save-excursion
-      (reverse-region (point) (point-max)))))
+      (reverse-region (point) (point-max)))
+    (set-buffer-modified-p nil)))
 
 (defun ledger-report-maybe-shrink-window ()
   "Shrink window if `ledger-report-resize-window' is non-nil."
@@ -533,7 +534,8 @@ arguments returned by `ledger-report--compute-extra-args'."
         (insert report))
       (when (ledger-report--cmd-needs-links-p cmd)
         (save-excursion
-          (ledger-report--add-links))))))
+          (ledger-report--add-links))))
+    (set-buffer-modified-p nil)))
 
 (defun ledger-report-visit-source ()
   "Visit the transaction under point in the report window."
