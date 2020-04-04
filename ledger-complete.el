@@ -82,7 +82,6 @@ If nil, full account names are offered for completion."
                          args)))
       (cons (reverse args) (reverse begins)))))
 
-
 (defun ledger-payees-in-buffer ()
   "Scan buffer and return list of all payees."
   (let ((origin (point))
@@ -97,6 +96,21 @@ If nil, full account names are offered for completion."
                                   payees-list)))))  ;; add the payee
     ;; to the list
     (sort (delete-dups payees-list) #'string-lessp)))
+
+(defun ledger-comments-list ()
+  "Return a list of all comments as strings"
+  ;(list " ; Item: string1" " ; Item: string2" " ; Item: string3" " ; Car: BRZ")
+  (let ((origin (point))
+        comment-list)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward
+              ledger-simple-comment-regex nil t)
+        (unless (and (>= origin (match-beginning 0))
+                     (< origin (match-end 0)))
+          (setq comment-list (cons (match-string-no-properties 1)
+                                   comment-list)))))
+    (sort (delete-dups comment-list) #'string-lessp)))
 
 (defun ledger-accounts-in-buffer ()
   "Return an alist of accounts in the current buffer.
@@ -306,7 +320,12 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
                  realign-after t
                  collection (if ledger-complete-in-steps
                                 #'ledger-accounts-tree
-                              #'ledger-accounts-list))))
+                              #'ledger-accounts-list)))
+          (;; Comments and Meta-data
+           (looking-back ledger-simple-comment-regex
+                         (line-beginning-position))
+           (setq start (match-beginning 1))
+           (setq collection #'ledger-comments-list)))
     (when collection
       (let ((prefix (buffer-substring-no-properties start end)))
         (list start end
