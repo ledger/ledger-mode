@@ -99,7 +99,6 @@ If nil, full account names are offered for completion."
 
 (defun ledger-comments-list ()
   "Return a list of all comments as strings"
-  ;(list " ; Item: string1" " ; Item: string2" " ; Item: string3" " ; Car: BRZ")
   (let ((origin (point))
         comment-list)
     (save-excursion
@@ -325,7 +324,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
            (looking-back ledger-simple-comment-regex
                          (line-beginning-position))
            (setq start (match-beginning 1))
-           (setq collection #'ledger-comments-list)))
+           (setq collection ( ledger-comments-list))))
     (when collection
       (let ((prefix (buffer-substring-no-properties start end)))
         (list start end
