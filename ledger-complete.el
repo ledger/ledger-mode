@@ -37,6 +37,14 @@ This file will then be used as a source for account name completions."
   :type 'file
   :group 'ledger)
 
+(defcustom ledger-comments-exclude-function nil
+  "Function to exclude comments from completion.  Should be
+  a predicate function that accepts one argument, an element of
+  `ledger-comments-in-buffer'."
+  :type 'function
+  :group 'ledger
+  :package-version '(ledger-mode . "2020-04-05"))
+
 (defcustom ledger-accounts-exclude-function nil
   "Function to exclude accounts from completion.
 Should be a predicate function that accepts one argument, an
@@ -82,34 +90,31 @@ If nil, full account names are offered for completion."
                          args)))
       (cons (reverse args) (reverse begins)))))
 
-(defun ledger-payees-in-buffer ()
-  "Scan buffer and return list of all payees."
-  (let ((origin (point))
-        payees-list)
+(defun ledger-list-things-in-buffer (thing-regex thing-group)
+  "Scan buffer and return list of all things described by thing-regex in thing-group of the regex"
+    (let ((origin (point))
+        thing-list)
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward
-              ledger-payee-any-status-regex nil t)  ;; matches first line
-        (unless (and (>= origin (match-beginning 0))
-                     (< origin (match-end 0)))
-          (setq payees-list (cons (match-string-no-properties 3)
-                                  payees-list)))))  ;; add the payee
+              thing-regex nil t)  ;; matches first line
+        (unless (and (> origin (match-beginning thing-group))
+                     (<= origin (match-end thing-group)))
+          (setq thing-list (cons (match-string-no-properties thing-group)
+                                  thing-list)))))  ;; add the thing
     ;; to the list
-    (sort (delete-dups payees-list) #'string-lessp)))
+    (sort (delete-dups thing-list) #'string-lessp)))
+
+(defun ledger-payees-in-buffer ()
+  "Scan buffer and return list of all payees."
+  (ledger-list-things-in-buffer ledger-payee-any-status-regex 3))
 
 (defun ledger-comments-list ()
   "Return a list of all comments as strings"
-  (let ((origin (point))
-        comment-list)
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward
-              ledger-simple-comment-regex nil t)
-        (unless (and (>= origin (match-beginning 0))
-                     (< origin (match-end 0)))
-          (setq comment-list (cons (match-string-no-properties 1)
-                                   comment-list)))))
-    (sort (delete-dups comment-list) #'string-lessp)))
+  (let ((comments (ledger-list-things-in-buffer ledger-simple-comment-regex 1)))
+    (when ledger-comments-exclude-function
+      (setq comments (cl-remove-if ledger-comments-exclude-function comments)))
+    comments))
 
 (defun ledger-accounts-in-buffer ()
   "Return an alist of accounts in the current buffer.
@@ -283,6 +288,9 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
                (cl-find-if (lambda (date) (not (time-less-p date tx-date))) dates))
               (and (= (point) (line-end-position)) " ")))))
 
+(defun string-not-match (regexp string &optional start)
+  (not (string-match regexp string start)))
+
 (defun ledger-complete-at-point ()
   "Do appropriate completion for the thing at point."
   (let ((end (point))
@@ -324,14 +332,14 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
            (looking-back ledger-simple-comment-regex
                          (line-beginning-position))
            (setq start (match-beginning 1))
-           (setq collection ( ledger-comments-list))))
+           (setq collection #'ledger-comments-list)))
     (when collection
       (let ((prefix (buffer-substring-no-properties start end)))
         (list start end
               (if (functionp collection)
                   (completion-table-dynamic
                    (lambda (_)
-                     (cl-remove-if (apply-partially 'string= prefix) (funcall collection))))
+                     (seq-filter (lambda (s) (string-match (concat "^" prefix) s)) (funcall collection))))
                 collection)
               :exit-function (lambda (&rest _)
                                (when delete-suffix
