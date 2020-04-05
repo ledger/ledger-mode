@@ -288,9 +288,6 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
                (cl-find-if (lambda (date) (not (time-less-p date tx-date))) dates))
               (and (= (point) (line-end-position)) " ")))))
 
-(defun string-not-match (regexp string &optional start)
-  (not (string-match regexp string start)))
-
 (defun ledger-complete-at-point ()
   "Do appropriate completion for the thing at point."
   (let ((end (point))
