@@ -168,14 +168,13 @@ See documentation for the function `ledger-master-file'")
 
 (defun ledger-report-reverse-lines ()
   "Reverse the lines in the ledger report buffer."
-  (let ((inhibit-read-only t))
+  (with-silent-modifications
     (goto-char (point-min))
     (unless ledger-report-use-header-line
       (forward-paragraph)
       (forward-line))
     (save-excursion
-      (reverse-region (point) (point-max)))
-    (set-buffer-modified-p nil)))
+      (reverse-region (point) (point-max)))))
 
 (defun ledger-report-maybe-shrink-window ()
   "Shrink window if `ledger-report-resize-window' is non-nil."
@@ -282,19 +281,18 @@ used to generate the buffer, navigating the buffer, etc."
          (wcfg (current-window-configuration)))
     (with-current-buffer
         (pop-to-buffer (get-buffer-create ledger-report-buffer-name))
-      (let ((inhibit-read-only t))
-        (erase-buffer))
-      (ledger-report-mode)
-      (set (make-local-variable 'ledger-report-saved) nil)
-      (set (make-local-variable 'ledger-buf) buf)
-      (set (make-local-variable 'ledger-report-name) report-name)
-      (set (make-local-variable 'ledger-original-window-cfg) wcfg)
-      (set (make-local-variable 'ledger-report-is-reversed) nil)
-      (set (make-local-variable 'ledger-report-current-month) nil)
-      (set 'ledger-master-file file)
-      (ledger-do-report (ledger-report-cmd report-name edit))
+      (with-silent-modifications
+        (erase-buffer)
+        (ledger-report-mode)
+        (set (make-local-variable 'ledger-report-saved) nil)
+        (set (make-local-variable 'ledger-buf) buf)
+        (set (make-local-variable 'ledger-report-name) report-name)
+        (set (make-local-variable 'ledger-original-window-cfg) wcfg)
+        (set (make-local-variable 'ledger-report-is-reversed) nil)
+        (set (make-local-variable 'ledger-report-current-month) nil)
+        (set 'ledger-master-file file)
+        (ledger-do-report (ledger-report-cmd report-name edit)))
       (ledger-report-maybe-shrink-window)
-      (set-buffer-modified-p nil)
       (run-hooks 'ledger-report-after-report-hook)
       (message "q to quit; r to redo; e to edit; s to save; SPC and DEL to scroll"))))
 
@@ -512,8 +510,7 @@ CMD may contain a (shell-quoted) version of
 `ledger-report--extra-args-marker', which will be replaced by
 arguments returned by `ledger-report--compute-extra-args'."
   (goto-char (point-min))
-  (let* ((inhibit-read-only t)
-         (marker ledger-report--extra-args-marker)
+  (let* ((marker ledger-report--extra-args-marker)
          (marker-re (concat " *" (regexp-quote marker)))
          (args (ledger-report--compute-extra-args cmd))
          (args-str (concat " " (mapconcat #'shell-quote-argument args " ")))
@@ -534,8 +531,7 @@ arguments returned by `ledger-report--compute-extra-args'."
         (insert report))
       (when (ledger-report--cmd-needs-links-p cmd)
         (save-excursion
-          (ledger-report--add-links))))
-    (set-buffer-modified-p nil)))
+          (ledger-report--add-links))))))
 
 (defun ledger-report-visit-source ()
   "Visit the transaction under point in the report window."
@@ -565,20 +561,19 @@ arguments returned by `ledger-report--compute-extra-args'."
   (unless (or (derived-mode-p 'ledger-mode)
               (derived-mode-p 'ledger-report-mode))
     (user-error "Not in a ledger-mode or ledger-report-mode buffer"))
-  (let ((cur-buf (current-buffer))
-        (inhibit-read-only t))
+  (let ((cur-buf (current-buffer)))
     (when (and ledger-report-auto-refresh
                (get-buffer ledger-report-buffer-name))
       (pop-to-buffer (get-buffer ledger-report-buffer-name))
       (ledger-report-maybe-shrink-window)
       (setq ledger-report-cursor-line-number (line-number-at-pos))
-      (erase-buffer)
-      (ledger-do-report ledger-report-cmd)
-      (when ledger-report-is-reversed
-        (ledger-report-reverse-lines))
-      (when ledger-report-auto-refresh-sticky-cursor
-        (forward-line (- ledger-report-cursor-line-number 5)))
-      (set-buffer-modified-p nil)
+      (with-silent-modifications
+        (erase-buffer)
+        (ledger-do-report ledger-report-cmd)
+        (when ledger-report-is-reversed
+          (ledger-report-reverse-lines))
+        (when ledger-report-auto-refresh-sticky-cursor
+          (forward-line (- ledger-report-cursor-line-number 5))))
       (run-hooks 'ledger-report-after-report-hook)
       (pop-to-buffer cur-buf))))
 
