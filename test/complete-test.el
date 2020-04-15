@@ -61,7 +61,6 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=582"
   "Regress test for Bug 252
 http://bugs.ledger-cli.org/show_bug.cgi?id=252"
   :tags '(complete regress)
-
   (ledger-tests-with-temp-file
       "2010/04/08 payee
     account1                1 €
@@ -72,7 +71,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
     (insert "2016/09/01 payee")
     (ledger-fully-complete-xact)
     (should
-     (equal (buffer-string)
+     (equal (buffer-substring-no-properties (point-min) (point-max))
             "2010/04/08 payee
     account1                1 €
     account2
@@ -80,7 +79,25 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
 2016/09/01 payee
     account1                1 €
     account2
-"))))
+"))
+    (ledger-navigate-beginning-of-xact)
+    (open-line 1)
+    (insert "2015/08/01 payee")
+    (ledger-fully-complete-xact)
+    (should
+     (equal (buffer-substring-no-properties (point-min) (point-max))
+            "2010/04/08 payee
+    account1                1 €
+    account2
+
+2015/08/01 payee
+    account1                1 €
+    account2
+
+2016/09/01 payee
+    account1                1 €
+    account2
+"            ))))
 
 (ert-deftest ledger-complete/test-complete-virtual-account-brackets ()
   "https://github.com/ledger/ledger-mode/issues/141"

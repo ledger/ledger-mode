@@ -348,7 +348,8 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
     (save-excursion
       (insert rest-of-name ?\n)
       (insert xacts)
-      (insert ?\n))
+      (unless (looking-at-p "\n\n")
+        (insert "\n")))
     (forward-line)
     (goto-char (line-end-position))
     (when (re-search-backward "\\(\t\\| [ \t]\\)" nil t)
