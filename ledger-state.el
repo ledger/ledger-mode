@@ -72,7 +72,7 @@
   "Get state from STATE-STRING."
   (when state-string
     (cond
-     ((string-match "\\!" state-string) 'pending)
+     ((string-match "!" state-string) 'pending)
      ((string-match "\\*" state-string) 'cleared)
      ((string-match ";" state-string) 'comment)
      (t nil))))

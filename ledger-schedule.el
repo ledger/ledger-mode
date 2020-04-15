@@ -263,8 +263,8 @@ date descriptor."
   "Parse day descriptors that have repeats."
   (let ((years (mapcar 'string-to-number (split-string year-desc ",")))
         (months (mapcar 'string-to-number (split-string month-desc ",")))
-        (day-parts (split-string day-desc "+"))
-        (every-nth (string-match "+" day-desc)))
+        (day-parts (split-string day-desc "\\+"))
+        (every-nth (string-match "\\+" day-desc)))
     (if every-nth
         (let ((base-day (string-to-number (car day-parts)))
               (increment (string-to-number (substring (cadr day-parts) 0
