@@ -115,7 +115,8 @@ Then one of the elements this function returns will be
   (\"assert\" . \"commodity == \"$\"\"))"
   (save-excursion
     (goto-char (point-min))
-    (let (account-list)
+    (let (account-list
+          (seen (make-hash-table :test #'equal :size 1)))
       ;; First, consider accounts declared with "account" directives, which may or
       ;; may not have associated data. The data is on the following lines up to a
       ;; line not starting with whitespace.
@@ -139,7 +140,8 @@ Then one of the elements this function returns will be
                               (substring d (match-end 0) nil))
                         data)
                 (push (cons d nil) data))))
-          (push (cons account data) account-list)))
+          (push (cons account data) account-list)
+          (puthash account t seen)))
       ;; Next, gather all accounts declared in postings
       (unless
           ;; FIXME: People who have set `ledger-flymake-be-pedantic' to non-nil
@@ -150,8 +152,10 @@ Then one of the elements this function returns will be
         (goto-char (point-min))
         (while (re-search-forward ledger-account-name-or-directive-regex nil t)
           (let ((account (match-string-no-properties 1)))
-            (cl-pushnew (cons account nil) account-list :key #'car :test #'string-equal))))
-      (sort (delete-dups account-list) (lambda (a b) (string-lessp (car a) (car b)))))))
+            (unless (gethash account seen)
+              (puthash account t seen)
+              (push (cons account nil) account-list)))))
+      (sort account-list (lambda (a b) (string-lessp (car a) (car b)))))))
 
 (defun ledger-accounts-list-in-buffer ()
   "Return a list of all known account names in the current buffer as strings.
