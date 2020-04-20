@@ -116,7 +116,7 @@ Requires empty line separating xacts."
                       (point)))
         (end (progn (forward-line 1)
                     (ledger-navigate-skip-lines-forwards "[ \t]")
-                    (point)))
+                    (1- (point))))
         (comment-re " *;"))
     ;; handle block comments here
     (goto-char begin)
