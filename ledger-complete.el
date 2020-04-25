@@ -330,10 +330,12 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
   (replace-regexp-in-string "[ \t]*$" "" str))
 
 (defun ledger-fully-complete-xact ()
-  "Completes a transaction if there is another matching payee in the buffer."
+  "Completes a transaction if there is another matching payee in the buffer.
+
+Interactively, if point is after a payee, complete the
+transaction with the details from the last transaction to that
+payee."
   (interactive)
-  (unless (looking-back ledger-payee-any-status-regex (line-beginning-position))
-    (user-error "Point is not after payee"))
   (let* ((name (ledger-trim-trailing-whitespace (caar (ledger-parse-arguments))))
          (rest-of-name name)
          xacts)
