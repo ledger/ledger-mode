@@ -136,6 +136,12 @@ Calls `shrink-window-if-larger-than-buffer'."
   :package-version '(ledger-mode . "4.0.0")
   :group 'ledger-report)
 
+(defcustom ledger-report-use-explicit nil
+  "When non-nil, `ledger-mode' will use --explicit when running reports?"
+  :type 'boolean
+  :package-version '(ledger-mode . "4.0.1")
+  :group 'ledger-report)
+
 (defcustom ledger-report-after-report-hook nil
   "Hook run after `ledger-report' has created the buffer and report."
   :type 'boolean
@@ -449,7 +455,9 @@ MONTH is of the form (YEAR . INDEX) where INDEX ranges from
     ,@(when ledger-report-use-native-highlighting
         '("--color" "--force-color"))
     ,@(when ledger-report-use-strict
-        '("--strict"))))
+        '("--strict"))
+    ,@(when ledger-report-use-explicit
+        '("--explicit"))))
 
 (defun ledger-report-cmd (report-name edit)
   "Get the command line to run the report name REPORT-NAME.
