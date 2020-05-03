@@ -1146,11 +1146,20 @@ Ledger Post:
 
 @ftable @option
 
-@item ledger-post-amount-alignment-column
-The column Ledger-mode uses to align amounts.
+@item ledger-post-account-alignment-column
+The column Ledger-mode attempts to align accounts to.
 
-@item ledger-default-acct-transaction-indent
-Default indentation for account transactions in an entry.
+@item ledger-post-amount-alignment-at
+Position at which the amount is aligned.
+
+Can be @code{:end} to align on the last number of the amount (can be followed 
+by unaligned commodity) or @code{:decimal} to align at the decimal separator.
+
+@item ledger-post-amount-alignment-column
+The column Ledger-mode attempts to align amounts to.
+
+@item ledger-post-auto-align
+When non-nil, realign post amounts when indenting or completing.
 
 @end ftable
 
