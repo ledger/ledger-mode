@@ -176,7 +176,6 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
     (ledger-accounts-list-in-buffer)))
 
 (defun ledger-find-accounts-in-buffer ()
-  (interactive)
   (let ((account-tree (list t))
         (account-elements nil)
         (prefix ""))
