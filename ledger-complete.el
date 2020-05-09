@@ -314,7 +314,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
       (let ((prefix (buffer-substring-no-properties start end)))
         (list start end
               (if (functionp collection)
-                  (completion-table-dynamic
+                  (completion-table-with-cache
                    (lambda (_)
                      (cl-remove-if (apply-partially 'string= prefix) (funcall collection))))
                 collection)

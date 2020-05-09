@@ -243,6 +243,43 @@ account Assets:Checking:Bank B")
                      (list "Assets:Checking:Bank A"
                            "Assets:Checking:Bank B"))))))
 
+(ert-deftest ledger-complete/test-account-completion-in-steps ()
+  (let ((completion-cycle-threshold t)
+        (ledger-complete-in-steps t))
+    (ledger-tests-with-temp-file
+        "2020-01-01 Opening Balances
+    Assets:Bank:Balance                       100.00 EUR
+    Equity:Opening Balances
+
+2020-02-01 Acme Widgetry GmbH
+    Assets:Bank:Deposit:20200201              200.00 EUR
+    Income:Salary
+
+2020-03-01 Gear
+    Assets:Reimbursements                      50.00 EUR
+    Assets:Bank:Balance
+
+2020-04-01 Fnord
+    As"
+      (goto-char (point-max))
+      (call-interactively 'completion-at-point)
+      (should
+       (equal (buffer-substring-no-properties (point-min) (point-max))
+              "2020-01-01 Opening Balances
+    Assets:Bank:Balance                       100.00 EUR
+    Equity:Opening Balances
+
+2020-02-01 Acme Widgetry GmbH
+    Assets:Bank:Deposit:20200201              200.00 EUR
+    Income:Salary
+
+2020-03-01 Gear
+    Assets:Reimbursements                      50.00 EUR
+    Assets:Bank:Balance
+
+2020-04-01 Fnord
+    Assets:")))))
+
 (provide 'complete-test)
 
 ;;; complete-test.el ends here
