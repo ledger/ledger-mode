@@ -190,7 +190,6 @@ See documentation for the function `ledger-master-file'")
     (define-key map [?e] #'ledger-report-edit-report)
     (define-key map [( shift ?e)] #'ledger-report-edit-reports)
     (define-key map [?q] #'ledger-report-quit)
-    (define-key map [?g] #'ledger-report-redo)
     (define-key map [(control ?c) (control ?l) (control ?r)]
       #'ledger-report-redo)
     (define-key map [(control ?c) (control ?l) (control ?S)]
@@ -224,6 +223,7 @@ See documentation for the function `ledger-master-file'")
 
 (define-derived-mode ledger-report-mode special-mode "Ledger-Report"
   "A mode for viewing ledger reports."
+  (setq-local revert-buffer-function #'ledger-report-redo)
   (hack-dir-local-variables-non-file-buffer))
 
 (defconst ledger-report--extra-args-marker "[[ledger-mode-flags]]")
@@ -555,8 +555,10 @@ arguments returned by `ledger-report--compute-extra-args'."
     (pop-to-buffer rbuf)
     (ledger-report-maybe-shrink-window)))
 
-(defun ledger-report-redo ()
-  "Redo the report in the current ledger report buffer."
+(defun ledger-report-redo (&optional _ignore-auto _noconfirm)
+  "Redo the report in the current ledger report buffer.
+IGNORE-AUTO and NOCONFIRM are for compatibility with
+`revert-buffer-function' and are currently ignored."
   (interactive)
   (unless (or (derived-mode-p 'ledger-mode)
               (derived-mode-p 'ledger-report-mode))
