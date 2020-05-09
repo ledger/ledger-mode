@@ -617,7 +617,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
           (progn
             (setq ledger-fontify-xact-state-overrides t)
             (insert str)
-            (ledger-test-font-lock-fontify-buffer)
+            (font-lock-ensure)
             (should (equal (ledger-test-face-groups (buffer-string))
                            face-groups)))
         (setq ledger-fontify-xact-state-overrides nil)))))

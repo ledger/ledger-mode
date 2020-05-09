@@ -4,7 +4,7 @@
 
 ;; This file is not part of GNU Emacs.
 
-;; Package-Requires: ((emacs "24.3"))
+;; Package-Requires: ((emacs "25.1"))
 
 ;; This is free software; you can redistribute it and/or modify it under
 ;; the terms of the GNU General Public License as published by the Free
