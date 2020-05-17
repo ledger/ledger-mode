@@ -294,7 +294,11 @@ used to generate the buffer, navigating the buffer, etc."
         (ledger-do-report (ledger-report-cmd report-name edit)))
       (ledger-report-maybe-shrink-window)
       (run-hooks 'ledger-report-after-report-hook)
-      (message "q to quit; r to redo; e to edit; s to save; SPC and DEL to scroll"))))
+      (message (substitute-command-keys (concat "\\[ledger-report-quit] to quit; "
+                                                "\\[ledger-report-redo] to redo; "
+                                                "\\[ledger-report-edit-report] to edit; "
+                                                "\\[ledger-report-save] to save; "
+                                                "\\[scroll-up-command] and \\[scroll-down-command] to scroll"))))))
 
 (defun ledger-report--header-function ()
   "Compute the string to be used as the header in the `ledger-report' buffer."
