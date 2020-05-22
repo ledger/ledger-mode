@@ -29,6 +29,7 @@
 (require 'ledger-mode)
 (require 'ert)
 (require 'cl-lib)
+(require 'cus-edit)
 
 (defvar demo-ledger)
 
