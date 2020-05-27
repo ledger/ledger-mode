@@ -52,7 +52,7 @@ ISO 8601 dates."
   "Format DATE according to the current preferred date format.
 Returns the current date if DATE is nil or not supplied."
   (format-time-string
-   (or (cdr (assoc "date-format" ledger-environment-alist))
+   (or (cdr (assoc "input-date-format" ledger-environment-alist))
        ledger-default-date-format)
    date))
 
