@@ -20,7 +20,7 @@ jobs:
             ledger_version: snapshot
 
     steps:
-    - uses: cachix/install-nix-action@v6
+    - uses: cachix/install-nix-action@v9
     - uses: purcell/setup-emacs@master
       with:
         version: ${{ matrix.emacs_version }}
