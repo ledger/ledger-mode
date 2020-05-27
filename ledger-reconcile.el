@@ -283,7 +283,9 @@ Return the number of uncleared xacts found."
   "Use ledger xact to add a new transaction."
   (interactive)
   (with-current-buffer ledger-buf
-    (call-interactively #'ledger-add-transaction))
+    (let ((date (ledger-read-date "Date: "))
+          (text (read-string "Transaction: ")))
+      (ledger-add-transaction (concat date " " text))))
   (ledger-reconcile-refresh))
 
 (defun ledger-reconcile-delete ()
