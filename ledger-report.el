@@ -35,7 +35,8 @@
 (require 'ansi-color)
 (require 'font-lock)
 (eval-when-compile
-  (require 'rx))
+  (require 'rx)
+  (require 'subr-x))
 
 (defvar ledger-buf)
 
@@ -364,7 +365,9 @@ used to generate the buffer, navigating the buffer, etc."
   ;; It is intended completion should be available on existing
   ;; payees, but the list of possible completions needs to be
   ;; developed to allow this.
-  (ledger-read-string-with-default "Payee" (regexp-quote (ledger-xact-payee))))
+  (if-let ((payee (ledger-xact-payee)))
+      (ledger-read-string-with-default "Payee" (regexp-quote payee))
+    (ledger-read-string-with-default "Payee" nil)))
 
 (defun ledger-report-account-format-specifier ()
   "Substitute an account name.
