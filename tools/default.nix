@@ -3,7 +3,7 @@
 let
   ledgerFromGit = builtins.fetchGit {
     url = git://github.com/ledger/ledger;
-    ref = "next";
+    ref = "master";
   };
 in
 {
