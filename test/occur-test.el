@@ -181,6 +181,50 @@ https://github.com/ledger/ledger-mode/issues/415"
   Income:Salary
 "))))
 
+(ert-deftest ledger-occur/test-005 ()
+  "Test transaction folding"
+  :tags '(transaction folding)
+
+  (ledger-tests-with-temp-file
+   "2011/01/02 Grocery Store
+  Expenses:Food:Groceries             $ 65.00
+  * Assets:Checking
+
+2011/01/05 Employer
+  * Assets:Checking                 $ 2000.00
+  Income:Salary
+"
+   (progn
+     (hs-minor-mode t)
+     (ledger-mode-folding-toggle-transactions))
+   (should
+    (equal (ledger-test-visible-buffer-string)
+           "2011/01/02 Grocery Store
+
+2011/01/05 Employer
+"))))
+
+(ert-deftest ledger-occur/test-006 ()
+  "Test transaction folding together with ledger-occur-mode"
+  :tags '(transaction folding)
+
+  (ledger-tests-with-temp-file
+   "2011/01/02 Grocery Store
+  Expenses:Food:Groceries             $ 65.00
+  * Assets:Checking
+
+2011/01/05 Employer
+  * Assets:Checking                 $ 2000.00
+  Income:Salary
+"
+   (progn
+     (hs-minor-mode t)
+     (ledger-occur "Groceries")
+     (ledger-mode-folding-toggle-transactions))
+   (should
+    (equal (ledger-test-visible-buffer-string)
+           "2011/01/02 Grocery Store
+"))))
 
 (provide 'occur-test)
 

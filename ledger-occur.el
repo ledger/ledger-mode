@@ -31,6 +31,7 @@
 
 (require 'cl-lib)
 (require 'ledger-navigate)
+(require 'hideshow)
 
 (defconst ledger-occur-overlay-property-name 'ledger-occur-custom-buffer-grep)
 
@@ -119,7 +120,9 @@ long, otherwise it is the word at point."
   "Make an overlay for an invisible portion of the buffer, from BEG to END."
   (let ((ovl (make-overlay beg end)))
     (overlay-put ovl ledger-occur-overlay-property-name t)
-    (overlay-put ovl 'invisible t)))
+    (overlay-put ovl 'invisible t)
+    ;; required to not display ... when using together with transaction folding
+    (overlay-put ovl 'display "")))
 
 (defun ledger-occur-create-overlays (ovl-bounds)
   "Create the overlays for the visible transactions.
@@ -172,6 +175,78 @@ BUFFER-MATCHES should be a list of (BEG END) lists."
             (setq current-beginning (car match))
             (setq current-end (cadr match))))
         (nreverse (push (list current-beginning current-end) points)))))
+
+;; -----------------------------------------------------------------------------
+;; transactions folding
+;; FIXME: probably this is not the best file to include this functionality.
+;; -----------------------------------------------------------------------------
+(defvar-local ledger-mode-folding-transactions-hidden nil
+  "Whether transactions are globally hidden or not.")
+
+(defvar-local ledger-mode-toggle-invisible-transactions t
+  "Toggle invisible transactions (see ledger-occur-mode).")
+
+(defun ledger-mode-transaction-toggle-folding ()
+  "Toggle hiding of transaction block under point.
+A transaction block is identified as in ledger-highlight-xact-under-point.
+
+Overlay of type `code' is used so that hidden blocks are
+temporarily opened when doing incremental search."
+  (interactive)
+  (if (not (and (boundp 'hs-minor-mode) hs-minor-mode))
+      (message "Enable hs-minor-mode to use this functionality.")
+    (let ((exts (ledger-navigate-find-element-extents (point))))
+      (let ((b (car exts))
+            (e (cadr exts))
+            (p (point)))
+        (when (and (> (- e b) 1)            ; not an empty line
+                   (<= p e) (>= p b)        ; point is within the boundaries
+                   (not (region-active-p))) ; no active region
+          (goto-char b)
+          (save-excursion
+            (goto-char (line-end-position))
+            (if (hs-overlay-at (point))  ;; if transaction is hidden show it
+                (progn
+                  (save-excursion (hs-show-block))
+                  (goto-char b))
+              (goto-char b)
+              (hs-discard-overlays (line-end-position) e)
+              (hs-make-overlay (line-end-position) e 'code)
+              (run-hooks 'hs-hide-hook))))))))
+
+(defun ledger-mode-request-toggle-transaction-hiding-p ()
+  "Decide whether to request transaction folding.
+Assume that point is at the first transaction delimiter."
+  (goto-char (line-end-position))
+  (let ((ov-hs (hs-overlay-at (point)))
+	(ovs (overlays-at (point)))
+	(to_request t))
+    (when (not (eq (not ledger-mode-folding-transactions-hidden)
+		   (overlayp ov-hs)))
+      ;; handle behavior in invisible regions (see ledger-occur-mode)
+      (when (not ledger-mode-toggle-invisible-transactions)
+	(dolist (ov ovs)
+	  (when (and (overlay-get ov 'invisible)
+		     (overlay-get ov ledger-occur-overlay-property-name))
+	    (setq to_request nil))))
+      to_request)))
+
+(defun ledger-mode-folding-toggle-transactions ()
+  "Toggle hiding of all transactions in the current buffer."
+  (interactive)
+  (if (not (and (boundp 'hs-minor-mode) hs-minor-mode))
+      (message "Enable hs-minor-mode to use this functionality.")
+    (hs-life-goes-on
+     (save-excursion
+       (goto-char (point-min))
+       (while (re-search-forward "^[=~[:digit:]]" nil t)
+         (beginning-of-line)
+         (when (ledger-mode-request-toggle-transaction-hiding-p)
+           (ledger-mode-transaction-toggle-folding)
+           (goto-char (line-end-position))))
+       (setq ledger-mode-folding-transactions-hidden
+             (not ledger-mode-folding-transactions-hidden))))))
+;; -----------------------------------------------------------------------------
 
 (provide 'ledger-occur)
 
