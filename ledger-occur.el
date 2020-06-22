@@ -186,22 +186,24 @@ A transaction block is identified as in ledger-highlight-xact-under-point.
 Overlay of type `code' is used so that hidden blocks are
 temporarily opened when doing incremental search."
   (interactive)
-  (let ((exts (ledger-navigate-find-element-extents (point))))
-    (let ((b (car exts))
-	  (e (cadr exts))
-	  (p (point)))
-      (when (and (> (- e b) 1)            ; not an empty line
-		 (<= p e) (>= p b)        ; point is within the boundaries
-		 (not (region-active-p))) ; no active region
-	(goto-char (+ b ledger-mode-folding-overlay-offset))
-	(if (hs-overlay-at (point))  ;; if transaction is hidden show it
-	    (progn
-	      (save-excursion (hs-show-block))
-	      (goto-char b))
-	  (goto-char b)
-	  (hs-discard-overlays (+ b ledger-mode-folding-overlay-offset) e)
-	  (hs-make-overlay (+ b ledger-mode-folding-overlay-offset) e 'code)
-	  (run-hooks 'hs-hide-hook))))))
+  (if (not (and (boundp 'hs-minor-mode) hs-minor-mode))
+      (message "Enable hs-minor-mode to use this functionality.")
+    (let ((exts (ledger-navigate-find-element-extents (point))))
+      (let ((b (car exts))
+            (e (cadr exts))
+            (p (point)))
+        (when (and (> (- e b) 1)            ; not an empty line
+                   (<= p e) (>= p b)        ; point is within the boundaries
+                   (not (region-active-p))) ; no active region
+          (goto-char (+ b ledger-mode-folding-overlay-offset))
+          (if (hs-overlay-at (point))  ;; if transaction is hidden show it
+              (progn
+                (save-excursion (hs-show-block))
+                (goto-char b))
+            (goto-char b)
+            (hs-discard-overlays (+ b ledger-mode-folding-overlay-offset) e)
+            (hs-make-overlay (+ b ledger-mode-folding-overlay-offset) e 'code)
+            (run-hooks 'hs-hide-hook)))))))
 
 (defun ledger-mode-request-toggle-transaction-hiding-p ()
   "Decide whether to request transaction folding.
@@ -223,16 +225,18 @@ Assume that point is at the first transaction delimiter."
 (defun ledger-mode-folding-toggle-transactions ()
   "Toggle hiding of all transactions in the current buffer."
   (interactive)
-  (hs-life-goes-on
-   (save-excursion
-     (goto-char (point-min))
-     (while (re-search-forward "^[=~[:digit:]]" nil t)
-       (beginning-of-line)
-       (when (ledger-mode-request-toggle-transaction-hiding-p)
-	 (ledger-mode-transaction-toggle-folding)
-	 (goto-char (+ (point) ledger-mode-folding-overlay-offset))))
-     (setq ledger-mode-folding-transactions-hidden
-           (not ledger-mode-folding-transactions-hidden)))))
+  (if (not (and (boundp 'hs-minor-mode) hs-minor-mode))
+      (message "Enable hs-minor-mode to use this functionality.")
+    (hs-life-goes-on
+     (save-excursion
+       (goto-char (point-min))
+       (while (re-search-forward "^[=~[:digit:]]" nil t)
+         (beginning-of-line)
+         (when (ledger-mode-request-toggle-transaction-hiding-p)
+           (ledger-mode-transaction-toggle-folding)
+           (goto-char (+ (point) ledger-mode-folding-overlay-offset))))
+       (setq ledger-mode-folding-transactions-hidden
+             (not ledger-mode-folding-transactions-hidden))))))
 ;; -----------------------------------------------------------------------------
 
 (provide 'ledger-occur)
