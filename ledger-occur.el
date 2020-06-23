@@ -31,6 +31,7 @@
 
 (require 'cl-lib)
 (require 'ledger-navigate)
+(require 'hideshow)
 
 (defconst ledger-occur-overlay-property-name 'ledger-occur-custom-buffer-grep)
 
