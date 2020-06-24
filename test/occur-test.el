@@ -69,9 +69,9 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=246"
      (ledger-mode-folding-toggle-transactions))
    (should
     (equal (ledger-test-visible-buffer-string)
-           "2011/01/02 Gr
+           "2011/01/02 Grocery Store
 
-2011/01/05 Em
+2011/01/05 Employer
 "))))
 
 (ert-deftest ledger-occur/test-003 ()
@@ -93,7 +93,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=246"
      (ledger-mode-folding-toggle-transactions))
    (should
     (equal (ledger-test-visible-buffer-string)
-           "2011/01/02 Gr
+           "2011/01/02 Grocery Store
 "))))
 
 (provide 'occur-test)
