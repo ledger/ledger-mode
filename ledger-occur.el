@@ -177,9 +177,6 @@ Argument OVL-BOUNDS contains bounds for the transactions to be left visible."
 (defvar-local ledger-mode-toggle-invisible-transactions t
   "Toggle invisible transactions (see ledger-occur-mode).")
 
-(defvar-local ledger-mode-folding-overlay-offset 13
-  "Offset between transaction start and overlay start.")
-
 (defun ledger-mode-transaction-toggle-folding ()
   "Toggle hiding of transaction block under point.
 A transaction block is identified as in ledger-highlight-xact-under-point.
@@ -196,20 +193,22 @@ temporarily opened when doing incremental search."
         (when (and (> (- e b) 1)            ; not an empty line
                    (<= p e) (>= p b)        ; point is within the boundaries
                    (not (region-active-p))) ; no active region
-          (goto-char (+ b ledger-mode-folding-overlay-offset))
-          (if (hs-overlay-at (point))  ;; if transaction is hidden show it
-              (progn
-                (save-excursion (hs-show-block))
-                (goto-char b))
-            (goto-char b)
-            (hs-discard-overlays (+ b ledger-mode-folding-overlay-offset) e)
-            (hs-make-overlay (+ b ledger-mode-folding-overlay-offset) e 'code)
-            (run-hooks 'hs-hide-hook)))))))
+          (goto-char b)
+          (save-excursion
+            (goto-char (line-end-position))
+            (if (hs-overlay-at (point))  ;; if transaction is hidden show it
+                (progn
+                  (save-excursion (hs-show-block))
+                  (goto-char b))
+              (goto-char b)
+              (hs-discard-overlays (line-end-position) e)
+              (hs-make-overlay (line-end-position) e 'code)
+              (run-hooks 'hs-hide-hook))))))))
 
 (defun ledger-mode-request-toggle-transaction-hiding-p ()
   "Decide whether to request transaction folding.
 Assume that point is at the first transaction delimiter."
-  (goto-char (+ (point) ledger-mode-folding-overlay-offset))
+  (goto-char (line-end-position))
   (let ((ov-hs (hs-overlay-at (point)))
 	(ovs (overlays-at (point)))
 	(to_request t))
@@ -235,7 +234,7 @@ Assume that point is at the first transaction delimiter."
          (beginning-of-line)
          (when (ledger-mode-request-toggle-transaction-hiding-p)
            (ledger-mode-transaction-toggle-folding)
-           (goto-char (+ (point) ledger-mode-folding-overlay-offset))))
+           (goto-char (line-end-position))))
        (setq ledger-mode-folding-transactions-hidden
              (not ledger-mode-folding-transactions-hidden))))))
 ;; -----------------------------------------------------------------------------
