@@ -28,7 +28,7 @@
 (require 'rx)
 (require 'cl-lib)
 
-(defvar ledger-iso-date-regex)
+(defvar ledger-iso-date-regexp)
 
 (defconst ledger-amount-decimal-comma-regex
   "-?[1-9][0-9.]*[,]?[0-9]*")
@@ -184,7 +184,7 @@
 (put 'ledger-define-regexp 'lisp-indent-function 1)
 
 (ledger-define-regexp iso-date
-                      ( let ((sep '(or ?-  ?/)))
+                      (let ((sep '(or ?- ?/)))
                         (rx (group
                              (and (group (= 4 num))
                                   (eval sep)
