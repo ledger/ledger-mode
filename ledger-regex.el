@@ -89,40 +89,40 @@
 
 (defmacro ledger-define-regexp (name regex docs &rest args)
   "Simplify the creation of a Ledger regex and helper functions."
-  (let ((defs
-          (list
-           `(defconst
-              ,(intern (concat "ledger-" (symbol-name name) "-regexp"))
-              ,(eval regex)
-              ,docs)))
-        (addend 0) last-group)
-    (if (null args)
-        (progn
-          (nconc
-           defs
+  (let* ((regex (eval regex))
+         (group-count (regexp-opt-depth regex))
+         (defs
            (list
             `(defconst
-               ,(intern
-                 (concat "ledger-regex-" (symbol-name name) "-group"))
-               1)))
-          (nconc
-           defs
-           (list
+               ,(intern (concat "ledger-" (symbol-name name) "-regexp"))
+               ,regex
+               ,docs)
             `(defconst
                ,(intern (concat "ledger-regex-" (symbol-name name)
                                 "-group--count"))
-               1)))
-          (nconc
-           defs
-           (list
-            `(defmacro
-                 ,(intern (concat "ledger-regex-" (symbol-name name)))
-                 (&optional string)
-               ,(format "Return the match string for the %s" name)
-               (match-string
-                ,(intern (concat "ledger-regex-" (symbol-name name)
-                                 "-group"))
-                string)))))
+               ,group-count)))
+         (addend 0) last-group)
+    (if (null args)
+        (progn
+          (when (cl-plusp group-count)
+            (nconc
+             defs
+             (list
+              `(defconst
+                 ,(intern
+                   (concat "ledger-regex-" (symbol-name name) "-group"))
+                 1)))
+            (nconc
+             defs
+             (list
+              `(defmacro
+                   ,(intern (concat "ledger-regex-" (symbol-name name)))
+                   (&optional string)
+                 ,(format "Return the match string for the %s" name)
+                 (match-string
+                  ,(intern (concat "ledger-regex-" (symbol-name name)
+                                   "-group"))
+                  string))))))
 
       (dolist (arg args)
         (let (var grouping target)
@@ -171,13 +171,7 @@
                                  "-group-" (symbol-name var)))
                 string))))
 
-          (setq last-group (or grouping target))))
-
-      (nconc defs
-             (list
-              `(defconst ,(intern (concat "ledger-regex-" (symbol-name name)
-                                          "-group--count"))
-                 ,(length args)))))
+          (setq last-group (or grouping target)))))
 
     (cons 'eval-and-compile defs)))
 

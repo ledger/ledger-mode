@@ -138,8 +138,7 @@ In particular, the group count and index variables should match EXPECTED."
 (ert-deftest ledger-regex/test-amount-no-group ()
   (regex-test--test-regexp
    "amount-no-group"
-   '((ledger-regex-amount-no-group-group 1)
-     (ledger-regex-amount-no-group-group--count 1))))
+   '((ledger-regex-amount-no-group-group--count 0))))
 
 (ert-deftest ledger-regex/test-balance-assertion ()
   (regex-test--test-regexp
@@ -175,8 +174,7 @@ In particular, the group count and index variables should match EXPECTED."
 (ert-deftest ledger-regex/test-commodity-no-group ()
   (regex-test--test-regexp
    "commodity-no-group"
-   '((ledger-regex-commodity-no-group-group 1)
-     (ledger-regex-commodity-no-group-group--count 1))))
+   '((ledger-regex-commodity-no-group-group--count 0))))
 
 (ert-deftest ledger-regex/test-cost ()
   (regex-test--test-regexp
@@ -206,7 +204,7 @@ In particular, the group count and index variables should match EXPECTED."
 (ert-deftest ledger-regex/test-full-date ()
   (regex-test--test-regexp
    "full-date"
-   '((ledger-regex-full-date-group--count 2)
+   '((ledger-regex-full-date-group--count 8)
      (ledger-regex-full-date-group-actual 1)
      (ledger-regex-full-date-group-effective 1))))
 
@@ -220,13 +218,12 @@ In particular, the group count and index variables should match EXPECTED."
   (regex-test--test-regexp
    "iso-date"
    '((ledger-regex-iso-date-group 1)
-     (ledger-regex-iso-date-group--count 1))))
+     (ledger-regex-iso-date-group--count 4))))
 
 (ert-deftest ledger-regex/test-long-space ()
   (regex-test--test-regexp
    "long-space"
-   '((ledger-regex-long-space-group 1)
-     (ledger-regex-long-space-group--count 1))))
+   '((ledger-regex-long-space-group--count 0))))
 
 (ert-deftest ledger-regex/test-note ()
   (regex-test--test-regexp
@@ -253,12 +250,12 @@ In particular, the group count and index variables should match EXPECTED."
 (ert-deftest ledger-regex/test-xact-line ()
   (regex-test--test-regexp
    "xact-line"
-   '((ledger-regex-xact-line-group--count 5)
+   '((ledger-regex-xact-line-group--count 11)
      (ledger-regex-xact-line-group-actual-date 1)
-     (ledger-regex-xact-line-group-code 4)
+     (ledger-regex-xact-line-group-code 10)
      (ledger-regex-xact-line-group-effective-date 1)
-     (ledger-regex-xact-line-group-note 5)
-     (ledger-regex-xact-line-group-state 3))))
+     (ledger-regex-xact-line-group-note 11)
+     (ledger-regex-xact-line-group-state 9))))
 
 (provide 'regex-test)
 
