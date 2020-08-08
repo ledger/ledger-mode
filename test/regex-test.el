@@ -115,7 +115,9 @@ added to this file similar to the tests for the other regexps."
   "Check that the variables associated with the regex named NAME.
 
 In particular, the group count and index variables should match EXPECTED."
-  (should (equal (regex-test--dump-regex name) expected)))
+  (should (equal (regex-test--dump-regex name) expected))
+  (should (= (regexp-opt-depth (symbol-value (intern (concat "ledger-" name "-regexp"))))
+             (symbol-value (intern (concat "ledger-regex-" name "-group--count"))))))
 
 (ert-deftest ledger-regex/test-account ()
   (regex-test--test-regexp
