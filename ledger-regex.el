@@ -305,7 +305,9 @@
                                (or (and ?\{ (regexp ,ledger-commoditized-amount-regexp) ?\})
                                    (and ?\[ (regexp ,ledger-iso-date-regexp) ?\])
                                    (and ?\( (not (any ?\))) ?\))))))
-                      "")
+                      ""
+                      commoditized-amount
+                      iso-date)
 
 (ledger-define-regexp cost
                       (macroexpand

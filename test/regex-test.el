@@ -168,8 +168,9 @@ In particular, the group count and index variables should match EXPECTED."
 (ert-deftest ledger-regex/test-commodity-annotations ()
   (regex-test--test-regexp
    "commodity-annotations"
-   '((ledger-regex-commodity-annotations-group 1)
-     (ledger-regex-commodity-annotations-group--count 1))))
+   '((ledger-regex-commodity-annotations-group--count 5)
+     (ledger-regex-commodity-annotations-group-commoditized-amount 1)
+     (ledger-regex-commodity-annotations-group-iso-date 2))))
 
 (ert-deftest ledger-regex/test-commodity-no-group ()
   (regex-test--test-regexp
