@@ -61,11 +61,14 @@
     "full-date"
     "full-note"
     "iso-date"
+    "iterate"
     "long-space"
     "note"
+    "payee"
     "post-line"
     "state"
-    "xact-line")
+    "xact-line"
+    "year")
   "Names of the regexps defined via `ledger-define-regexp'.")
 
 (defconst regex-test--ledger-define-regexp-defined-symbols-by-name
@@ -225,7 +228,7 @@ In particular, the group count and index variables should match EXPECTED."
 (ert-deftest ledger-regex/test-iterate ()
   (regex-test--test-regexp
    "iterate"
-   '((ledger-regex-iterate-group--count 10)
+   '((ledger-regex-iterate-group--count 9)
      (ledger-regex-iterate-group-code 7)
      (ledger-regex-iterate-group-iso-date 2)
      (ledger-regex-iterate-group-note 9)

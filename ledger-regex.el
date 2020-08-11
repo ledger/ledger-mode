@@ -358,13 +358,31 @@
           "\\([ \t]*[@={]@?[^\n;]+?\\)?"
           "\\([ \t]+;.+?\\|[ \t]*\\)?$"))
 
-(defconst ledger-iterate-regex
-  (concat "\\(\\(?:Y\\|year\\)\\s-+\\([0-9]+\\)\\|"  ;; Catches a Y/year directive
-          ledger-iso-date-regexp
-          "\\([ *!]+\\)"  ;; mark
-          "\\((.*)\\)?"  ;; code
-          "\\([[:word:] ]+\\)"   ;; desc
-          "\\)"))
+(ledger-define-regexp year
+  (macroexpand `(rx (group (+ (any "0-9")))))
+  "")
+
+(ledger-define-regexp payee
+  (macroexpand `(rx (group (+? nonl))))
+  "")
+
+(ledger-define-regexp iterate
+  (macroexpand `(rx  (or (and (or "Y" "year")
+                              (+ (syntax ?-))
+                              (regexp ,ledger-year-regexp))
+                         (and (regexp ,ledger-iso-date-regexp)
+                              (? (and (+ blank) (regexp ,ledger-state-regexp)))
+                              (? (and (+ blank) (regexp ,ledger-code-regexp)))
+                              (+ blank)
+                              (regexp ,ledger-payee-regexp)
+                              (? (regexp ,ledger-end-note-regexp))))))
+  ""
+  year
+  iso-date
+  state
+  code
+  payee
+  (note end-note))
 
 (defconst ledger-incomplete-date-regexp
   "\\(?:\\([0-9]\\{1,2\\}\\)[-/]\\)?\\([0-9]\\{1,2\\}\\)")
