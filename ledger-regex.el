@@ -124,8 +124,14 @@
                                    "-group"))
                   string))))))
 
-      (dolist (arg args)
-        (let (var grouping target)
+      (while args
+        (let (arg var grouping target force-increment)
+          (setq arg (pop args))
+
+          (when (eq arg :separate)
+            (setq arg (pop args))
+            (setq force-increment t))
+
           (if (symbolp arg)
               (setq var arg target arg)
             (cl-assert (listp arg))
@@ -137,7 +143,8 @@
                     target (cl-caddr arg))))
 
           (if (and last-group
-                   (not (eq last-group (or grouping target))))
+                   (or (not (eq last-group (or grouping target)))
+                       force-increment))
               (cl-incf addend
                        (symbol-value
                         (intern-soft (concat "ledger-regex-"
@@ -193,6 +200,7 @@
                                  (? (and ?= (regexp ,ledger-iso-date-regexp))))))
                       "Match a compound date, of the form ACTUAL=EFFECTIVE"
                       (actual iso-date)
+                      :separate
                       (effective iso-date))
 
 (ledger-define-regexp state

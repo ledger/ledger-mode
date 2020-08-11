@@ -206,7 +206,7 @@ In particular, the group count and index variables should match EXPECTED."
    "full-date"
    '((ledger-regex-full-date-group--count 8)
      (ledger-regex-full-date-group-actual 1)
-     (ledger-regex-full-date-group-effective 1))))
+     (ledger-regex-full-date-group-effective 5))))
 
 (ert-deftest ledger-regex/test-full-note ()
   (regex-test--test-regexp
@@ -253,7 +253,7 @@ In particular, the group count and index variables should match EXPECTED."
    '((ledger-regex-xact-line-group--count 11)
      (ledger-regex-xact-line-group-actual-date 1)
      (ledger-regex-xact-line-group-code 10)
-     (ledger-regex-xact-line-group-effective-date 1)
+     (ledger-regex-xact-line-group-effective-date 5)
      (ledger-regex-xact-line-group-note 11)
      (ledger-regex-xact-line-group-state 9))))
 
