@@ -20,12 +20,12 @@ jobs:
             ledger_version: snapshot
 
     steps:
-    - uses: cachix/install-nix-action@v9
-    - uses: purcell/setup-emacs@master
+    - uses: cachix/install-nix-action@v12
+    - uses: purcell/setup-emacs@v3.0
       with:
         version: ${{ matrix.emacs_version }}
 
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Install ledger
       run: nix-env -iA ${{ matrix.ledger_version || 'stable' }} -f tools
     # Byte compilation is known to fail in Emacs < 26.1 due to ledger-flymake.el, which should
