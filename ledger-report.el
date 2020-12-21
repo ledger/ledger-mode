@@ -487,7 +487,7 @@ Optionally EDIT the command."
 
 (defun ledger-report--add-links ()
   "Replace file and line annotations with buttons."
-  (while (re-search-forward "^\\(/[^:]+\\)?:\\([0-9]+\\)?:" nil t)
+  (while (re-search-forward "^\\(\\(?:/\\|[a-zA-Z]:[\\/]\\)[^:]+\\)?:\\([0-9]+\\)?:" nil t)
     (let ((file (match-string 1))
           (line (string-to-number (match-string 2))))
       (delete-region (match-beginning 0) (match-end 0))
