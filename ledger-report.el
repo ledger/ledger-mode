@@ -149,7 +149,6 @@ Calls `shrink-window-if-larger-than-buffer'."
 (defvar ledger-report-cmd nil)
 (defvar ledger-report-name-prompt-history nil)
 (defvar ledger-report-cmd-prompt-history nil)
-(defvar ledger-original-window-cfg nil)
 (defvar ledger-report-saved nil)
 (defvar ledger-minibuffer-history nil)
 (defvar ledger-report-mode-abbrev-table)
@@ -278,8 +277,7 @@ used to generate the buffer, navigating the buffer, etc."
            (edit (not (null current-prefix-arg))))
        (list rname edit))))
   (let* ((file (ledger-master-file))
-         (buf (find-file-noselect file))
-         (wcfg (current-window-configuration)))
+         (buf (find-file-noselect file)))
     (with-current-buffer
         (pop-to-buffer (get-buffer-create ledger-report-buffer-name))
       (with-silent-modifications
@@ -288,7 +286,6 @@ used to generate the buffer, navigating the buffer, etc."
         (set (make-local-variable 'ledger-report-saved) nil)
         (set (make-local-variable 'ledger-buf) buf)
         (set (make-local-variable 'ledger-report-name) report-name)
-        (set (make-local-variable 'ledger-original-window-cfg) wcfg)
         (set (make-local-variable 'ledger-report-is-reversed) nil)
         (set (make-local-variable 'ledger-report-current-month) nil)
         (set 'ledger-master-file file)
@@ -587,11 +584,11 @@ IGNORE-AUTO and NOCONFIRM are for compatibility with
       (pop-to-buffer cur-buf))))
 
 (defun ledger-report-quit ()
-  "Quit the ledger report buffer."
+  "Quit the ledger report buffer and kill its buffer."
   (interactive)
-  (ledger-report-goto)
-  (set-window-configuration ledger-original-window-cfg)
-  (kill-buffer (get-buffer ledger-report-buffer-name)))
+  (unless (buffer-live-p (get-buffer ledger-report-buffer-name))
+    (user-error "No ledger report buffer"))
+  (quit-windows-on ledger-report-buffer-name 'kill))
 
 (define-obsolete-function-alias 'ledger-report-kill #'ledger-report-quit)
 
