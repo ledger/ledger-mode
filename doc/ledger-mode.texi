@@ -1222,7 +1222,27 @@ Work in Progress.
 @node Hacking Ledger-mode, Concept Index, Embedding Example results in Ledger Documentation, Top
 @chapter Hacking Ledger-mode
 
-Work in Progress.
+@menu
+* Use org-like outlines::
+@end menu
+
+@node  Use org-like outlines,  , Hacking Ledger-mode, Hacking Ledger-mode
+@section Use org-like outlines
+
+Some users like to have org-like outlines for their ledger files. A suggested
+customization is to include something like the following in your Emacs
+configuration:
+
+@cindex outline
+@cindex org
+@cindex folding
+@lisp
+(eval-after-load 'ledger-mode
+  ;; org-cycle allows completion to work whereas outline-toggle-children does not
+  (define-key ledger-mode-map (kbd "TAB") #'org-cycle)
+  (add-hook 'ledger-mode-hook #'outline-minor-mode)
+  (font-lock-add-keywords 'ledger-mode outline-font-lock-keywords))
+@end lisp
 
 @node Concept Index, Command & Variable Index, Hacking Ledger-mode, Top
 @unnumbered Concept Index
