@@ -1238,10 +1238,11 @@ configuration:
 @cindex folding
 @lisp
 (eval-after-load 'ledger-mode
-  ;; org-cycle allows completion to work whereas outline-toggle-children does not
-  (define-key ledger-mode-map (kbd "TAB") #'org-cycle)
-  (add-hook 'ledger-mode-hook #'outline-minor-mode)
-  (font-lock-add-keywords 'ledger-mode outline-font-lock-keywords))
+  (progn
+    ;; org-cycle allows completion to work whereas outline-toggle-children does not
+    (define-key ledger-mode-map (kbd "TAB") #'org-cycle)
+    (add-hook 'ledger-mode-hook #'outline-minor-mode)
+    (font-lock-add-keywords 'ledger-mode outline-font-lock-keywords)))
 @end lisp
 
 @node Concept Index, Command & Variable Index, Hacking Ledger-mode, Top
