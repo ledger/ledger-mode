@@ -102,6 +102,14 @@ simply concatenated (no quoting)."
   :package-version '(ledger-mode . "4.0.0")
   :group 'ledger-report)
 
+(defcustom ledger-report-native-highlighting-arguments '("--color" "--force-color")
+  "List of strings to pass to ledger when `ledger-report-use-native-highlighting' is non-nil.
+
+If you are using hledger instead of ledger, you might want to set
+this variable to `(\"--color=always\")'."
+  :type '(repeat string)
+  :group 'ledger-report)
+
 (defcustom ledger-report-auto-width t
   "When non-nil, tell ledger about the width of the report window."
   :type 'boolean
@@ -451,7 +459,7 @@ MONTH is of the form (YEAR . INDEX) where INDEX ranges from
     ,@(when ledger-report-auto-width
         `("--columns" ,(format "%d" (- (window-width) 1))))
     ,@(when ledger-report-use-native-highlighting
-        '("--color" "--force-color"))
+        ledger-report-native-highlighting-arguments)
     ,@(when ledger-report-use-strict
         '("--strict"))))
 
