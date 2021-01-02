@@ -40,6 +40,13 @@
   :type 'boolean
   :group 'ledger)
 
+(defcustom ledger-add-transaction-prompt-for-text t
+  "When non-nil, use ledger xact to format transaction.
+When nil, `ledger-add-transaction' will not prompt twice."
+  :type 'boolean
+  :package-version '(ledger-mode . "4.0.1")
+  :group 'ledger)
+
 (defvar-local ledger-xact-highlight-overlay (list))
 
 (defun ledger-highlight-make-overlay ()
@@ -172,14 +179,10 @@ MOMENT is an encoded date"
 
 (defun ledger-read-transaction ()
   "Read the text of a transaction, which is at least the current date."
-  (let* ((reference-date (or ledger-add-transaction-last-date (current-time)))
-         (full-date-string (ledger-format-date reference-date))
-         ;; Pre-fill year and month, but not day: this assumes DD is the last format arg.
-         (initial-string (replace-regexp-in-string "[0-9]+$" "" full-date-string))
-         (entered-string (ledger-read-date "Date: ")))
-    (if (string= initial-string entered-string)
-        full-date-string
-      entered-string)))
+  (let ((date (ledger-read-date "Date: ")))
+    (concat date " "
+            (when ledger-add-transaction-prompt-for-text
+              (read-string (concat "xact " date ": ") nil 'ledger-minibuffer-history)))))
 
 (defun ledger-parse-iso-date (date)
   "Try to parse DATE using `ledger-iso-date-regexp' and return a time value or nil."
