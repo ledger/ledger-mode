@@ -92,11 +92,12 @@
                                            (regexp-quote account))
                                          (ledger-accounts-list))))
 
-(defun ledger-read-date (prompt)
+(defun ledger-read-date (prompt &optional default-time)
   "Return user-supplied date after `PROMPT', defaults to today.
 This uses `org-read-date', which see."
-  (ledger-format-date (let ((org-read-date-prefer-future nil))
-                        (org-read-date nil t nil prompt))))
+  (ledger-format-date (let ((org-read-date-prefer-future nil)
+                            (org-extend-today-until 0))
+                        (org-read-date nil t nil prompt default-time))))
 
 (defun ledger-get-minibuffer-prompt (prompt default)
   "Return a minibuffer prompt string composing PROMPT and DEFAULT."

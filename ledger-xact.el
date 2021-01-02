@@ -151,7 +151,9 @@ MOMENT is an encoded date"
   "Ask for a new DATE and copy the transaction under point to that date.
 Leave point on the first amount."
   (interactive  (list
-                 (ledger-read-date "Copy to date: ")))
+                 (ledger-read-date "Copy to date: "
+                                   (ledger-parse-iso-date
+                                    (ledger-xact-date)))))
   (let* ((extents (ledger-navigate-find-xact-extents (point)))
          (transaction (buffer-substring-no-properties (car extents) (cadr extents)))
          (encoded-date (ledger-parse-iso-date date)))
