@@ -135,8 +135,10 @@ MOMENT is an encoded date"
                        mark desc)))))
       (forward-line))))
 
-(defvar ledger-copy-transaction-insert-blank-line-after nil
-  "Non-nil means insert blank line after a transaction inserted with ‘ledger-copy-transaction-at-point’.")
+(defcustom ledger-copy-transaction-insert-blank-line-after nil
+  "Non-nil means insert blank line after a transaction inserted with ‘ledger-copy-transaction-at-point’."
+  :type 'boolean
+  :group 'ledger)
 
 (defun ledger-copy-transaction-at-point (date)
   "Ask for a new DATE and copy the transaction under point to that date.  Leave point on the first amount."
