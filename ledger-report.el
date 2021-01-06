@@ -598,7 +598,7 @@ IGNORE-AUTO and NOCONFIRM are for compatibility with
     (user-error "No ledger report buffer"))
   (quit-windows-on ledger-report-buffer-name 'kill))
 
-(define-obsolete-function-alias 'ledger-report-kill #'ledger-report-quit)
+(define-obsolete-function-alias 'ledger-report-kill #'ledger-report-quit "2018-03-18")
 
 (defun ledger-report-edit-reports ()
   "Edit the defined ledger reports."
