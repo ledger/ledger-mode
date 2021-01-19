@@ -275,8 +275,8 @@ next and previous xacts or directives.
 @findex ledger-navigate-next-uncleared
 @findex ledger-navigate-previous-uncleared
 
-Additionally, M-x ledger-navigate-previous-uncleared and M-x
-ledger-navigate-next-uncleared navigate to the next and previous uncleared
+Additionally, @kbd{M-x ledger-navigate-next-uncleared} and @kbd{M-x
+ledger-navigate-previous-uncleared} navigate to the next and previous uncleared
 transactions.
 
 
