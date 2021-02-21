@@ -3,7 +3,9 @@
 ** ledger-add-transaction now uses org-read-date
 This is more consistent with the behavior of =ledger-copy-transaction-at-point=
 and =ledger-insert-effective-date=. In order to disable the pop-up calendar, bind
-=org-read-date-popup-calendar= to nil.
+=org-read-date-popup-calendar= to nil. The command now prompts twice - once for
+the date and another time for the xact text. If you find this annoying, set
+=ledger-add-transaction-prompt-for-text= to nil.
 * Release v4.0.0
 ** The completion system now respects whatever completion system the user prefers
 Some users prefer different completion systems such as ivy or helm. To get the
