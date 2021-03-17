@@ -218,7 +218,7 @@ date is requested via `ledger-read-date'."
           (insert
            (with-temp-buffer
              (apply #'ledger-exec-ledger ledger-buf (current-buffer) "xact"
-                    (mapcar 'eval args))
+                    (append (mapcar 'eval args) '("-y") (list ledger-default-date-format)))
              (goto-char (point-min))
              (ledger-post-align-postings (point-min) (point-max))
              (buffer-string))
