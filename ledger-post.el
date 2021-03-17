@@ -168,7 +168,9 @@ regular text."
             (delete-region (match-beginning 0) (match-end 0))
             (push-mark)
             (calc)
-            (calc-eval val-string 'push)) ;; edit the amount
+            ;; edit the amount, first removing thousands separators and
+            ;; converting decimal commas to calc's input format
+            (calc-eval (number-to-string (ledger-string-to-number val-string)) 'push))
         (progn ;;make sure there are two spaces after the account name and go to calc
           (if (search-backward "  " (- (point) 3) t)
               (goto-char (line-end-position))
