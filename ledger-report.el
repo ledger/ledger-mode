@@ -87,7 +87,7 @@ simply concatenated (no quoting)."
   :group 'ledger-report)
 
 (defcustom ledger-report-auto-refresh-sticky-cursor nil
-  "If non-nil, place cursor at same relative position as it was before auto-refresh."
+  "If non-nil, keep cursor's relative position after auto-refresh."
   :type 'boolean
   :group 'ledger-report)
 
@@ -103,7 +103,7 @@ simply concatenated (no quoting)."
   :group 'ledger-report)
 
 (defcustom ledger-report-native-highlighting-arguments '("--color" "--force-color")
-  "List of strings to pass to ledger when `ledger-report-use-native-highlighting' is non-nil.
+  "List of ledger args needed by `ledger-report-use-native-highlighting'.
 
 If you are using hledger instead of ledger, you might want to set
 this variable to `(\"--color=always\")'."

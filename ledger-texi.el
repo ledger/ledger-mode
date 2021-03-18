@@ -137,8 +137,7 @@
       (let ((section (match-string 1))
             (example-name (match-string 2))
             (command (match-string 3))
-            (data-file ledger-texi-sample-doc-path)
-            input output)
+            (data-file ledger-texi-sample-doc-path))
         (goto-char (match-end 0))
         (forward-line)
         (when (looking-at "@\\(\\(?:small\\)?example\\)")
@@ -171,7 +170,7 @@
                   "@end " section-name ?\n))
 
         ;; Update the regression test associated with this example
-        (ledger-texi-write-test example-name command input output
+        (ledger-texi-write-test example-name command nil nil
                                 "../test/manual")))))
 
 (provide 'ledger-texi)

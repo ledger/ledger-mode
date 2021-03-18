@@ -143,7 +143,7 @@ MOMENT is an encoded date"
       (forward-line))))
 
 (defcustom ledger-copy-transaction-insert-blank-line-after nil
-  "Non-nil means insert blank line after a transaction inserted with ‘ledger-copy-transaction-at-point’."
+  "When non-nil, insert a blank line after `ledger-copy-transaction-at-point'."
   :type 'boolean
   :group 'ledger)
 

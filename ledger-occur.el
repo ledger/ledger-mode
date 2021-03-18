@@ -35,7 +35,8 @@
 (defconst ledger-occur-overlay-property-name 'ledger-occur-custom-buffer-grep)
 
 (defcustom ledger-occur-use-face-shown t
-  "If non-nil, use a custom face for xacts shown in `ledger-occur' mode using ledger-occur-xact-face."
+  "If non-nil, use a custom face for xacts shown in `ledger-occur' mode.
+This uses `ledger-occur-xact-face'."
   :type 'boolean
   :group 'ledger)
 (make-variable-buffer-local 'ledger-occur-use-face-shown)

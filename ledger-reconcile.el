@@ -55,7 +55,7 @@
   :group 'ledger-reconcile)
 
 (defcustom ledger-narrow-on-reconcile t
-  "If t, limit transactions shown in main buffer to those matching the reconcile regex."
+  "If t, show only transactions matching the reconcile regex in the main buffer."
   :type 'boolean
   :group 'ledger-reconcile)
 
@@ -67,7 +67,7 @@ buffer then that transaction will be shown in its source buffer."
   :group 'ledger-reconcile)
 
 (defcustom ledger-reconcile-force-window-bottom nil
-  "If t, make the reconcile window appear along the bottom of the register window and resize."
+  "If t, show the reconcile window below the register window and resize."
   :type 'boolean
   :group 'ledger-reconcile)
 
@@ -121,12 +121,13 @@ if string is longer, it is not truncated unless
 (defcustom ledger-reconcile-sort-key "(0)"
   "Key for sorting reconcile buffer.
 
-Possible values are '(date)', '(amount)', '(payee)' or '(0)' for no sorting, i.e. using ledger file order."
+Possible values are '(date)', '(amount)', '(payee)' or '(0)' for
+no sorting, i.e. using ledger file order."
   :type 'string
   :group 'ledger-reconcile)
 
 (defcustom ledger-reconcile-insert-effective-date nil
-  "If t, prompt for effective date when clearing transactions during reconciliation."
+  "If t, prompt for effective date when clearing transactions."
   :type 'boolean
   :group 'ledger-reconcile)
 

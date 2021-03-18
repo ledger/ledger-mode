@@ -31,7 +31,7 @@
   "The version of ledger executable needed for interactive features.")
 
 (defvar ledger-works nil
-  "Flag showing whether the ledger binary can support `ledger-mode' interactive features.")
+  "Non-nil if the ledger binary can support `ledger-mode' interactive features.")
 
 (defgroup ledger-exec nil
   "Interface to the Ledger command-line accounting program."
