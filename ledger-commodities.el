@@ -119,7 +119,7 @@ See `ledger-environment-alist' for DECIMAL-COMMA."
                       (assoc "decimal-comma" ledger-environment-alist))
                   (ledger-strip str "[.]")
                 (ledger-strip str ","))))
-    (while (string-match "," nstr)  ;if there is a comma now, it is a thousands separator
+    (while (string-match "," nstr)  ;if there is a comma now, it is a decimal point
       (setq nstr (replace-match "." nil nil nstr)))
     (string-to-number nstr)))
 
