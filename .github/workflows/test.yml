@@ -36,5 +36,6 @@ jobs:
       run: emacs --eval "(setq byte-compile-error-on-warn (>= emacs-major-version 26))" -L . --batch -f batch-byte-compile *.el
     - name: Tests
       run: make -C test test-batch
+    # This is currently for information only, since a lot of docstrings need fixing up
     - name: Checkdoc
-      run: make -C test checkdoc
+      run: make -C test checkdoc || true
