@@ -42,7 +42,7 @@ $(CHECKDOC_BATCH_EL):
 
 .PHONY: checkdoc
 checkdoc: $(CHECKDOC_BATCH_EL)
-	$(EMACS_BATCH) --load $(CHECKDOC_BATCH_EL) --funcall checkdoc-batch-commandline $(EL) | grep -E "el:[0-9]+:[0-9]+:" && exit 1 || exit 0
+	$(EMACS_BATCH) --load $(CHECKDOC_BATCH_EL) --funcall checkdoc-batch-commandline ../*.el | grep -E "el:[0-9]+:[0-9]+:" && exit 1 || exit 0
 
 # Enables `make ledger-fontify/test-003`
 define ERTDEFTEST
