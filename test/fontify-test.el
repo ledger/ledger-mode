@@ -182,7 +182,7 @@ https://groups.google.com/d/msg/ledger-cli/UsFDEytFdak/lymuTW5wX9IJ"
   Equity:Opening Balance
 
 P 2006/03/05 FOO £1.40
-P 2006/03/06 BAR £1.50
+P 2006/03/06 \"BAR BAZ\" £1.50
 
 
 2006/05/15 Interest
@@ -201,7 +201,7 @@ P 2006/03/06 BAR £1.50
    "£1.40"                    ledger-font-price-face
    "P"                        ledger-font-price-directive-face
    "2006/03/06"               ledger-font-price-date-face
-   "BAR"                      ledger-font-price-symbol-face
+   "\"BAR BAZ\""              ledger-font-price-symbol-face
    "£1.50"                    ledger-font-price-face
    "2006/05/15"               ledger-font-posting-date-face
    "Interest"                 ledger-font-payee-uncleared-face

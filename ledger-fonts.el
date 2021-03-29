@@ -599,7 +599,7 @@ See `font-lock-keywords' for the full description."
     (,(concat "^\\(P\\)"
               "\\(?:[[:blank:]]+\\([^[:blank:]\n]+"
               "\\(?:[[:blank:]]+[[:digit:]][^[:blank:]\n]*\\)?\\)"
-              "\\(?:[[:blank:]]+\\([^[:blank:]\n]+\\)"
+              "\\(?:[[:blank:]]+\\(\".*?\"\\|[^[:blank:]\n]+\\)"
               "\\(?:[[:blank:]]+\\(.*\\)\\)?\\)?\\)?$")
      (1 'ledger-font-price-directive-face)
      (2 'ledger-font-price-date-face nil :lax)
