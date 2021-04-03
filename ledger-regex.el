@@ -64,6 +64,12 @@
 (defconst ledger-init-string-regex
   "^--.+?\\($\\|[ ]\\)")
 
+(defconst ledger-tag-name-regex
+  "\\(?1:[^][();: \t\r\n]+\\(?: [^][();: \t\r\n]+\\)*\\):")
+
+(defconst ledger-tag-directive-regex
+  (concat "^tag[ \t]+" ledger-tag-name-regex))
+
 (defconst ledger-account-name-regex
   "\\(?1:[^][(); \t\r\n]+\\(?: [^][(); \t\r\n]+\\)*\\)")
 
