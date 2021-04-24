@@ -26,6 +26,8 @@
 (require 'ledger-regex)
 (require 'ledger-navigate)
 
+(declare-function ledger-string-to-number "ledger-commodities" (str &optional decimal-comma))
+
 ;;; Code:
 
 (defgroup ledger-post nil

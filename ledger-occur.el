@@ -53,9 +53,9 @@ This uses `ledger-occur-xact-face'."
 
 (define-minor-mode ledger-occur-mode
   "A minor mode which display only transactions matching `ledger-occur-current-regex'."
-  nil
-  (:eval (format " Ledger-Narrow(%s)" ledger-occur-current-regex))
-  ledger-occur-mode-map
+  :init-value nil
+  :lighter (:eval (format " Ledger-Narrow(%s)" ledger-occur-current-regex))
+  :keymap ledger-occur-mode-map
   (if (and ledger-occur-current-regex ledger-occur-mode)
       (ledger-occur-refresh)
     (ledger-occur-remove-overlays)
