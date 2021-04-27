@@ -268,6 +268,23 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=257"
      (should (equal "$1,000.00"
                     (ledger-context-field-value context 'commoditized-amount))))))
 
+(ert-deftest ledger-context/test-009 ()
+  "Regress test for #302.
+https://github.com/ledger/ledger-mode/issues/302"
+  :tags '(context regress)
+
+  (ledger-tests-with-temp-file
+   "2016/08/12 KFC
+ ; xact note
+ a  $7
+ b"
+   (goto-char 12)                       ; on the payee
+   (let ((context (ledger-context-at-point)))
+     (should (eq (ledger-context-current-field context) 'payee))
+     (should (equal "KFC"
+                    (ledger-context-field-value context 'payee)))
+     (should (equal "xact note"
+                    (ledger-context-field-value context 'comment))))))
 
 (provide 'context-test)
 
