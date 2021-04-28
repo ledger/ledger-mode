@@ -89,6 +89,7 @@ otherwise the error output is displayed and an error is raised."
                    (apply #'call-process-region
                           (append (list (point-min) (point-max)
                                         ledger-binary-path nil (list outbuf errfile) nil "-f" "-")
+                                  (list "--date-format" ledger-default-date-format)
                                   args)))))
             (if (ledger-exec-success-p exit-code outbuf)
                 outbuf
