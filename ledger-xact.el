@@ -124,22 +124,22 @@ MOMENT is an encoded date"
   (let* ((now (current-time))
          (current-year (nth 5 (decode-time now))))
     (while (not (eobp))
-      (when (looking-at ledger-iterate-regex)
-        (let ((found-y-p (match-string 2)))
+      (when (looking-at ledger-iterate-regexp)
+        (let ((found-y-p (match-string 1)))
           (if found-y-p
               (setq current-year (string-to-number found-y-p)) ;; a Y directive was found
             (let ((start (match-beginning 0))
-                  (year (match-string 4))
-                  (month (string-to-number (match-string 5)))
-                  (day (string-to-number (match-string 6)))
-                  (mark (match-string 7))
-                  (desc (match-string 9)))
+                  (year (match-string (+ ledger-regex-iterate-group-actual-date 1)))
+                  (month (string-to-number (match-string (+ ledger-regex-iterate-group-actual-date 2))))
+                  (day (string-to-number (match-string (+ ledger-regex-iterate-group-actual-date 3))))
+                  (state (match-string ledger-regex-iterate-group-state))
+                  (payee (match-string ledger-regex-iterate-group-payee)))
               (if (and year (> (length year) 0))
                   (setq year (string-to-number year)))
               (funcall callback start
                        (encode-time 0 0 0 day month
                                     (or year current-year))
-                       mark desc)))))
+                       state payee)))))
       (forward-line))))
 
 (defcustom ledger-copy-transaction-insert-blank-line-after nil

@@ -95,6 +95,37 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=526"
 "))))
 
 
+(ert-deftest ledger-xact/test-003 ()
+  "Regression test for #307
+https://github.com/ledger/ledger-mode/issues/307"
+  :tags '(xact regress)
+
+  (ledger-tests-with-temp-file
+   "2013/05/02=2013/05/03 foo
+    Expenses:Foo                            $10.00
+    Assets:Bar
+
+2013/05/03 foo
+    Expenses:Foo                            $10.00
+    Assets:Bar
+"
+   (goto-char (point-max))              ; end-of-buffer
+   (ledger-add-transaction "2013/05/01 foo")
+   (should
+    (equal (buffer-string)
+           "2013/05/01 foo
+    Expenses:Foo                              $10.00
+    Assets:Bar
+
+2013/05/02=2013/05/03 foo
+    Expenses:Foo                            $10.00
+    Assets:Bar
+
+2013/05/03 foo
+    Expenses:Foo                            $10.00
+    Assets:Bar
+"))))
+
 (provide 'xact-test)
 
 ;;; xact-test.el ends here

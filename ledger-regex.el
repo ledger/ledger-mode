@@ -28,7 +28,7 @@
 (require 'rx)
 (require 'cl-lib)
 
-(defvar ledger-iso-date-regex)
+(defvar ledger-iso-date-regexp)
 
 (defconst ledger-amount-decimal-comma-regex
   "-?[1-9][0-9.]*[,]?[0-9]*")
@@ -89,43 +89,49 @@
 
 (defmacro ledger-define-regexp (name regex docs &rest args)
   "Simplify the creation of a Ledger regex and helper functions."
-  (let ((defs
-          (list
-           `(defconst
-              ,(intern (concat "ledger-" (symbol-name name) "-regexp"))
-              ,(eval regex)
-              ,docs)))
-        (addend 0) last-group)
-    (if (null args)
-        (progn
-          (nconc
-           defs
+  (let* ((regex (eval regex))
+         (group-count (regexp-opt-depth regex))
+         (defs
            (list
             `(defconst
-               ,(intern
-                 (concat "ledger-regex-" (symbol-name name) "-group"))
-               1)))
-          (nconc
-           defs
-           (list
+               ,(intern (concat "ledger-" (symbol-name name) "-regexp"))
+               ,regex
+               ,docs)
             `(defconst
                ,(intern (concat "ledger-regex-" (symbol-name name)
                                 "-group--count"))
-               1)))
-          (nconc
-           defs
-           (list
-            `(defmacro
-                 ,(intern (concat "ledger-regex-" (symbol-name name)))
-                 (&optional string)
-               ,(format "Return the match string for the %s" name)
-               (match-string
-                ,(intern (concat "ledger-regex-" (symbol-name name)
-                                 "-group"))
-                string)))))
+               ,group-count)))
+         (addend 0) last-group)
+    (if (null args)
+        (progn
+          (when (cl-plusp group-count)
+            (nconc
+             defs
+             (list
+              `(defconst
+                 ,(intern
+                   (concat "ledger-regex-" (symbol-name name) "-group"))
+                 1)))
+            (nconc
+             defs
+             (list
+              `(defmacro
+                   ,(intern (concat "ledger-regex-" (symbol-name name)))
+                   (&optional string)
+                 ,(format "Return the match string for the %s" name)
+                 (match-string
+                  ,(intern (concat "ledger-regex-" (symbol-name name)
+                                   "-group"))
+                  string))))))
 
-      (dolist (arg args)
-        (let (var grouping target)
+      (while args
+        (let (arg var grouping target force-increment)
+          (setq arg (pop args))
+
+          (when (eq arg :separate)
+            (setq arg (pop args))
+            (setq force-increment t))
+
           (if (symbolp arg)
               (setq var arg target arg)
             (cl-assert (listp arg))
@@ -137,7 +143,8 @@
                     target (cl-caddr arg))))
 
           (if (and last-group
-                   (not (eq last-group (or grouping target))))
+                   (or (not (eq last-group (or grouping target)))
+                       force-increment))
               (cl-incf addend
                        (symbol-value
                         (intern-soft (concat "ledger-regex-"
@@ -171,20 +178,14 @@
                                  "-group-" (symbol-name var)))
                 string))))
 
-          (setq last-group (or grouping target))))
-
-      (nconc defs
-             (list
-              `(defconst ,(intern (concat "ledger-regex-" (symbol-name name)
-                                          "-group--count"))
-                 ,(length args)))))
+          (setq last-group (or grouping target)))))
 
     (cons 'eval-and-compile defs)))
 
 (put 'ledger-define-regexp 'lisp-indent-function 1)
 
 (ledger-define-regexp iso-date
-                      ( let ((sep '(or ?-  ?/)))
+                      (let ((sep '(or ?- ?/)))
                         (rx (group
                              (and (group (= 4 num))
                                   (eval sep)
@@ -199,6 +200,7 @@
                                  (? (and ?= (regexp ,ledger-iso-date-regexp))))))
                       "Match a compound date, of the form ACTUAL=EFFECTIVE"
                       (actual iso-date)
+                      :separate
                       (effective iso-date))
 
 (ledger-define-regexp state
@@ -234,22 +236,6 @@
                       (macroexpand
                        `(rx (and line-start
                                  (regexp ,ledger-full-date-regexp)
-                                 (? (and (+ blank) (regexp ,ledger-state-regexp)))
-                                 (? (and (+ blank) (regexp ,ledger-code-regexp)))
-                                 (+ blank) (+? nonl)
-                                 (? (regexp ,ledger-end-note-regexp))
-                                 line-end)))
-                      "Match a transaction's first line (and optional notes)."
-                      (actual-date full-date actual)
-                      (effective-date full-date effective)
-                      state
-                      code
-                      (note end-note))
-
-(ledger-define-regexp recurring-line
-                      (macroexpand
-                       `(rx (and line-start
-                                 (regexp "\\[.+/.+/.+\\]")
                                  (? (and (+ blank) (regexp ,ledger-state-regexp)))
                                  (? (and (+ blank) (regexp ,ledger-code-regexp)))
                                  (+ blank) (+? nonl)
@@ -321,7 +307,9 @@
                                (or (and ?\{ (regexp ,ledger-commoditized-amount-regexp) ?\})
                                    (and ?\[ (regexp ,ledger-iso-date-regexp) ?\])
                                    (and ?\( (not (any ?\))) ?\))))))
-                      "")
+                      ""
+                      commoditized-amount
+                      iso-date)
 
 (ledger-define-regexp cost
                       (macroexpand
@@ -370,13 +358,32 @@
           "\\([ \t]*[@={]@?[^\n;]+?\\)?"
           "\\([ \t]+;.+?\\|[ \t]*\\)?$"))
 
-(defconst ledger-iterate-regex
-  (concat "\\(\\(?:Y\\|year\\)\\s-+\\([0-9]+\\)\\|"  ;; Catches a Y/year directive
-          ledger-iso-date-regexp
-          "\\([ *!]+\\)"  ;; mark
-          "\\((.*)\\)?"  ;; code
-          "\\([[:word:] ]+\\)"   ;; desc
-          "\\)"))
+(ledger-define-regexp year
+  (macroexpand `(rx (group (+ (any "0-9")))))
+  "")
+
+(ledger-define-regexp payee
+  (macroexpand `(rx (group (+? nonl))))
+  "")
+
+(ledger-define-regexp iterate
+  (macroexpand `(rx  (or (and (or "Y" "year")
+                              (+ (syntax ?-))
+                              (regexp ,ledger-year-regexp))
+                         (and (regexp ,ledger-full-date-regexp)
+                              (? (and (+ blank) (regexp ,ledger-state-regexp)))
+                              (? (and (+ blank) (regexp ,ledger-code-regexp)))
+                              (+ blank)
+                              (regexp ,ledger-payee-regexp)
+                              (? (regexp ,ledger-end-note-regexp))))))
+  ""
+  year
+  (actual-date full-date actual)
+  (effective-date full-date effective)
+  state
+  code
+  payee
+  (note end-note))
 
 (defconst ledger-incomplete-date-regexp
   "\\(?:\\([0-9]\\{1,2\\}\\)[-/]\\)?\\([0-9]\\{1,2\\}\\)")
