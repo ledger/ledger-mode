@@ -324,7 +324,7 @@
   "")
 
 (ledger-define-regexp full-amount
-  (macroexpand `(rx (group (+? (not (any ?\;))))))
+  (rx (group (+? (not (any ?\;)))))
   "")
 
 (ledger-define-regexp post-line
@@ -359,11 +359,11 @@
           "\\([ \t]+;.+?\\|[ \t]*\\)?$"))
 
 (ledger-define-regexp year
-  (macroexpand `(rx (group (+ (any "0-9")))))
+  (rx (group (+ (any "0-9"))))
   "")
 
 (ledger-define-regexp payee
-  (macroexpand `(rx (group (+? nonl))))
+  (rx (group (+? nonl)))
   "")
 
 (ledger-define-regexp iterate
