@@ -45,9 +45,8 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=441"
 
 (ert-deftest ledger-navigate-uncleared ()
   :tags '(navigate)
-  (with-temp-buffer
-    (insert
-     "2011/01/27 Book Store
+  (ledger-tests-with-temp-file
+   "2011/01/27 Book Store
     Expenses:Books                       $20.00
     Liabilities:MasterCard
 
@@ -61,15 +60,12 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=441"
 
 2011/12/01 * Sale
     Assets:Checking                     $ 30.00
-    Income:Sales")
-    (ledger-mode)
-    (goto-char (point-min))
-    (ledger-navigate-next-uncleared)
-    (should (looking-at-p (regexp-quote "2011/04/27 Bookstore")))
-    (should-error (ledger-navigate-next-uncleared))
-    (ledger-navigate-previous-uncleared)
-    (should (bobp))
-    ))
+    Income:Sales"
+   (ledger-navigate-next-uncleared)
+   (should (looking-at-p (regexp-quote "2011/04/27 Bookstore")))
+   (should-error (ledger-navigate-next-uncleared))
+   (ledger-navigate-previous-uncleared)
+   (should (bobp))))
 
 
 (provide 'navigate-test)

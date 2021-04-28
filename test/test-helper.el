@@ -118,7 +118,8 @@ BODY is code to be executed within the temp buffer.  Point is
 always located at the beginning of buffer."
   (declare (indent 1) (debug t))
   `(let* ((temp-file (make-temp-file "ledger-tests-"))
-          (ledger-buffer (find-file-noselect temp-file)))
+          (ledger-buffer (find-file-noselect temp-file))
+          (ledger-init-file-name nil))
      (unwind-protect
          (with-current-buffer ledger-buffer
            (switch-to-buffer ledger-buffer)    ; this selects window
@@ -154,11 +155,12 @@ The two arguments START and END are character positions."
 
 (defun ledger-test-fontify-string (str)
   "Fontify `STR' in ledger mode."
-  (with-temp-buffer
-    (ledger-mode)
-    (insert str)
-    (font-lock-ensure)
-    (buffer-string)))
+  (let (ledger-init-file-name)
+    (with-temp-buffer
+      (ledger-mode)
+      (insert str)
+      (font-lock-ensure)
+      (buffer-string))))
 
 
 (defun ledger-test-face-groups (fontified)

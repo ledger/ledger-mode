@@ -612,15 +612,16 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
            "Equity:Opening Balances"  ledger-font-posting-account-face)))
 
     (with-temp-buffer
-      (ledger-mode)
-      (unwind-protect
-          (progn
-            (setq ledger-fontify-xact-state-overrides t)
-            (insert str)
-            (font-lock-ensure)
-            (should (equal (ledger-test-face-groups (buffer-string))
-                           face-groups)))
-        (setq ledger-fontify-xact-state-overrides nil)))))
+      (let (ledger-init-file-name)
+        (ledger-mode)
+        (unwind-protect
+            (progn
+              (setq ledger-fontify-xact-state-overrides t)
+              (insert str)
+              (font-lock-ensure)
+              (should (equal (ledger-test-face-groups (buffer-string))
+                             face-groups)))
+          (setq ledger-fontify-xact-state-overrides nil))))))
 
 ;; --------------------------------------------------------------------------------------------------------
 
@@ -2618,11 +2619,12 @@ payeee Charity
             "Expenses:Food"  ledger-font-posting-account-face
             "7 EUR"          ledger-font-posting-amount-face)))
     (with-temp-buffer
-      (ledger-mode)
-      (insert pre-str str post-str)
-      (font-lock-fontify-region beg end nil)
-      (should (equal (ledger-test-face-groups (buffer-substring beg end))
-                     face-groups)))))
+      (let (ledger-init-file-name)
+        (ledger-mode)
+        (insert pre-str str post-str)
+        (font-lock-fontify-region beg end nil)
+        (should (equal (ledger-test-face-groups (buffer-substring beg end))
+                       face-groups))))))
 
 
 (ert-deftest ledger-fontify/test-100 ()
