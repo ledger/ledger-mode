@@ -370,7 +370,7 @@
   (macroexpand `(rx  (or (and (or "Y" "year")
                               (+ (syntax ?-))
                               (regexp ,ledger-year-regexp))
-                         (and (regexp ,ledger-iso-date-regexp)
+                         (and (regexp ,ledger-full-date-regexp)
                               (? (and (+ blank) (regexp ,ledger-state-regexp)))
                               (? (and (+ blank) (regexp ,ledger-code-regexp)))
                               (+ blank)
@@ -378,7 +378,8 @@
                               (? (regexp ,ledger-end-note-regexp))))))
   ""
   year
-  iso-date
+  (actual-date full-date actual)
+  (effective-date full-date effective)
   state
   code
   payee

@@ -228,12 +228,13 @@ In particular, the group count and index variables should match EXPECTED."
 (ert-deftest ledger-regex/test-iterate ()
   (regex-test--test-regexp
    "iterate"
-   '((ledger-regex-iterate-group--count 9)
-     (ledger-regex-iterate-group-code 7)
-     (ledger-regex-iterate-group-iso-date 2)
-     (ledger-regex-iterate-group-note 9)
-     (ledger-regex-iterate-group-payee 8)
-     (ledger-regex-iterate-group-state 6)
+   '((ledger-regex-iterate-group--count 13)
+     (ledger-regex-iterate-group-actual-date 2)
+     (ledger-regex-iterate-group-code 11)
+     (ledger-regex-iterate-group-effective-date 6)
+     (ledger-regex-iterate-group-note 13)
+     (ledger-regex-iterate-group-payee 12)
+     (ledger-regex-iterate-group-state 10)
      (ledger-regex-iterate-group-year 1))))
 
 (ert-deftest ledger-regex/test-long-space ()

@@ -129,9 +129,9 @@ MOMENT is an encoded date"
           (if found-y-p
               (setq current-year (string-to-number found-y-p)) ;; a Y directive was found
             (let ((start (match-beginning 0))
-                  (year (match-string (+ ledger-regex-iterate-group-iso-date 1)))
-                  (month (string-to-number (match-string (+ ledger-regex-iterate-group-iso-date 2))))
-                  (day (string-to-number (match-string (+ ledger-regex-iterate-group-iso-date 3))))
+                  (year (match-string (+ ledger-regex-iterate-group-actual-date 1)))
+                  (month (string-to-number (match-string (+ ledger-regex-iterate-group-actual-date 2))))
+                  (day (string-to-number (match-string (+ ledger-regex-iterate-group-actual-date 3))))
                   (state (match-string ledger-regex-iterate-group-state))
                   (payee (match-string ledger-regex-iterate-group-payee)))
               (if (and year (> (length year) 0))
