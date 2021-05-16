@@ -554,10 +554,10 @@ moved and recentered.  If they aren't strange things happen."
       (add-hook 'after-save-hook 'ledger-reconcile-refresh-after-save nil t)
 
       ;; Narrow the ledger buffer
+      (if ledger-narrow-on-reconcile
+          (ledger-occur (regexp-quote account)))
+
       (with-current-buffer rbuf
-        (save-excursion
-          (if ledger-narrow-on-reconcile
-              (ledger-occur account)))
         (if (> (ledger-reconcile-refresh) 0)
             (ledger-reconcile-change-target target))
         (ledger-display-balance)))))
