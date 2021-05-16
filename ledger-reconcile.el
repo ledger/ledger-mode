@@ -555,7 +555,7 @@ moved and recentered.  If they aren't strange things happen."
 
       ;; Narrow the ledger buffer
       (if ledger-narrow-on-reconcile
-          (ledger-occur account))
+          (ledger-occur (regexp-quote account)))
 
       (with-current-buffer rbuf
         (if (> (ledger-reconcile-refresh) 0)
