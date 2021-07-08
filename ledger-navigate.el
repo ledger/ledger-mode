@@ -38,31 +38,39 @@
       (goto-char (match-beginning 0))
     (goto-char (point-max))))
 
-(defun ledger-navigate-start-xact-or-directive-p ()
-  "Return t if at the beginning of an empty or all-whitespace line."
-  (not (looking-at "[ \t]\\|\\(^$\\)")))
+(defun ledger-navigate-start-xact-or-directive-p (&optional invisible)
+  "Return t if at the beginning of an empty or
+all-whitespaceline. If INVISIBLE then consider invisible lines,
+otherwise they return nil."
+  (and (or invisible
+           (not (invisible-p (point))))
+       (not (looking-at "[ \t]\\|\\(^$\\)"))))
 
-(defun ledger-navigate-next-xact-or-directive ()
+(defun ledger-navigate-next-xact-or-directive (&optional invisible)
   "Move to the beginning of the next xact or directive."
   (interactive)
   (beginning-of-line)
-  (if (ledger-navigate-start-xact-or-directive-p) ; if we are the start of an xact, move forward to the next xact
+  (if (ledger-navigate-start-xact-or-directive-p invisible) ; if we are the start of an xact, move forward towards the next xact
       (progn
         (forward-line)
-        (if (not (ledger-navigate-start-xact-or-directive-p)) ; we have moved forward and are not at another xact, recurse forward
-            (ledger-navigate-next-xact-or-directive)))
-    (while (not (or (eobp)  ; we didn't start off at the beginning of an xact
-                    (ledger-navigate-start-xact-or-directive-p)))
+        (if (not (ledger-navigate-start-xact-or-directive-p invisible)) ; we have moved forward and are not at another xact, recurse forward
+            (ledger-navigate-next-xact-or-directive invisible)))
+    (while (not (or (eobp)     ; we didn't start off at the beginning of an xact
+                    (ledger-navigate-start-xact-or-directive-p invisible)))
       (forward-line))))
 
-(defun ledger-navigate-prev-xact-or-directive ()
-  "Move point to beginning of previous xact."
+(defun ledger-navigate-prev-xact-or-directive (&optional invisible)
+  "Move to the beginning of the previous xact or directive."
   (interactive)
-  (let ((context (car (ledger-context-at-point))))
-    (when (equal context 'acct-transaction)
-      (ledger-navigate-beginning-of-xact))
-    (beginning-of-line)
-    (re-search-backward "^[[:graph:]]" nil t)))
+  (beginning-of-line)
+  (if (ledger-navigate-start-xact-or-directive-p invisible) ; if we are the start of an xact, move backward towards the next xact
+      (progn
+        (forward-line -1)
+        (if (not (ledger-navigate-start-xact-or-directive-p invisible)) ; we have moved backward and are not at another xact, recurse backward
+            (ledger-navigate-prev-xact-or-directive invisible)))
+    (while (not (or (bobp)  ; we didn't start off at the beginning of an xact
+                    (ledger-navigate-start-xact-or-directive-p invisible)))
+      (forward-line -1))))
 
 (defun ledger-navigate-beginning-of-xact ()
   "Move point to the beginning of the current xact."
@@ -78,7 +86,7 @@
 (defun ledger-navigate-end-of-xact ()
   "Move point to end of xact."
   (interactive)
-  (ledger-navigate-next-xact-or-directive)
+  (ledger-navigate-next-xact-or-directive t)
   (re-search-backward ".$")
   (end-of-line)
   (point))
