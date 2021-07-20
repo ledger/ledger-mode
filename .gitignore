@@ -1,2 +1,3 @@
 *.elc
 *~
+/doc/ledger-mode.info
