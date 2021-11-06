@@ -353,8 +353,8 @@ Return the number of uncleared xacts found."
 
 (defun ledger-reconcile-finish ()
   "Mark all pending posting or transactions as cleared.
-Depends on ledger-reconcile-clear-whole-transactions, save the buffers
-and exit reconcile mode if `ledger-reconcile-finish-force-quit'"
+Depends on ledger-clear-whole-transactions, save the buffers and
+exit reconcile mode if `ledger-reconcile-finish-force-quit'"
   (interactive)
   (save-excursion
     (goto-char (point-min))
