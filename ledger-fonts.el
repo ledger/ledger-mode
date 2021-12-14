@@ -360,7 +360,7 @@
   :group 'ledger-faces)
 
 (defface ledger-font-posting-account-face
-  `((t :inherit ledger-font-default-face))
+  `((t :inherit ledger-font-default-directive-face))
   "Face for Ledger accounts"
   :group 'ledger-faces)
 
@@ -653,7 +653,7 @@ See `font-lock-keywords' for the full description."
               ledger-xact-after-date-regex "\\)") ; mark 4, code 5, desc 6, comment 7
      (1 (cond ((equal "=" (match-string 2)) 'ledger-font-auto-xact-face)
               ((equal "~" (match-string 2)) 'ledger-font-periodic-xact-face)
-              (t 'ledger-font-default-face))
+              (t 'ledger-font-default-directive-face))
         nil :lax)
      (3 'ledger-font-posting-date-face nil :lax)
      (5 'ledger-font-code-face nil :lax)
