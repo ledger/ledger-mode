@@ -77,7 +77,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Ledger is a command line accounting tool that provides double-entry
 accounting based on a text journal.  It provides no bells or whistles,
 and returns the user to the days before user interfaces were even
-a 1twinkling in their father's CRT.
+a twinkling in their father's CRT.
 
 Ledger-mode assists you in maintaining input files for Ledger, running
 reports and much more...
@@ -276,7 +276,7 @@ next and previous xacts or directives.
 @findex ledger-navigate-previous-uncleared
 
 Additionally, M-x ledger-navigate-previous-uncleared and M-x
-ledger-navigate-next-uncleared navigate to the next and precious uncleared
+ledger-navigate-next-uncleared navigate to the next and previous uncleared
 transactions.
 
 
