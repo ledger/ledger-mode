@@ -67,6 +67,31 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=441"
    (ledger-navigate-previous-uncleared)
    (should (bobp))))
 
+(ert-deftest ledger-navigate-invisible ()
+  :tags '(navigate)
+  (with-temp-buffer
+    (insert
+     "2011/01/27 Book Store
+    Expenses:Books                       $20.00
+    Liabilities:MasterCard
+
+2011/04/25 Tom's Used Cars
+    Expenses:Auto                    $ 5,500.00
+    Assets:Checking
+
+2011/04/27 Bookstore
+    Expenses:Books                       $20.00
+    Assets:Checking
+
+2011/12/01 * Sale
+    Assets:Checking                     $ 30.00
+    Income:Sales")
+    (ledger-mode)
+    (goto-char (point-min))
+    (ledger-occur "Books")
+    (ledger-navigate-next-xact-or-directive)
+    (should (looking-at-p (regexp-quote "2011/04/27 Bookstore")))))
+
 
 (provide 'navigate-test)
 
