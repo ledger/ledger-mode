@@ -27,6 +27,7 @@
 ;;; Code:
 (require 'ledger-regex)
 (require 'ledger-navigate)
+(require 'ledger-xact)
 
 (defun ledger-sort-find-start ()
   "Find the beginning of a sort region."
@@ -59,8 +60,12 @@
   (insert "\n; Ledger-mode: End sort\n\n"))
 
 (defun ledger-sort-startkey ()
-  "Return the date portion of the current line, for use in sorting."
-  (buffer-substring-no-properties (point) (+ 10 (point))))
+  "Return a numeric sort key based on the date of the xact beginning at point."
+  ;; Can use `time-convert' to return an integer instead of a floating-point
+  ;; number, starting in Emacs 27.
+  (float-time
+   (ledger-parse-iso-date
+    (buffer-substring-no-properties (point) (+ 10 (point))))))
 
 (defun ledger-sort-region (beg end)
   "Sort the region from BEG to END in chronological order."
