@@ -127,8 +127,12 @@ no sorting, i.e. using ledger file order."
   :group 'ledger-reconcile)
 
 (defcustom ledger-reconcile-insert-effective-date nil
-  "If t, prompt for effective date when clearing transactions."
-  :type 'boolean
+  "If t, prompt for effective date when clearing transactions.
+
+If this is a function, it is called with no arguments with point
+at the posting to be cleared.  The return value is then used as
+described above."
+  :type '(choice boolean function)
   :group 'ledger-reconcile)
 
 (defcustom ledger-reconcile-finish-force-quit nil
@@ -215,6 +219,19 @@ And calculate the target-delta of the account being reconciled."
       (car where)
     (error "Function ledger-reconcile-get-buffer: Buffer not set")))
 
+(defun ledger-reconcile-insert-effective-date ()
+  "Prompt for an effective date and insert it at point, if enabled.
+
+If the value of variable `ledger-reconcile-insert-effective-date'
+is a function, it is called with the point where the effective
+date would be inserted.  If it returns non-nil, prompt for an
+effective date and insert it at point.  If it is not a function,
+do the same if its value is non-nil."
+  (when (if (functionp ledger-reconcile-insert-effective-date)
+            (funcall ledger-reconcile-insert-effective-date)
+          ledger-reconcile-insert-effective-date)
+    (ledger-insert-effective-date)))
+
 (defun ledger-reconcile-toggle ()
   "Toggle the current transaction, and mark the recon window."
   (interactive)
@@ -229,9 +246,8 @@ And calculate the target-delta of the account being reconciled."
         (setq status (ledger-toggle-current (if ledger-reconcile-toggle-to-pending
                                                 'pending
                                               'cleared)))
-        (when ledger-reconcile-insert-effective-date
-          ;; Ask for effective date & insert it
-          (ledger-insert-effective-date)))
+        ;; Ask for effective date & insert it, if enabled
+        (ledger-reconcile-insert-effective-date))
       ;; remove the existing face and add the new face
       (remove-text-properties (line-beginning-position)
                               (line-end-position)
