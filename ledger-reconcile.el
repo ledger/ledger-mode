@@ -228,7 +228,7 @@ date would be inserted.  If it returns non-nil, prompt for an
 effective date and insert it at point.  If it is not a function,
 do the same if its value is non-nil."
   (when (if (functionp ledger-reconcile-insert-effective-date)
-            (funcall ledger-reconcile-insert-effective-date)
+            (save-excursion (funcall ledger-reconcile-insert-effective-date))
           ledger-reconcile-insert-effective-date)
     (ledger-insert-effective-date)))
 
