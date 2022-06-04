@@ -59,7 +59,7 @@
   (insert "\n; Ledger-mode: End sort\n\n"))
 
 (defun ledger-sort-startkey ()
-  "Return the actual date so the sort subroutine doesn't sort on the entire first line."
+  "Return the date portion of the current line, for use in sorting."
   (buffer-substring-no-properties (point) (+ 10 (point))))
 
 (defun ledger-sort-region (beg end)

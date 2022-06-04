@@ -464,7 +464,8 @@ POSTING is used in `ledger-clear-whole-transactions' is nil."
                                        (nth 2 posting)))))  ; amount
 
 (defun ledger-do-reconcile (&optional sort)
-  "SORT the uncleared transactions in the account and display them in the *Reconcile* buffer.
+  "SORT the uncleared transactions in the account.
+The sorted results are displayed in in the *Reconcile* buffer.
 Return a count of the uncleared transactions."
   (let* ((buf ledger-buf)
          (account ledger-acct)
@@ -496,7 +497,8 @@ Return a count of the uncleared transactions."
     (length xacts)))
 
 (defun ledger-reconcile-ensure-xacts-visible ()
-  "Ensure the last of the visible transactions in the ledger buffer is at the bottom of the main window.
+  "Ensure the last of the visible transactions in the ledger buffer is visible.
+This is achieved by placing that transaction at the bottom of the main window.
 The key to this is to ensure the window is selected when the buffer point is
 moved and recentered.  If they aren't strange things happen."
 
@@ -513,7 +515,7 @@ moved and recentered.  If they aren't strange things happen."
     (add-hook 'post-command-hook 'ledger-reconcile-track-xact nil t)))
 
 (defun ledger-reconcile-track-xact ()
-  "Force the ledger buffer to recenter on the transaction at point in the reconcile buffer."
+  "Recenter the ledger buffer on the transaction at point in the reconcile buffer."
   (if (and ledger-buffer-tracks-reconcile-buffer
            (member this-command (list 'next-line
                                       'previous-line

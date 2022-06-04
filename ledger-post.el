@@ -97,7 +97,8 @@ Looks only as far as END, if supplied, otherwise `point-max'."
     (ledger-post-align-postings (car bounds) (cadr bounds))))
 
 (defun ledger-post-align-postings (beg end)
-  "Align all accounts and amounts between BEG and END, or the current region, or, if no region, the current line."
+  "Align all accounts and amounts between BEG and END.
+The current region is used, or, if no region, the current line."
   (interactive "r")
   (save-match-data
     (save-excursion

@@ -98,13 +98,13 @@ Requires empty line separating xacts."
           (ledger-navigate-end-of-xact))))
 
 (defun ledger-navigate-skip-lines-backwards (re)
-  "Move backwards if necessary until RE does not match at the beginning of the line."
+  "Move backwards if necessary until the line beginning does not match RE."
   (beginning-of-line)
   (while (and (looking-at-p re)
               (zerop (forward-line -1)))))
 
 (defun ledger-navigate-skip-lines-forwards (re)
-  "Move forwards if necessary until RE does not match at the beginning of the line."
+  "Move forwards if necessary until the line beginning does not match RE."
   (beginning-of-line)
   (while (and (looking-at-p re)
               (zerop (forward-line 1)))))

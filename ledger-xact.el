@@ -148,7 +148,8 @@ MOMENT is an encoded date"
   :group 'ledger)
 
 (defun ledger-copy-transaction-at-point (date)
-  "Ask for a new DATE and copy the transaction under point to that date.  Leave point on the first amount."
+  "Ask for a new DATE and copy the transaction under point to that date.
+Leave point on the first amount."
   (interactive  (list
                  (ledger-read-date "Copy to date: ")))
   (let* ((extents (ledger-navigate-find-xact-extents (point)))

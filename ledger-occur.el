@@ -52,7 +52,8 @@ This uses `ledger-occur-xact-face'."
 (defvar ledger-occur-mode-map (make-sparse-keymap))
 
 (define-minor-mode ledger-occur-mode
-  "A minor mode which display only transactions matching `ledger-occur-current-regex'."
+  "A minor mode which display only transactions matching a pattern.
+The pattern is given by `ledger-occur-current-regex'."
   :init-value nil
   :lighter (:eval (format " Ledger-Narrow(%s)" ledger-occur-current-regex))
   :keymap ledger-occur-mode-map
@@ -136,7 +137,7 @@ Argument OVL-BOUNDS contains bounds for the transactions to be left visible."
                    (point-max) ledger-occur-overlay-property-name t))
 
 (defun ledger-occur-find-matches (regex)
-  "Return a list of 2-number tuples describing the beginning and end of transactions meeting REGEX."
+  "Return a list of bounds for transactions matching REGEX."
   (save-excursion
     (goto-char (point-min))
     ;; Set initial values for variables

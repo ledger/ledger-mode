@@ -658,7 +658,7 @@ IGNORE-AUTO and NOCONFIRM are for compatibility with
   (ledger-report--change-month 1))
 
 (defun ledger-report-toggle-default-commodity ()
-  "Add or remove \"--exchange `ledger-reconcile-default-commodity' to the current report."
+  "Toggle exchange of reported amounts to `ledger-reconcile-default-commodity'."
   (interactive)
   (unless (derived-mode-p 'ledger-report-mode)
     (user-error "Not a ledger report buffer"))

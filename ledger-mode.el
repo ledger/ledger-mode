@@ -99,14 +99,15 @@ This uses `org-read-date', which see."
                         (org-read-date nil t nil prompt))))
 
 (defun ledger-get-minibuffer-prompt (prompt default)
-  "Return a string composing of PROMPT and DEFAULT appropriate for a minibuffer prompt."
+  "Return a minibuffer prompt string composing PROMPT and DEFAULT."
   (concat prompt
           (if default
               (concat " (" default "): ")
             ": ")))
 
 (defun ledger-completing-read-with-default (prompt default collection)
-  "Return a user supplied string after PROMPT, or DEFAULT while providing completions from COLLECTION."
+  "Return a user-supplied string after PROMPT.
+Use the given DEFAULT, while providing completions from COLLECTION."
   (completing-read (ledger-get-minibuffer-prompt prompt default)
                    collection nil nil nil 'ledger-minibuffer-history default))
 
