@@ -127,7 +127,8 @@ COUNT 0) means EVERY day-of-week (eg. every Saturday)"
            day-of-week)))
 
 (defun ledger-schedule-constrain-every-count-day (day-of-week skip start-date)
-  "Return a form that is true for every DAY-OF-WEEK skipping SKIP, starting on START-DATE.
+  "Return a form that is true for every DAY-OF-WEEK.
+Skips SKIP, and starts on START-DATE.
 For example every second Friday, regardless of month."
   (let ((start-day (nth 6 (decode-time start-date))))
     (if (eq start-day day-of-week)  ;; good, can proceed
@@ -135,7 +136,8 @@ For example every second Friday, regardless of month."
       (error "START-DATE day of week doesn't match DAY-OF-WEEK"))))
 
 (defun ledger-schedule-constrain-date-range (month1 day1 month2 day2)
-  "Return a form of DATE that is true if DATE falls between MONTH1 DAY1 and MONTH2 DAY2."
+  "Return a form of DATE that is true if DATE falls between two dates.
+The dates are given by the pairs MONTH1 DAY1 and MONTH2 DAY2."
   (let ((decoded (cl-gensym))
         (target-month (cl-gensym))
         (target-day (cl-gensym)))
@@ -278,7 +280,8 @@ date descriptor."
         (ledger-schedule-constrain-day-in-month count day-of-week)))))
 
 (defun ledger-schedule-list-upcoming-xacts (candidate-items early horizon)
-  "Search CANDIDATE-ITEMS for xacts that occur within the period today - EARLY  to today + HORIZON."
+  "Search CANDIDATE-ITEMS for xacts that occur within the given period.
+The period runs from (today - EARLY) to (today + HORIZON)."
   (let ((start-date (time-subtract (current-time) (days-to-time early)))
         test-date items)
     (cl-loop for day from 0 to (+ early horizon) by 1 do
