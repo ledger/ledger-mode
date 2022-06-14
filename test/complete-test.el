@@ -280,6 +280,23 @@ account Assets:Checking:Bank B")
 2020-04-01 Fnord
     Assets:")))))
 
+(ert-deftest ledger-complete/amount-separated-by-tab ()
+  "https://github.com/ledger/ledger-mode/issues/339"
+  :tags '(complete regress)
+  (let ((ledger-post-auto-align nil))
+    (ledger-tests-with-temp-file
+        "2019/06/28 Foobar
+\tExpenses\t11.99 CAD
+\tEx\t-11.99 CAD"
+      (forward-line 2)
+      (forward-word 1)
+      (call-interactively 'completion-at-point)
+      (should
+       (equal (buffer-string)
+              "2019/06/28 Foobar
+\tExpenses\t11.99 CAD
+\tExpenses\t-11.99 CAD")))))
+
 (provide 'complete-test)
 
 ;;; complete-test.el ends here
