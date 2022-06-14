@@ -620,8 +620,8 @@ See `font-lock-keywords' for the full description."
               "\\(?:[[:blank:]]+\\([^[:blank:]\n]+"
               "\\(?:[[:blank:]]+[^[:blank:]\n]+\\)?\\)"
               "\\(?:[[:blank:]]+\\(.*?\\)"
-              "\\(?:\t\\|[ \t]\\{2,\\}\\(.*?\\)"
-              "\\(?:\t\\|[ \t]\\{2,\\}\\(;.*\\)\\)?\\)?\\)?\\)?$")
+              "\\(?:\\(?:\t\\|[ \t]\\{2,\\}\\)\\(.*?\\)"
+              "\\(?:\\(?:\t\\|[ \t]\\{2,\\}\\)\\(;.*\\)\\)?\\)?\\)?\\)?$")
      (1 'ledger-font-timeclock-directive-face)
      (2 'ledger-font-posting-date-face nil :lax)
      (3 (ledger-font-face-by-timeclock-state 1 '(ledger-font-posting-account-cleared-face
