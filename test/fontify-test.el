@@ -2672,6 +2672,21 @@ P 2004/06/21 02:18:02 AAPL $32.91
      "AAPL"                 ledger-font-price-symbol-face
      "$32.91"               ledger-font-price-face)))
 
+(ert-deftest ledger-fontify/test-101 ()
+  "single tab as a separator"
+  :tags '(font regress)
+
+  (ledger-test-font-lock
+   "
+2010/12/01 * Checking balance
+\tAssets:Checking\t$1,000.00
+\tEquity:Opening Balances
+"
+   '("2010/12/01"               ledger-font-posting-date-face
+     "Checking balance"         ledger-font-payee-cleared-face
+     "Assets:Checking"          ledger-font-posting-account-face
+     "$1,000.00"                ledger-font-posting-amount-face
+     "Equity:Opening Balances"  ledger-font-posting-account-face)))
 
 (provide 'fontify-test)
 
