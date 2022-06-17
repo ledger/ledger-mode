@@ -301,7 +301,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
              (skip-chars-forward "([") ;; for virtual accounts
              (setq start (point)))
            (setq delete-suffix (save-excursion
-                                 (when (search-forward-regexp (rx (or eol (repeat 2 space))) (line-end-position) t)
+                                 (when (search-forward-regexp (rx (or eol (or ?\t (repeat 2 space)))) (line-end-position) t)
                                    (- (match-beginning 0) end)))
                  realign-after t
                  collection (if ledger-complete-in-steps
