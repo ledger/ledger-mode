@@ -60,11 +60,10 @@
 
 (defun ledger-exec-success-p (exit-code ledger-output-buffer)
   "Return non-nil if EXIT-CODE and LEDGER-OUTPUT-BUFFER indicate success."
-  (not
-   (and (zerop exit-code)
-        (with-current-buffer ledger-output-buffer
-          (goto-char (point-min))
-          (and (> (buffer-size) 1) (looking-at (regexp-quote "While")))))))
+  (and (zerop exit-code)
+       (with-current-buffer ledger-output-buffer
+         (goto-char (point-min))
+         (not (and (> (buffer-size) 1) (looking-at (regexp-quote "While")))))))
 
 (defun ledger-exec-ledger (input-buffer &optional output-buffer &rest args)
   "Run Ledger using INPUT-BUFFER.
