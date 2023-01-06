@@ -169,7 +169,7 @@ Leave point on the first amount."
         (goto-char (match-beginning 0)))))
 
 (defun ledger-delete-current-transaction (pos)
-  "Delete the transaction surrounging POS."
+  "Delete the transaction surrounding POS."
   (interactive "d")
   (let ((bounds (ledger-navigate-find-xact-extents pos)))
     (delete-region (car bounds) (cadr bounds)))
