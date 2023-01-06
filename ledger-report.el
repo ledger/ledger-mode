@@ -364,7 +364,7 @@ used to generate the buffer, navigating the buffer, etc."
 (defun ledger-report-payee-format-specifier ()
   "Substitute a payee name.
 
-   The user is prompted to enter a payee and that is substitued.  If
+   The user is prompted to enter a payee and that is substituted.  If
    point is in an xact, the payee for that xact is used as the
    default."
   ;; It is intended completion should be available on existing
