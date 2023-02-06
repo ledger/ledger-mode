@@ -91,40 +91,39 @@ Flymake calls this with REPORT-FN as needed."
           ;; be simply suspended.
           (when (eq 'exit (process-status proc))
             (unwind-protect
-                 ;; Only proceed if `proc' is the same as
-                 ;; `ledger--flymake-proc', which indicates that
-                 ;; `proc' is not an obsolete process.
-                 (if (with-current-buffer source (eq proc ledger--flymake-proc))
-                     (with-current-buffer (process-buffer proc)
-                       (goto-char (point-min))
-                       ;; Parse the output buffer for diagnostic's
-                       ;; messages and locations, collect them in a list
-                       ;; of objects, and call `report-fn'.
-                       (cl-loop
-                             while (search-forward-regexp
-                                    ;; This regex needs to match the whole error.  We
-                                    ;; also need a capture group for the error message
-                                    ;; (that's group 1 here) and the line number
-                                    ;; (group 2).
-                                    (rx line-start "While parsing file \"" (one-or-more (not whitespace)) " line " (group-n 2 (one-or-more num)) ":\n"
-                                        (zero-or-more line-start "While " (one-or-more not-newline) "\n" )
-                                        (minimal-match (zero-or-more line-start (zero-or-more not-newline) "\n"))
-                                        (group-n 1 "Error: " (one-or-more not-newline) "\n"))
-                                    nil t)
-                             for msg = (match-string 1)
-                             for (beg . end) = (flymake-diag-region
-                                                source
-                                                (string-to-number (match-string 2)))
-                             for type = :error
-                             collect (flymake-make-diagnostic source
-                                                              beg
-                                                              end
-                                                              type
-                                                              msg)
-                             into diags
-                             finally (funcall report-fn diags)))
-                   (flymake-log :warning "Canceling obsolete check %s"
-                                proc))
+                ;; Only proceed if `proc' is the same as
+                ;; `ledger--flymake-proc', which indicates that
+                ;; `proc' is not an obsolete process.
+                (if (with-current-buffer source (eq proc ledger--flymake-proc))
+                    (with-current-buffer (process-buffer proc)
+                      (goto-char (point-min))
+                      ;; Parse the output buffer for diagnostic's
+                      ;; messages and locations, collect them in a list
+                      ;; of objects, and call `report-fn'.
+                      (cl-loop
+                       while (search-forward-regexp
+                              ;; This regex needs to match the whole error.  We
+                              ;; also need a capture group for the error message
+                              ;; (that's group 1 here) and the line number
+                              ;; (group 2).
+                              (rx line-start "While parsing file \"" (one-or-more (not whitespace)) " line " (group-n 2 (one-or-more num)) ":\n"
+                                  (zero-or-more line-start "While " (one-or-more not-newline) "\n" )
+                                  (minimal-match (zero-or-more line-start (zero-or-more not-newline) "\n"))
+                                  (group-n 1 "Error: " (one-or-more not-newline) "\n"))
+                              nil t)
+                       for msg = (match-string 1)
+                       for (beg . end) = (flymake-diag-region
+                                          source
+                                          (string-to-number (match-string 2)))
+                       for type = :error
+                       collect (flymake-make-diagnostic source
+                                                        beg
+                                                        end
+                                                        type
+                                                        msg)
+                       into diags
+                       finally (funcall report-fn diags)))
+                  (flymake-log :warning "Canceling obsolete check %s"
               ;; Cleanup the temporary buffer used to hold the
               ;; check's output.
               (kill-buffer (process-buffer proc))))))))))
