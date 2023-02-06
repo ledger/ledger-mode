@@ -124,6 +124,7 @@ Flymake calls this with REPORT-FN as needed."
                        into diags
                        finally (funcall report-fn diags)))
                   (flymake-log :warning "Canceling obsolete check %s"
+                               proc))
               ;; Cleanup the temporary buffer used to hold the
               ;; check's output.
               (kill-buffer (process-buffer proc))))))))))
