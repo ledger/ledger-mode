@@ -286,6 +286,25 @@ https://github.com/ledger/ledger-mode/issues/302"
      (should (equal "xact note"
                     (ledger-context-field-value context 'comment))))))
 
+(ert-deftest ledger-context/test-010 ()
+  "Regress test for #352
+https://github.com/ledger/ledger-mode/issues/352"
+  :tags '(context regress)
+
+  (ledger-tests-with-temp-file
+   "2016/08/12 KFC
+  a  7 AAPL @ $100
+  b"
+   (goto-char 18)                       ; on the first posting
+   (let ((context (ledger-context-at-point)))
+     (should (eq (ledger-context-current-field context) 'account))
+     (should (equal "a"
+                    (ledger-context-field-value context 'account)))
+     (should (equal "7 AAPL"
+                    (ledger-context-field-value context 'commoditized-amount)))
+     (should (equal "$100"
+                    (ledger-context-field-value context 'cost))))))
+
 (provide 'context-test)
 
 ;;; context-test.el ends here
