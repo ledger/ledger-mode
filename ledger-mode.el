@@ -189,7 +189,7 @@ With a prefix argument, remove the effective date."
     (let* ((context (car (ledger-context-at-point)))
            (date-string (or date (ledger-read-date "Effective date: "))))
       (save-restriction
-        (narrow-to-region (point-at-bol) (point-at-eol))
+        (narrow-to-region (line-beginning-position) (line-end-position))
         (cond
          ((eq 'xact context)
           (beginning-of-line)
