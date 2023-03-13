@@ -81,7 +81,7 @@
   "Toggle the cleared status of the transaction under point.
 Optional argument STYLE may be `pending' or `cleared', depending
 on which type of status the caller wishes to indicate (default is
-`cleared').  Returns the new status as 'pending 'cleared or nil.
+`cleared').  Returns the new status as `pending' `cleared' or nil.
 This function is rather complicated because it must preserve both
 the overall formatting of the ledger xact, as well as ensuring
 that the most minimal display format is used.  This could be
