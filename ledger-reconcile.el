@@ -121,7 +121,7 @@ if string is longer, it is not truncated unless
 (defcustom ledger-reconcile-sort-key "(0)"
   "Key for sorting reconcile buffer.
 
-Possible values are '(date)', '(amount)', '(payee)' or '(0)' for
+Possible values are \"(date)\", \"(amount)\", \"(payee)\" or \"(0)\" for
 no sorting, i.e. using ledger file order."
   :type 'string
   :group 'ledger-reconcile)

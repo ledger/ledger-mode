@@ -87,7 +87,7 @@ Returns a list with (value commodity)."
            (t (list 0 ledger-reconcile-default-commodity)))))))
 
 (defun ledger-string-balance-to-commoditized-amount (str)
-  "Return a commoditized amount (val, 'comm') from STR."
+  "Return a commoditized amount (val, \"comm\") from STR."
                                         ; break any balances with multi commodities into a list
   (mapcar #'(lambda (st)
               (ledger-split-commodity-string st))

@@ -158,7 +158,7 @@ regular text."
    (t (call-interactively 'ledger-post-align-xact))))
 
 (defun ledger-post-edit-amount ()
-  "Call 'calc-mode' and push the amount in the posting to the top of stack."
+  "Call `calc-mode' and push the amount in the posting to the top of stack."
   (interactive)
   (goto-char (line-beginning-position))
   (when (re-search-forward ledger-post-line-regexp (line-end-position) t)

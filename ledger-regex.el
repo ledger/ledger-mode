@@ -192,7 +192,7 @@
               (group (and num (? num)))
               (eval sep)
               (group (and num (? num)))))))
-  "Match a single date, in its 'written' form.")
+  "Match a single date, in its \"written\" form.")
 
 (ledger-define-regexp full-date
   (macroexpand

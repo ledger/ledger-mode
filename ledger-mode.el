@@ -156,7 +156,7 @@ And calculate the target-delta of the account being reconciled."
   (let ((context (car (ledger-context-at-point))))
     (save-excursion
       (save-restriction
-        (narrow-to-region (point-at-bol) (point-at-eol))
+        (narrow-to-region (line-beginning-position) (line-end-position))
         (beginning-of-line)
         (cond ((eq 'xact context)
                (re-search-forward ledger-iso-date-regexp)
