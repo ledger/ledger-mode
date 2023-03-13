@@ -17,7 +17,7 @@ jobs:
         emacs_version: [25.1, 25.2, 25.3, 26.1, 26.2, 26.3, 27.1, 27.2, 28.1, 28.2, snapshot]
         include:
           - emacs_version: snapshot
-            ledger_version: snapshot
+            ledger_version: github:ledger/ledger#ledger
 
     steps:
     - uses: cachix/install-nix-action@v20
@@ -28,14 +28,12 @@ jobs:
         version: ${{ matrix.emacs_version }}
 
     - uses: actions/checkout@v3
-    - name: Install ledger
-      run: nix-env -iA ${{ matrix.ledger_version || 'stable' }} -f tools
     # Byte compilation is known to fail in Emacs < 26.1 due to ledger-flymake.el, which should
     # be packaged separately
     - name: Byte compilation
       run: emacs --eval "(setq byte-compile-error-on-warn (>= emacs-major-version 26))" -L . --batch -f batch-byte-compile *.el
     - name: Tests
-      run: make -C test test-batch
+      run: nix shell ${{ matrix.ledger_version || 'nixpkgs#ledger' }} -c make -C test test-batch
     # This is currently for information only, since a lot of docstrings need fixing up
     - name: Checkdoc
       run: make -C test checkdoc || true
