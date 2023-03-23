@@ -577,15 +577,16 @@ moved and recentered.  If they aren't strange things happen."
 
       (with-current-buffer rbuf
         (if (> (ledger-reconcile-refresh) 0)
-            (ledger-reconcile-change-target target))
-        (ledger-display-balance)))))
+            (ledger-reconcile-change-target target)
+          (ledger-display-balance))))))
 
 (defvar ledger-reconcile-mode-abbrev-table)
 
 (defun ledger-reconcile-change-target (&optional target)
   "Change the TARGET amount for the reconciliation process."
   (interactive)
-  (setq ledger-target (or target (ledger-read-commodity-string ledger-reconcile-target-prompt-string))))
+  (setq ledger-target (or target (ledger-read-commodity-string ledger-reconcile-target-prompt-string)))
+  (ledger-display-balance))
 
 (defmacro ledger-reconcile-change-sort-key-and-refresh (sort-by)
   "Set the sort-key to SORT-BY."
