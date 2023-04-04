@@ -157,7 +157,7 @@ Leave point on the first amount."
          (encoded-date (ledger-parse-iso-date date)))
     (ledger-xact-find-slot encoded-date)
     (insert transaction
-            (if ledger-copy-transaction-insert-blank-line-after
+            (if (and ledger-copy-transaction-insert-blank-line-after (not (eobp)))
                 "\n\n"
               "\n"))
     (beginning-of-line -1)
