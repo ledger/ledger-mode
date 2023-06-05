@@ -735,6 +735,17 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=262"
        (eq (1- line-before-delete) (line-number-at-pos))))))
 
 
+(ert-deftest ledger-reconcile/test-029 ()
+  "Commodity values starting with 0 are valid"
+  :tags '(reconcile regress)
+
+  (should (equal '(0.53 "$") (ledger-split-commodity-string "$0.53")))
+  (should (equal '(0.53 "USD") (ledger-split-commodity-string "0.53 USD")))
+
+  (should (equal '(-0.53 "$") (ledger-split-commodity-string "$-0.53")))
+  (should (equal '(-0.53 "USD") (ledger-split-commodity-string "-0.53 USD"))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
