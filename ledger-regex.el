@@ -344,7 +344,7 @@
   (note end-note))
 
 (defconst ledger-amount-regex
-  (concat "\\(  \\|\t\\| \t\\)[ \t]*[-+=]?"
+  (concat "\\(  \\|\t\\| \t\\)[ \t]*[-+=]? *"
           "\\(?:" ledger-commodity-regexp " *\\)?"
           ;; We either match just a number after the commodity with no
           ;; decimal or thousand separators or a number with thousand
@@ -352,7 +352,7 @@
           ;; or `.', because the match is non-greedy, it must leave at
           ;; least one of those symbols for the following capture
           ;; group, which then finishes the decimal part.
-          "\\([-+=]?\\(?:[0-9]+\\|[0-9,.]+?\\)\\)"
+          "\\([-+=]? *\\(?:[0-9]+\\|[0-9,.]+?\\)\\)"
           "\\([,.][0-9)]+\\)?"
           "\\(?: *" ledger-commodity-regexp "\\)?"
           "\\([ \t]*[@={]@?[^\n;]+?\\)?"
