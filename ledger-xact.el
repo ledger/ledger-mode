@@ -155,6 +155,7 @@ Leave point on the first amount."
   (let* ((extents (ledger-navigate-find-xact-extents (point)))
          (transaction (buffer-substring-no-properties (car extents) (cadr extents)))
          (encoded-date (ledger-parse-iso-date date)))
+    (push-mark)
     (ledger-xact-find-slot encoded-date)
     (insert transaction
             (if (and ledger-copy-transaction-insert-blank-line-after (not (eobp)))
