@@ -28,6 +28,7 @@
 (require 'cl-lib)
 (require 'flymake)
 (require 'ledger-exec)                  ; for `ledger-binary-path'
+(require 'ledger-report)                ; for `ledger-master-file'
 
 ;; To silence byte compiler warnings in Emacs 25 and older:
 (declare-function flymake-diag-region "flymake" (buffer line &optional col))
@@ -66,8 +67,8 @@ Flymake calls this with REPORT-FN as needed."
     (kill-process ledger--flymake-proc))
   ;; Save the current buffer, the narrowing restriction, remove any
   ;; narrowing restriction.
-  (let ((source (current-buffer))
-        (file (buffer-file-name)))
+  (let* ((source (current-buffer))
+         (file (or (ledger-master-file) (buffer-file-name))))
     (save-restriction
       (widen)
       ;; Reset the `ledger--flymake-proc' process to a new process
