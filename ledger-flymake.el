@@ -68,8 +68,7 @@ Flymake calls this with REPORT-FN as needed."
   ;; Save the current buffer, the narrowing restriction, remove any
   ;; narrowing restriction.
   (let* ((source (current-buffer))
-         (master (ledger-master-file))
-         (file (if (file-exists-p master) master (buffer-file-name))))
+         (file (or (ledger-master-file) (buffer-file-name))))
     (save-restriction
       (widen)
       ;; Reset the `ledger--flymake-proc' process to a new process
