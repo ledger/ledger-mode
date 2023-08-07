@@ -962,6 +962,7 @@ for Ledger under the data options.  Alternatively you can choose
 * Ledger Customization Group::
 * Ledger Reconcile Customization Group::
 * Ledger Report Customization Group::
+* Ledger Schedule Customization Group::
 * Ledger Faces Customization Group::
 * Ledger Post Customization Group::
 * Ledger Exec Customization Group::
@@ -1056,7 +1057,7 @@ If t, will force closing reconcile window after @kbd{C-c C-c}.
 
 @end ftable
 
-@node Ledger Report Customization Group, Ledger Faces Customization Group, Ledger Reconcile Customization Group, Customization Variables
+@node Ledger Report Customization Group, Ledger Schedule Customization Group, Ledger Reconcile Customization Group, Customization Variables
 @subsection Ledger Report Customization Group
 @cindex customization, report
 
@@ -1078,7 +1079,33 @@ Whether reports should fill the whole width of the @file{*Report*} window
 
 @end ftable
 
-@node Ledger Faces Customization Group, Ledger Post Customization Group, Ledger Report Customization Group, Customization Variables
+@node Ledger Schedule Customization Group, Ledger Faces Customization Group, Ledger Report Customization Group, Customization Variables
+@subsection Ledger Schedule Customization Group
+@cindex customization, schedule
+
+@ftable @option
+
+@item ledger-schedule
+Support for automatically recommendation transactions.
+
+@item ledger-schedule-buffer-name
+Name of the schedule buffer. Defaults to @file{*Ledger Schedule*}.
+
+@item ledger-schedule-file
+File to find scheduled transactions. Defaults to @file{~/ledger-schedule.ledger}.
+
+@item ledger-schedule-look-backward
+Number of days to look back in time for transactions. Defaults to @samp{7}.
+
+@item ledger-schedule-look-forward
+Number of days auto look forward to recommend transactions. Defaults to @samp{14}.
+
+@item ledger-schedule-week-days
+List of weekday abbreviations.
+
+@end ftable
+
+@node Ledger Faces Customization Group, Ledger Post Customization Group, Ledger Schedule Customization Group, Customization Variables
 @subsection Ledger Faces Customization Group
 @cindex customization, faces
 
