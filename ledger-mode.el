@@ -329,7 +329,9 @@ With a prefix argument, remove the effective date."
   (ledger-init-load-init-file)
   (setq-local comment-start ";")
   (setq-local indent-line-function #'ledger-indent-line)
-  (setq-local indent-region-function 'ledger-post-align-postings))
+  (setq-local indent-region-function 'ledger-post-align-postings)
+  (setq-local beginning-of-defun-function #'ledger-navigate-beginning-of-xact)
+  (setq-local end-of-defun-function #'ledger-navigate-end-of-xact))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.ledger\\'" . ledger-mode))
