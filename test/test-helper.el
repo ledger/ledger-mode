@@ -68,7 +68,7 @@
   Assets:Checking
 
 2011/01/19 Grocery Store
-  Expenses:Food:Groceries             $ 44.00 ; hastag: not block
+  Expenses:Food:Groceries             $ 44.00  ; hastag: not block
   Assets:Checking
 
 2011/01/25 Bank

@@ -69,7 +69,7 @@ https://groups.google.com/d/msg/ledger-cli/FcYG5cnFOpw/PmpLq_dzdYwJ"
   (ledger-test-font-lock
    "
 2010/12/01 * Checking balance
-  Assets:Checking                   $42.00 ; the answer to life
+  Assets:Checking                   $42.00  ; the answer to life
   Equity:Opening Balances
 "
    '("2010/12/01"               ledger-font-posting-date-face
@@ -942,7 +942,7 @@ https://groups.google.com/d/msg/ledger-cli/9zyWZW_fJmk/G56uVsqv0FAJ"
       ; posting #2 note, extra indentation is optional
 
 2012-03-10 * KFC
-    Expenses:Food                $20.00 ; posting #1 note
+    Expenses:Food                $20.00  ; posting #1 note
     Assets:Cash
 "
    '("2012-03-10"                                        ledger-font-posting-date-face
@@ -2687,6 +2687,45 @@ P 2004/06/21 02:18:02 AAPL $32.91
      "Assets:Checking"          ledger-font-posting-account-face
      "$1,000.00"                ledger-font-posting-amount-face
      "Equity:Opening Balances"  ledger-font-posting-account-face)))
+
+
+(ert-deftest ledger-fontify/test-102 ()
+  "Postings with comments
+Comments must be preceded by at least one tab or two whitespace characters"
+  :tags '(font regress)
+  (ledger-test-font-lock
+   "2023/09/20 Payee
+    Assets:Checking  $1.00  ; valid comment
+    Assets:Checking  $1.00	; valid comment
+    Assets:Checking  ; valid comment
+    Assets:Checking	; valid comment
+    Assets:Checking  $1.00 ; invalid comment
+    Assets:Checking  $1.00; invalid comment
+    Assets:Checking ; invalid comment
+    Assets:Checking; invalid comment
+    Liabilities:Credit"
+   '("2023/09/20"         ledger-font-posting-date-face
+     "Payee"              ledger-font-payee-uncleared-face
+     "Assets:Checking"    ledger-font-posting-account-face
+     "$1.00"              ledger-font-posting-amount-face
+     "; valid comment"    ledger-font-comment-face
+     "Assets:Checking"    ledger-font-posting-account-face
+     "$1.00"              ledger-font-posting-amount-face
+     "; valid comment"    ledger-font-comment-face
+     "Assets:Checking"    ledger-font-posting-account-face
+     "; valid comment"    ledger-font-comment-face
+     "Assets:Checking"    ledger-font-posting-account-face
+     "; valid comment"    ledger-font-comment-face
+     "Assets:Checking  $1.00 ; invalid comment"
+                          ledger-font-posting-account-face
+     "Assets:Checking  $1.00; invalid comment"
+                          ledger-font-posting-account-face
+     "Assets:Checking ; invalid comment"
+                          ledger-font-posting-account-face
+     "Assets:Checking; invalid comment"
+                          ledger-font-posting-account-face
+     "Liabilities:Credit" ledger-font-posting-account-face)))
+
 
 (provide 'fontify-test)
 
