@@ -65,15 +65,17 @@
     (re-search-backward "^[[:graph:]]" nil t)))
 
 (defun ledger-navigate-beginning-of-xact ()
-  "Move point to the beginning of the current xact."
+  "Move point to the beginning of the current transaction."
   (interactive)
-  ;; need to start at the beginning of a line in case we are in the first line of an xact already.
-  (beginning-of-line)
-  (let ((sreg (concat "^[=~[:digit:]]")))
-    (unless (looking-at sreg)
-      (re-search-backward sreg nil t)
-      (beginning-of-line)))
-  (point))
+  (if (not (ledger-point-on-valid-xact-p))
+    (user-error "Not on a valid transaction")
+    (progn
+      (beginning-of-line)
+      (let ((sreg (concat "^[=~[:digit:]]")))
+        (unless (looking-at sreg)
+          (re-search-backward sreg nil t)
+          (beginning-of-line)))
+      (point))))
 
 (defun ledger-navigate-end-of-xact ()
   "Move point to end of xact."
@@ -192,6 +194,16 @@ Requires empty line separating xacts."
       (progn (beginning-of-line)
              (point))
     (user-error "No previous uncleared transactions")))
+
+(defun ledger-point-on-valid-xact-p ()
+  "Returns t if point is located on or within a valid transaction.
+Returns nil, otherwise.
+
+Valid transactions are regular transactions, automated transactions,
+and periodic transactions."
+  (when (memq (car (ledger-context-at-point))
+              '(xact automated-xact period-xact acct-transaction))
+    t))
 
 
 (provide 'ledger-navigate)
