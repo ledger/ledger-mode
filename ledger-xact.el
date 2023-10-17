@@ -216,15 +216,17 @@ date is requested via `ledger-read-date'."
         (when (looking-at "\n*\\'")
           (setq separator ""))))
     (if (> (length args) 1)
-        (save-excursion
-          (insert
-           (with-temp-buffer
-             (apply #'ledger-exec-ledger ledger-buf (current-buffer) "xact"
-                    (mapcar 'eval args))
-             (goto-char (point-min))
-             (ledger-post-align-postings (point-min) (point-max))
-             (buffer-string))
-           separator))
+        (progn
+          (save-excursion
+            (insert
+             (with-temp-buffer
+               (apply #'ledger-exec-ledger ledger-buf (current-buffer) "xact"
+                      (mapcar 'eval args))
+               (goto-char (point-min))
+               (ledger-post-align-postings (point-min) (point-max))
+               (buffer-string))
+             separator))
+          (ledger-next-amount))
       (progn
         (insert (car args) " ")
         (save-excursion (insert "\n" separator))))))
