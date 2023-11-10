@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/ledger/ledger-mode/workflows/CI/badge.svg)](https://github.com/ledger/ledger-mode/actions)
+[![Build Status](https://github.com/ledger/ledger-mode/actions/workflows/test.yml/badge.svg)](https://github.com/ledger/ledger-mode/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/license-GPL--2.0-blue.svg?style=flat)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
 [![MELPA](http://melpa.org/packages/ledger-mode-badge.svg)](http://melpa.org/#/ledger-mode)
 [![MELPA Stable](https://stable.melpa.org/packages/ledger-mode-badge.svg)](https://stable.melpa.org/#/ledger-mode)
