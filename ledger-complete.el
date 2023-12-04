@@ -138,7 +138,8 @@ Then one of the elements this function returns will be
           ;; probably don't want accounts from postings, just those declared
           ;; with directives.  But the name is a little misleading.  Should we
           ;; make a ledger-mode-be-pedantic and use that instead?
-          (bound-and-true-p ledger-flymake-be-pedantic)
+          (or (bound-and-true-p ledger-flymake-be-pedantic)
+              (bound-and-true-p flycheck-ledger-pedantic))
         (ledger-xact-iterate-transactions
          (lambda (_pos _date _state _payee)
            (let ((end (save-excursion (ledger-navigate-end-of-xact))))
