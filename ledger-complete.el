@@ -146,12 +146,15 @@ Then one of the elements this function returns will be
           ;; with directives.  But the name is a little misleading.  Should we
           ;; make a ledger-mode-be-pedantic and use that instead?
           (bound-and-true-p ledger-flymake-be-pedantic)
-        (goto-char (point-min))
-        (while (re-search-forward ledger-account-name-or-directive-regex nil t)
-          (let ((account (match-string-no-properties 1)))
-            (unless (gethash account seen)
-              (puthash account t seen)
-              (push (cons account nil) account-list)))))
+        (ledger-xact-iterate-transactions
+         (lambda (_pos _date _state _payee)
+           (let ((end (save-excursion (ledger-navigate-end-of-xact))))
+             (forward-line)
+             (while (re-search-forward ledger-account-name-or-directive-regex end t)
+               (let ((account (match-string-no-properties 1)))
+                 (unless (gethash account seen)
+                   (puthash account t seen)
+                   (push (cons account nil) account-list))))))))
       (sort account-list (lambda (a b) (string-lessp (car a) (car b)))))))
 
 (defun ledger-accounts-list-in-buffer ()

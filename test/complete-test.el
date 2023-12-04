@@ -297,6 +297,39 @@ account Assets:Checking:Bank B")
 \tExpenses\t11.99 CAD
 \tExpenses\t-11.99 CAD")))))
 
+(defvar ledger-flymake-be-pedantic)
+(defvar flycheck-ledger-pedantic)
+
+(ert-deftest ledger-complete/accounts-list-in-buffer ()
+  "https://github.com/ledger/ledger-mode/issues/380"
+  :tags '(complete regress)
+  (ledger-tests-with-temp-file
+      "\
+account Expenses:Food
+    note Use for dining out, etc.
+
+account Expenses:Groceries
+    note Use for food I cook myself
+
+2023-12-04 Restaurant
+\tExpenses:Food\t30 USD
+\tLiabilities:Credit Card
+
+2023-12-04 Grocery Store
+\tExpenses:Groceries\t50 USD
+\tLiabilities:Credit Card"
+    (let ((ledger-flymake-be-pedantic nil)
+          (flycheck-ledger-pedantic nil))
+      (should (equal (ledger-accounts-list-in-buffer)
+                     '("Expenses:Food"
+                       "Expenses:Groceries"
+                       "Liabilities:Credit Card"))))
+    (let ((ledger-flymake-be-pedantic t)
+          (flycheck-ledger-pedantic t))
+      (should (equal (ledger-accounts-list-in-buffer)
+                     '("Expenses:Food"
+                       "Expenses:Groceries"))))))
+
 (provide 'complete-test)
 
 ;;; complete-test.el ends here
