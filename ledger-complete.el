@@ -93,7 +93,7 @@ Looks in `ledger-payees-file' if set, otherwise the current buffer."
           (ledger-payees-in-buffer)))
     (ledger-payees-in-buffer)))
 
-(defun ledger-accounts-in-buffer ()
+(defun ledger-accounts-in-buffer (&optional include-postings)
   "Return an alist of accounts in the current buffer.
 The `car' of each element is the account name and the `cdr' is an
 alist where the key is a subdirective such as \"assert\" and the
@@ -107,7 +107,11 @@ account Assets:Checking
 Then one of the elements this function returns will be
 \(\"Assets:Checking\"
   (\"default\")
-  (\"assert\" . \"commodity == \"$\"\"))"
+  (\"assert\" . \"commodity == \"$\"\"))
+
+If INCLUDE-POSTINGS is non-nil, this alist will also include
+accounts seen in postings that aren't explicitly declared with
+\"account\" directives."
   (save-excursion
     (goto-char (point-min))
     (let (account-list
@@ -132,14 +136,8 @@ Then one of the elements this function returns will be
                 (push (cons d nil) data))))
           (push (cons account data) account-list)
           (puthash account t seen)))
-      ;; Next, gather all accounts declared in postings
-      (unless
-          ;; FIXME: People who have set `ledger-flymake-be-pedantic' to non-nil
-          ;; probably don't want accounts from postings, just those declared
-          ;; with directives.  But the name is a little misleading.  Should we
-          ;; make a ledger-mode-be-pedantic and use that instead?
-          (or (bound-and-true-p ledger-flymake-be-pedantic)
-              (bound-and-true-p flycheck-ledger-pedantic))
+      ;; Next, gather all accounts declared in postings if requested
+      (when include-postings
         (ledger-xact-iterate-transactions
          (lambda (_pos _date _state _payee)
            (let ((end (save-excursion (ledger-navigate-end-of-xact))))
@@ -151,16 +149,18 @@ Then one of the elements this function returns will be
                    (push (cons account nil) account-list))))))))
       (sort account-list (lambda (a b) (string-lessp (car a) (car b)))))))
 
-(defun ledger-accounts-list-in-buffer ()
+(defun ledger-accounts-list-in-buffer (&optional include-postings)
   "Return a list of all known account names in the current buffer as strings.
-Considers both accounts listed in postings and those declared
-with \"account\" directives."
-  (let ((accounts (ledger-accounts-in-buffer)))
+
+If INCLUDE-POSTINGS is non-nil, considers both accounts listed in
+postings and those declared with \"account\" directives.
+Otherwise, only considers the latter."
+  (let ((accounts (ledger-accounts-in-buffer include-postings)))
     (when ledger-accounts-exclude-function
       (setq accounts (cl-remove-if ledger-accounts-exclude-function accounts)))
     (mapcar #'car accounts)))
 
-(defun ledger-accounts-list ()
+(defun ledger-accounts-list (&optional include-postings)
   "Return a list of all known account names as strings.
 Looks in `ledger-accounts-file' if set, otherwise the current buffer."
   (if ledger-accounts-file
@@ -170,7 +170,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
           (ledger-accounts-list-in-buffer)))
     (ledger-accounts-list-in-buffer)))
 
-(defun ledger-accounts-tree ()
+(defun ledger-accounts-tree (&optional include-postings)
   "Return a tree of all accounts in the buffer.
 
 Each node in the tree is a list (t . CHILDREN), where CHILDREN is
@@ -186,7 +186,7 @@ an alist (ACCOUNT-ELEMENT . NODE)."
               (nconc root (list node)))
             (setq root (cdr node))))))))
 
-(defun ledger-complete-account-next-steps ()
+(defun ledger-complete-account-next-steps (&optional include-postings)
   "Return a list of next steps for the account prefix at point."
   ;; FIXME: This function is called from `ledger-complete-at-point' which
   ;; already knows the bounds of the account name to complete.  Computing it
@@ -198,7 +198,7 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                      (point))
                    (point)))
          (elements (and current (split-string current ":")))
-         (root (ledger-accounts-tree))
+         (root (ledger-accounts-tree include-postings))
          (prefix nil))
     (while (cdr elements)
       (let ((xact (assoc (car elements) root)))
@@ -320,10 +320,21 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                                  (when (search-forward-regexp (rx (or eol (or ?\t (repeat 2 space)))) (line-end-position) t)
                                    (- (match-beginning 0) end)))
                  realign-after t
-                 collection (cons 'nullary
-                                  (if ledger-complete-in-steps
-                                      #'ledger-complete-account-next-steps
-                                    #'ledger-accounts-list)))))
+                 collection
+                 ;; FIXME: People who have set `ledger-flymake-be-pedantic' or
+                 ;; `flycheck-ledger-pedantic' to non-nil probably don't want
+                 ;; accounts from postings, just those declared with directives.
+                 ;; But the name is a little misleading.  Should we make a
+                 ;; ledger-mode-be-pedantic and use that instead?
+                 (let ((include-postings
+                        (not (or (bound-and-true-p ledger-flymake-be-pedantic)
+                                 (bound-and-true-p flycheck-ledger-pedantic)))))
+                   (cons 'nullary
+                         (apply-partially
+                          (if ledger-complete-in-steps
+                              #'ledger-accounts-tree
+                            #'ledger-accounts-list)
+                          include-postings))))))
     (when collection
       (let ((prefix (buffer-substring-no-properties start end)))
         (list start end
