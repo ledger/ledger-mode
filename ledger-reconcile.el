@@ -508,7 +508,6 @@ Return a count of the uncleared transactions."
 This is achieved by placing that transaction at the bottom of the main window.
 The key to this is to ensure the window is selected when the buffer point is
 moved and recentered.  If they aren't strange things happen."
-
   (let ((reconcile-window (get-buffer-window (get-buffer ledger-reconcile-buffer-name))))
     (when reconcile-window
       (fit-window-to-buffer reconcile-window)
@@ -519,6 +518,9 @@ moved and recentered.  If they aren't strange things happen."
         (recenter))
       (select-window reconcile-window)
       (ledger-reconcile-visit t))
+    (with-current-buffer ledger-buf
+      (when ledger-occur-mode
+        (ledger-occur-refresh)))
     (add-hook 'post-command-hook 'ledger-reconcile-track-xact nil t)))
 
 (defun ledger-reconcile-track-xact ()
