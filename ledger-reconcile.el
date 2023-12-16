@@ -302,13 +302,15 @@ Return the number of uncleared xacts found."
         (recenter)
         (ledger-highlight-xact-under-point)))))
 
-(defun ledger-reconcile-add ()
-  "Use ledger xact to add a new transaction."
-  (interactive)
+(defun ledger-reconcile-add (date xact)
+  "Use ledger xact to add a new transaction.
+
+When called interactively, prompt for DATE, then XACT."
+  (interactive
+   (list (ledger-read-date "Date: ")
+         (read-string "Transaction: " nil 'ledger-minibuffer-history)))
   (with-current-buffer ledger-buf
-    (let ((date (ledger-read-date "Date: "))
-          (text (read-string "Transaction: " nil 'ledger-minibuffer-history)))
-      (ledger-add-transaction (concat date " " text))))
+    (ledger-add-transaction (concat date " " xact)))
   (ledger-reconcile-refresh))
 
 (defun ledger-reconcile-delete ()
