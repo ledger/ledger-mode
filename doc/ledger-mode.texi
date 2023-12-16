@@ -993,7 +993,7 @@ If non-nil, highlight transaction under point using
 
 @ftable @option
 
-@item ledger-recon-buffer-name
+@item ledger-reconcile-buffer-name
 Name to use for reconciliation buffer. Defaults to @file{*Reconcile*}.
 
 @item ledger-narrow-on-reconcile
@@ -1018,7 +1018,7 @@ Date format for the reconcile buffer. Defaults to
 @option{ledger-default-date-format}.
 
 @item ledger-reconcile-target-prompt-string
-Prompt for recon target. Defaults to "Target amount for reconciliation ".
+Prompt for reconcile target. Defaults to "Target amount for reconciliation ".
 
 @item ledger-reconcile-buffer-header
 Header string for the reconcile buffer. If non-nil, the name of the

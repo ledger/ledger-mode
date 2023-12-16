@@ -36,15 +36,15 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1107"
 
   (ledger-tests-with-temp-file
       demo-ledger
-    (ledger-reconcile "Assets:Checking" '(0 "$")) ; this moves to *recon* buffer
+    (ledger-reconcile "Assets:Checking" '(0 "$")) ; this moves to *reconcile* buffer
     (other-window 1)                ; go to *ledger* buffer
     (insert " ")                    ; simulate modification of ledger buffer
     (delete-char -1)
     (other-window 1)                ; back to *reconcile* buffer
     (ledger-reconcile-save)         ; key 's'
-    (should ;; current buffer should be *recon* buffer
+    (should ;; current buffer should be *reconcile* buffer
      (equal (buffer-name)           ; current buffer name
-            ledger-recon-buffer-name))
+            ledger-reconcile-buffer-name))
     (other-window 1)                ; switch to *other* window
     (should ;; Expected: this must be ledger buffer
      (equal (buffer-name)           ; current buffer name
@@ -60,13 +60,13 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1039"
   (ledger-tests-with-temp-file
       demo-ledger
     (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (forward-line 2)                    ; because of ledger-reconcile-buffer-header
     (ledger-reconcile-toggle)                     ; mark pending
     (ledger-reconcile-toggle)                     ; mark pending
     (ledger-reconcile-finish)                     ; C-c C-c
-    (should ;; Expected: buffer recon must still exist and be selected
-     (equal ledger-recon-buffer-name
+    (should ;; Expected: buffer reconcile must still exist and be selected
+     (equal ledger-reconcile-buffer-name
             (buffer-name (window-buffer (selected-window)))))))
 
 
@@ -74,20 +74,20 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1039"
   "Regress test for Bug 1060
 http://bugs.ledger-cli.org/show_bug.cgi?id=1060
 
-If `ledger-reconcile-finish-force-quit' is set, recon window is killed"
+If `ledger-reconcile-finish-force-quit' is set, reconcile window is killed"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
       demo-ledger
     (setq ledger-reconcile-finish-force-quit t)
     (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (forward-line 2)                    ; because of ledger-reconcile-buffer-header
     (ledger-reconcile-toggle)                     ; mark pending
     (ledger-reconcile-toggle)                     ; mark pending
     (ledger-reconcile-finish)                     ; C-c C-c
-    (should ;; Expected: recon buffer has been killed
-     (equal nil (get-buffer-window ledger-recon-buffer-name)))))
+    (should ;; Expected: reconcile buffer has been killed
+     (equal nil (get-buffer-window ledger-reconcile-buffer-name)))))
 
 
 (ert-deftest ledger-reconcile/test-004 ()
@@ -134,7 +134,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=875"
           ledger-reconcile-buffer-payee-max-chars 30
           ledger-reconcile-buffer-account-max-chars 22)
     (ledger-reconcile "Expenses:Food:Groceries" '(0 "$"))
-    (switch-to-buffer ledger-recon-buffer-name)
+    (switch-to-buffer ledger-reconcile-buffer-name)
     (should (equal
              "2008/10/16 Bountiful Blessings Farm Will… …penses:Food:Groceries    $ 37.50
 2008/10/16 Bountiful Blessings Farm Will… …penses:Food:Groceries    $ 37.50
@@ -155,7 +155,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1104"
     (setq ledger-reconcile-buffer-header "")
     (ledger-reconcile "Expenses:Books" '(0 "$"))
     (should-not
-     (equal nil (get-buffer-window ledger-recon-buffer-name)))))
+     (equal nil (get-buffer-window ledger-reconcile-buffer-name)))))
 
 
 (ert-deftest ledger-reconcile/test-007 ()
@@ -200,8 +200,8 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1056"
 "
     (setq ledger-reconcile-default-commodity "€") ; FIXME This must be set even if below call (ledger-reconcile "Dépense" '(0 "€")) is using "€". Is this a bug?
     (ledger-reconcile "Dépense" '(0 "€"))
-    (should-not ;; ledger recon must exists and no error prevented to go to this point
-     (equal nil (get-buffer-window ledger-recon-buffer-name)))))
+    (should-not ;; ledger reconcile must exists and no error prevented to go to this point
+     (equal nil (get-buffer-window ledger-reconcile-buffer-name)))))
 
 
 (ert-deftest ledger-reconcile/test-009 ()
@@ -213,7 +213,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=915"
   (ledger-tests-with-temp-file
       demo-ledger
     (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (forward-line 6)
     (ledger-reconcile-toggle)
     (ledger-reconcile-toggle)
@@ -221,9 +221,9 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=915"
       (ledger-reconcile-save)             ; key 's'
       (should ;; Expected: line position is kept
        (eq line-before-save (line-number-at-pos)))
-      (should ;; current buffer should be *recon* buffer
+      (should ;; current buffer should be *reconcile* buffer
        (equal (buffer-name)           ; current buffer name
-              ledger-recon-buffer-name)))))
+              ledger-reconcile-buffer-name)))))
 
 
 (ert-deftest ledger-reconcile/test-010 ()
@@ -235,7 +235,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=986"
       demo-ledger
 
     (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (should
      (equal (buffer-string)     ; default sort is by ledger file order
       "Reconciling account Assets:Checking
@@ -251,7 +251,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=986"
 
     (setq ledger-reconcile-sort-key "(date)") ; sort by date
     (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (should
      (equal (buffer-string)
       "Reconciling account Assets:Checking
@@ -267,7 +267,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=986"
 
     (setq ledger-reconcile-sort-key "(amount)") ; sort by amount
     (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (should
      (equal (buffer-string)             ; sort by ledger file order
       "Reconciling account Assets:Checking
@@ -283,7 +283,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=986"
 
     (setq ledger-reconcile-sort-key "(payee)") ; sort by payee
     (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (should
      (equal (buffer-string)
       "Reconciling account Assets:Checking
@@ -299,7 +299,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=986"
 
     (setq ledger-reconcile-sort-key "(0)") ; sort by ledger file order
     (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (should
      (equal (buffer-string)
       "Reconciling account Assets:Checking
@@ -322,13 +322,13 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=967"
   (ledger-tests-with-temp-file
       demo-ledger
     (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (other-window 1)                ; go to *ledger* buffer
     (remove-hook 'kill-buffer-hook 'ledger-reconcile-quit t) ; needed for delete-other-windows
     (delete-other-windows)          ; C-x 1
     (set-frame-width (selected-frame) 100) ; needed for split-window-right
     (split-window-right)            ; C-x 3
-    (switch-to-buffer-other-window ledger-recon-buffer-name) ; C-x 4 b
+    (switch-to-buffer-other-window ledger-reconcile-buffer-name) ; C-x 4 b
 
     (forward-line 2)
     (ledger-reconcile-toggle)
@@ -359,7 +359,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=957"
 "
     (setq ledger-reconcile-default-commodity "€")
     (ledger-reconcile "BanqueAccord" '(0 "€"))
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (forward-line 2)
     (ledger-reconcile-visit)
     (forward-line -1)
@@ -369,7 +369,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=957"
     Dépense:Alimentation:Alcool    1,00 €
 ")
     (save-buffer)
-    (switch-to-buffer-other-window ledger-recon-buffer-name)
+    (switch-to-buffer-other-window ledger-reconcile-buffer-name)
     (ledger-reconcile-toggle)
     (switch-to-buffer-other-window ledger-buffer)
     (should
@@ -390,7 +390,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=957"
     (forward-line 1)
     (kill-line 4)
     (save-buffer)
-    (switch-to-buffer-other-window ledger-recon-buffer-name)
+    (switch-to-buffer-other-window ledger-reconcile-buffer-name)
     (forward-line -1)
     (ledger-reconcile-toggle)
     (switch-to-buffer-other-window ledger-buffer)
@@ -415,13 +415,13 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=906"
       demo-ledger
     (goto-char 1040)
     (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (switch-to-buffer-other-window ledger-buffer)
     (should (= 1040 (point)))
 
     (goto-char 1265)
     (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (switch-to-buffer-other-window ledger-buffer)
     (should (= 1265 (point)))))
 
@@ -434,7 +434,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=900"
   (ledger-tests-with-temp-file
       demo-ledger
     (ledger-reconcile "Assets:Checking" '(0 "$"))
-    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (select-window (get-buffer-window ledger-reconcile-buffer-name))
     (switch-to-buffer-other-window ledger-buffer)
     (save-buffer)
     (let ((ledger-buffer-name (buffer-name ledger-buffer)))
@@ -453,7 +453,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=245"
   (ledger-tests-with-temp-file          ; Faces in *Reconcile* buffer
       demo-ledger
     (ledger-reconcile "Assets:Checking" '(0 "$"))
-    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (select-window (get-buffer-window ledger-reconcile-buffer-name))
     (forward-line 2)       ; because of ledger-reconcile-buffer-header
     (should (eq 'ledger-font-reconciler-uncleared-face
                 (get-text-property (point) 'font-lock-face)))
@@ -470,7 +470,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=245"
   (ledger-tests-with-temp-file
       demo-ledger
     (ledger-reconcile "Assets:Checking" '(0 "$"))
-    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (select-window (get-buffer-window ledger-reconcile-buffer-name))
     (forward-line 2)       ; because of ledger-reconcile-buffer-header
     (ledger-reconcile-toggle)           ; mark pending
     (forward-line 1)
@@ -488,7 +488,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=895"
   (ledger-tests-with-temp-file
       demo-ledger
     (ledger-reconcile "Food" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (should
      (equal (buffer-string)
       "Reconciling account Food
@@ -505,7 +505,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=886"
   (ledger-tests-with-temp-file
       demo-ledger
     (ledger-reconcile "Assets:Checking" '(0 "$"))
-    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (select-window (get-buffer-window ledger-reconcile-buffer-name))
     (goto-char (point-max))  ; end-of-buffer
     (let ((line-before-toggle (line-number-at-pos)))
       (ledger-reconcile-toggle)           ; mark pending
@@ -526,13 +526,13 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=879"
   (ledger-tests-with-temp-file
       demo-ledger
     (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-recon-buffer-name)) ; IRL user select recon window
+    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (switch-to-buffer-other-window ledger-buffer)
     (ledger-reconcile "Food" '(0 "$")) ; launch a *second* time on *another* account
-    (select-window (get-buffer-window ledger-recon-buffer-name))
-    (should ;; current buffer should be *recon* buffer
+    (select-window (get-buffer-window ledger-reconcile-buffer-name))
+    (should ;; current buffer should be *reconcile* buffer
      (equal (buffer-name)           ; current buffer name
-            ledger-recon-buffer-name))
+            ledger-reconcile-buffer-name))
     (other-window 1)                ; switch to *other* window
     (should ;; Expected: this must be ledger buffer
      (equal (buffer-name)           ; current buffer name
@@ -550,7 +550,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=527"
     Assets:Checking
 "
    (ledger-reconcile "Expenses:Food" '(0 "$"))
-   (switch-to-buffer ledger-recon-buffer-name)
+   (switch-to-buffer ledger-reconcile-buffer-name)
    (should (equal
             "Reconciling account Expenses:Food
 
@@ -574,7 +574,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=922"
 "
    (setq ledger-reconcile-buffer-header "")
    (ledger-reconcile "Nyu" '(0 "B"))
-   (switch-to-buffer ledger-recon-buffer-name)
+   (switch-to-buffer ledger-reconcile-buffer-name)
    (should (equal (buffer-string)
             "2012/01/02 03DIZ3Q Bilip                                              Nyu:sto                                  -12 B"))))
 
@@ -590,7 +590,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=951"
     Assets:Checking
 "
    (ledger-reconcile "Expenses:Food" '(0 "$"))
-   (switch-to-buffer ledger-recon-buffer-name)
+   (switch-to-buffer ledger-reconcile-buffer-name)
    (should (equal (buffer-string)
             "Reconciling account Expenses:Food
 
@@ -628,7 +628,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=396"
     Assets:Checking
 "
    (ledger-reconcile "Expenses:Food" '(0 "$"))
-   (switch-to-buffer ledger-recon-buffer-name)
+   (switch-to-buffer ledger-reconcile-buffer-name)
    (should (equal (buffer-string)
                   "Reconciling account Expenses:Food
 
@@ -702,16 +702,16 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=262"
   (ledger-tests-with-temp-file
       demo-ledger
     (ledger-reconcile "Expenses" '(0 "$"))
-    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (select-window (get-buffer-window ledger-reconcile-buffer-name))
     (forward-line 2)       ; because of ledger-reconcile-buffer-header
-    (forward-line 4)       ; move to not be on first line of recon
+    (forward-line 4)       ; move to not be on first line of reconcile
     (let ((line-before-delete (line-number-at-pos)))
       (ledger-reconcile-delete)             ; key 'd'
       (should ;; Expected: line position is kept
        (eq line-before-delete (line-number-at-pos)))
-      (should ;; current buffer should be *recon* buffer
+      (should ;; current buffer should be *reconcile* buffer
        (equal (buffer-name)           ; current buffer name
-              ledger-recon-buffer-name))
+              ledger-reconcile-buffer-name))
       (other-window 1)                ; switch to *other* window
       (should ;; Expected: this must be ledger buffer
        (equal (buffer-name)           ; current buffer name
@@ -726,7 +726,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=262"
   (ledger-tests-with-temp-file
       demo-ledger
     (ledger-reconcile "Expenses" '(0 "$"))
-    (select-window (get-buffer-window ledger-recon-buffer-name))
+    (select-window (get-buffer-window ledger-reconcile-buffer-name))
     (goto-char (point-max))             ; end-of-buffer
     (goto-char (line-beginning-position)) ; beginning-of-line
     (let ((line-before-delete (line-number-at-pos)))
