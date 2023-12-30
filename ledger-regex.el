@@ -282,7 +282,7 @@
 (ledger-define-regexp amount-no-group
   (rx (and (? ?-)
            (+ digit)
-           (*? (and (any ?. ?,) (+ digit)))))
+           (* (and (any ?. ?,) (+ digit)))))
   "")
 
 (ledger-define-regexp amount
