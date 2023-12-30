@@ -163,26 +163,25 @@ regular text."
 (defun ledger-post-edit-amount ()
   "Call `calc-mode' and push the amount in the posting to the top of stack."
   (interactive)
-  (goto-char (line-beginning-position))
+  (beginning-of-line)
   (when (re-search-forward ledger-post-line-regexp (line-end-position) t)
-    (goto-char (match-end ledger-regex-post-line-group-account)) ;; go to the and of the account
-    (let ((end-of-amount (re-search-forward ledger-amount-regexp (line-end-position) t)))
-      ;; determine if there is an amount to edit
-      (if end-of-amount
-          (let ((val-string (match-string 0)))
-            (goto-char (match-beginning 0))
-            (delete-region (match-beginning 0) (match-end 0))
-            (push-mark (point) 'nomsg)
-            (calc)
-            ;; edit the amount, first removing thousands separators and
-            ;; converting decimal commas to calc's input format
-            (calc-eval (number-to-string (ledger-string-to-number val-string)) 'push))
-        (progn ;;make sure there are two spaces after the account name and go to calc
-          (if (search-backward "  " (- (point) 3) t)
-              (goto-char (line-end-position))
-            (insert "  "))
+    (goto-char (match-end ledger-regex-post-line-group-account)) ;; go to the end of the account
+    ;; determine if there is an amount to edit
+    (if (re-search-forward ledger-amount-regexp (line-end-position) t)
+        (let ((val-string (match-string 0)))
+          (goto-char (match-beginning 0))
+          (delete-region (match-beginning 0) (match-end 0))
           (push-mark (point) 'nomsg)
-          (calc))))))
+          (calc)
+          ;; edit the amount, first removing thousands separators and converting
+          ;; decimal commas to calc's input format
+          (calc-eval (number-to-string (ledger-string-to-number val-string)) 'push))
+      ;; make sure there are two spaces after the account name and go to calc
+      (if (search-backward "  " (- (point) 3) t)
+          (end-of-line)
+        (insert "  "))
+      (push-mark (point) 'nomsg)
+      (calc))))
 
 (provide 'ledger-post)
 
