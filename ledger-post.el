@@ -166,7 +166,7 @@ regular text."
   (goto-char (line-beginning-position))
   (when (re-search-forward ledger-post-line-regexp (line-end-position) t)
     (goto-char (match-end ledger-regex-post-line-group-account)) ;; go to the and of the account
-    (let ((end-of-amount (re-search-forward "[-.,0-9]+" (line-end-position) t)))
+    (let ((end-of-amount (re-search-forward ledger-amount-regexp (line-end-position) t)))
       ;; determine if there is an amount to edit
       (if end-of-amount
           (let ((val-string (match-string 0)))
