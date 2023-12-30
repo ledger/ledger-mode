@@ -181,7 +181,14 @@ regular text."
           (end-of-line)
         (insert "  "))
       (push-mark (point) 'nomsg)
-      (calc))))
+      (calc))
+
+    ;; Preserve calc's own welcome message, if any, and append our own.
+    (message "%s%s"
+             (if-let (msg (current-message))
+                 (concat msg "\n\n")
+               "")
+             (substitute-command-keys "Press \\[universal-argument] \\[calc-copy-to-buffer] to use the top of stack as the new amount."))))
 
 (provide 'ledger-post)
 
