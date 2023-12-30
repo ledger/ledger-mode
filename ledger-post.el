@@ -172,7 +172,7 @@ regular text."
           (let ((val-string (match-string 0)))
             (goto-char (match-beginning 0))
             (delete-region (match-beginning 0) (match-end 0))
-            (push-mark)
+            (push-mark (point) 'nomsg)
             (calc)
             ;; edit the amount, first removing thousands separators and
             ;; converting decimal commas to calc's input format
@@ -181,7 +181,7 @@ regular text."
           (if (search-backward "  " (- (point) 3) t)
               (goto-char (line-end-position))
             (insert "  "))
-          (push-mark)
+          (push-mark (point) 'nomsg)
           (calc))))))
 
 (provide 'ledger-post)
