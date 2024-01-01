@@ -216,8 +216,8 @@ With a prefix argument, remove the effective date."
   "Indent, remove multiple line feeds and sort the buffer."
   (interactive)
   (let ((start (point-min-marker))
-        (end (point-max-marker)))
-    (ledger-navigate-beginning-of-xact)
+        (end (point-max-marker))
+        (distance-in-xact (- (point) (ledger-navigate-beginning-of-xact))))
     (beginning-of-line)
     (let ((target (buffer-substring (point) (progn
                                               (end-of-line)
@@ -228,7 +228,9 @@ With a prefix argument, remove the effective date."
       (ledger-post-align-postings start end)
       (ledger-mode-remove-extra-lines)
       (goto-char start)
-      (search-forward target))))
+      (search-forward target)
+      (beginning-of-line)
+      (forward-char distance-in-xact))))
 
 (defvar ledger-mode-syntax-table
   (let ((table (make-syntax-table text-mode-syntax-table)))
