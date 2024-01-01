@@ -161,28 +161,34 @@ regular text."
    (t (call-interactively 'ledger-post-align-xact))))
 
 (defun ledger-post-edit-amount ()
-  "Call `calc-mode' and push the amount in the posting to the top of stack."
+  "Call `calc' and push the amount in the posting to the top of stack, if any."
   (interactive)
-  (goto-char (line-beginning-position))
+  (beginning-of-line)
   (when (re-search-forward ledger-post-line-regexp (line-end-position) t)
-    (goto-char (match-end ledger-regex-post-line-group-account)) ;; go to the and of the account
-    (let ((end-of-amount (re-search-forward "[-.,0-9]+" (line-end-position) t)))
-      ;; determine if there is an amount to edit
-      (if end-of-amount
-          (let ((val-string (match-string 0)))
-            (goto-char (match-beginning 0))
-            (delete-region (match-beginning 0) (match-end 0))
-            (push-mark)
-            (calc)
-            ;; edit the amount, first removing thousands separators and
-            ;; converting decimal commas to calc's input format
-            (calc-eval (number-to-string (ledger-string-to-number val-string)) 'push))
-        (progn ;;make sure there are two spaces after the account name and go to calc
-          (if (search-backward "  " (- (point) 3) t)
-              (goto-char (line-end-position))
-            (insert "  "))
-          (push-mark)
-          (calc))))))
+    (goto-char (match-end ledger-regex-post-line-group-account)) ;; go to the end of the account
+    ;; determine if there is an amount to edit
+    (if (re-search-forward ledger-amount-regexp (line-end-position) t)
+        (let ((val-string (match-string 0)))
+          (goto-char (match-beginning 0))
+          (delete-region (match-beginning 0) (match-end 0))
+          (push-mark (point) 'nomsg)
+          (calc)
+          ;; edit the amount, first removing thousands separators and converting
+          ;; decimal commas to calc's input format
+          (calc-eval (number-to-string (ledger-string-to-number val-string)) 'push))
+      ;; make sure there are two spaces after the account name and go to calc
+      (if (search-backward "  " (- (point) 3) t)
+          (end-of-line)
+        (insert "  "))
+      (push-mark (point) 'nomsg)
+      (calc))
+
+    ;; Preserve calc's own welcome message, if any, and append our own.
+    (message "%s%s"
+             (if-let (msg (current-message))
+                 (concat msg "\n\n")
+               "")
+             (substitute-command-keys "Press \\[universal-argument] \\[calc-copy-to-buffer] to use the top of stack as the new amount."))))
 
 (provide 'ledger-post)
 
