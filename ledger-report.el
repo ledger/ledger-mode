@@ -245,13 +245,13 @@ See documentation for the function `ledger-master-file'")
   "Return a valid meta-data tag name."
   ;; It is intended completion should be available on existing tag
   ;; names, but it remains to be implemented.
-  (ledger-read-string-with-default "Tag Name: " nil))
+  (ledger-read-string-with-default "Tag Name" nil))
 
 (defun ledger-report-tagvalue-format-specifier ()
   "Return a valid meta-data tag name."
   ;; It is intended completion should be available on existing tag
   ;; values, but it remains to be implemented.
-  (ledger-read-string-with-default "Tag Value: " nil))
+  (ledger-read-string-with-default "Tag Value" nil))
 
 (defun ledger-report-read-name ()
   "Read the name of a ledger report to use, with completion.
