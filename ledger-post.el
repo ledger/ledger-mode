@@ -161,7 +161,10 @@ regular text."
    (t (call-interactively 'ledger-post-align-xact))))
 
 (defun ledger-post-edit-amount ()
-  "Call `calc' and push the amount in the posting to the top of stack, if any."
+  "Call `calc' and push the amount in the posting to the top of stack, if any.
+
+In the calc buffer, press y to use the top value in the stack as
+the amount and return to ledger."
   (interactive)
   (beginning-of-line)
   (when (re-search-forward ledger-post-line-regexp (line-end-position) t)
@@ -181,14 +184,7 @@ regular text."
           (end-of-line)
         (insert "  "))
       (push-mark (point) 'nomsg)
-      (calc))
-
-    ;; Preserve calc's own welcome message, if any, and append our own.
-    (message "%s%s"
-             (if-let (msg (current-message))
-                 (concat msg "\n\n")
-               "")
-             (substitute-command-keys "Press \\[universal-argument] \\[calc-copy-to-buffer] to use the top of stack as the new amount."))))
+      (calc))))
 
 (provide 'ledger-post)
 
