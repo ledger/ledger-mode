@@ -149,6 +149,8 @@ described above."
   :type 'boolean
   :group 'ledger-reconcile)
 
+(defvar-local ledger-reconcile-last-balance-message nil)
+
 ;; s-functions below are copied from Magnars' s.el
 ;; prefix ledger-reconcile- is added to not conflict with s.el
 (defun ledger-reconcile-s-pad-left (len padding s)
@@ -206,14 +208,16 @@ described above."
   "Display the cleared-or-pending balance.
 And calculate the target-delta of the account being reconciled."
   (interactive)
-  (let* ((pending (ledger-reconcile-get-cleared-or-pending-balance ledger-reconcile-ledger-buf ledger-reconcile-account)))
-    (when pending
-      (if ledger-reconcile-target
-          (message "Cleared and Pending balance: %s,   Difference from target: %s"
-                   (ledger-commodity-to-string pending)
-                   (ledger-commodity-to-string (ledger-subtract-commodity ledger-reconcile-target pending)))
-        (message "Pending balance: %s"
-                 (ledger-commodity-to-string pending))))))
+  (when-let ((pending (ledger-reconcile-get-cleared-or-pending-balance ledger-reconcile-ledger-buf ledger-reconcile-account))
+             (message
+              (if ledger-reconcile-target
+                  (format-message "Cleared and Pending balance: %s,   Difference from target: %s"
+                                  (ledger-commodity-to-string pending)
+                                  (ledger-commodity-to-string (ledger-subtract-commodity ledger-reconcile-target pending)))
+                (format-message "Pending balance: %s"
+                                (ledger-commodity-to-string pending)))))
+    (setq ledger-reconcile-last-balance-message message)
+    (message "%s" message)))
 
 (defun ledger-is-stdin (file)
   "True if ledger FILE is standard input."
@@ -590,6 +594,8 @@ reconciliation, otherwise prompt for TARGET."
       (if ledger-narrow-on-reconcile
           (ledger-occur (regexp-quote account)))
 
+      (setq ledger-reconcile-last-balance-message nil)
+
       (with-current-buffer rbuf
         (if (> (ledger-reconcile-refresh) 0)
             (ledger-reconcile-change-target target)
@@ -628,6 +634,7 @@ reconciliation, otherwise prompt for TARGET."
     (define-key map (kbd "s") #'ledger-reconcile-save)
     (define-key map (kbd "q") #'ledger-reconcile-quit)
     (define-key map (kbd "b") #'ledger-display-balance)
+    (define-key map (kbd "B") #'ledger-reconcile-display-balance-in-header-mode)
 
     (define-key map (kbd "C-c C-o") (ledger-reconcile-change-sort-key-and-refresh "(0)"))
 
@@ -669,6 +676,13 @@ reconciliation, otherwise prompt for TARGET."
 
 (define-derived-mode ledger-reconcile-mode text-mode "Reconcile"
   "A mode for reconciling ledger entries.")
+
+(define-minor-mode ledger-reconcile-display-balance-in-header-mode
+  "When enabled, display the cleared-or-pending balance in the header."
+  :group 'ledger-reconcile
+  (if ledger-reconcile-display-balance-in-header-mode
+      (setq header-line-format 'ledger-reconcile-last-balance-message)
+    (setq header-line-format nil)))
 
 (provide 'ledger-reconcile)
 
