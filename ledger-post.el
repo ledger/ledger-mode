@@ -26,6 +26,7 @@
 (require 'ledger-regex)
 (require 'ledger-navigate)
 
+(declare-function calc-renumber-stack "calc" ())
 (declare-function ledger-string-to-number "ledger-commodities" (str &optional decimal-comma))
 
 ;;; Code:
@@ -178,7 +179,8 @@ the amount and return to ledger."
           (calc)
           ;; edit the amount, first removing thousands separators and converting
           ;; decimal commas to calc's input format
-          (calc-eval (number-to-string (ledger-string-to-number val-string)) 'push))
+          (calc-eval (number-to-string (ledger-string-to-number val-string)) 'push)
+          (calc-renumber-stack))
       ;; make sure there are two spaces after the account name and go to calc
       (if (search-backward "  " (- (point) 3) t)
           (end-of-line)
