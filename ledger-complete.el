@@ -47,6 +47,15 @@ element of `ledger-accounts-list-in-buffer'."
   :group 'ledger
   :package-version '(ledger-mode . "2019-08-14"))
 
+(defcustom ledger-payees-collection #'ledger-payees-in-buffer
+  "Collection of payees to be used for completion.
+This option may be set to any kind of collection accepted by
+`completing-read', which see."
+  :type '(choice (const :tag "Payees in current buffer" ledger-payees-in-buffer)
+                 (sexp :tag "Other"))
+  :group 'ledger
+  :package-version '(ledger-mode . "4.0.0"))
+
 (defcustom ledger-complete-in-steps nil
   "When non-nil, `ledger-complete-at-point' completes account names in steps.
 If nil, full account names are offered for completion."
@@ -297,7 +306,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
           (;; Payees
            (eq (save-excursion (ledger-thing-at-point)) 'transaction)
            (setq start (save-excursion (backward-word) (point)))
-           (setq collection #'ledger-payees-in-buffer))
+           (setq collection ledger-payees-collection))
           (;; Accounts
            (save-excursion
              (back-to-indentation)
