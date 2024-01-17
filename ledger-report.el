@@ -457,7 +457,7 @@ MONTH is of the form (YEAR . INDEX) where INDEX ranges from
   `(,@(when (ledger-report--cmd-needs-links-p report-cmd)
         '("--prepend-format=%(filename):%(beg_line):"))
     ,@(when ledger-report-auto-width
-        `("--columns" ,(format "%d" (- (window-width) 1))))
+        `("--columns" ,(format "%d" (window-max-chars-per-line))))
     ,@(when ledger-report-use-native-highlighting
         ledger-report-native-highlighting-arguments)
     ,@(when ledger-report-use-strict
