@@ -140,8 +140,7 @@ the balance into that."
       (message balance))))
 
 (defun ledger-display-ledger-stats ()
-  "Display the cleared-or-pending balance.
-And calculate the target-delta of the account being reconciled."
+  "Display some summary statistics about the current ledger file."
   (interactive)
   (let* ((buffer (find-file-noselect (ledger-master-file)))
          (balance (with-temp-buffer
