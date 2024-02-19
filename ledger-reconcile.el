@@ -288,6 +288,7 @@ Return the number of uncleared xacts found."
         (ledger-do-reconcile ledger-reconcile-sort-key)
       (set-buffer-modified-p t)
       (ledger-reconcile-ensure-xacts-visible)
+      (ledger-display-balance)
       (goto-char (point-min))
       (forward-line line))))
 
@@ -301,7 +302,7 @@ Return the number of uncleared xacts found."
         (ledger-reconcile-refresh)
         (set-buffer-modified-p nil))
       (when curbufwin
-        (select-window  curbufwin)
+        (select-window curbufwin)
         (goto-char curpoint)
         (recenter)
         (ledger-highlight-xact-under-point)))))
