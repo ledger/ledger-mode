@@ -81,16 +81,12 @@ Returns the current date if DATE is nil or not supplied."
 (defun ledger-init-load-init-file ()
   "Load and parse the .ledgerrc file."
   (interactive)
-  (when ledger-init-file-name
-    (let ((init-base-name (file-name-nondirectory ledger-init-file-name)))
-      (if (get-buffer init-base-name) ;; init file already loaded, parse it and leave it
-          (setq ledger-environment-alist
-                (ledger-init-parse-initialization init-base-name))
-        (when (file-readable-p ledger-init-file-name)
-          (let ((init-buffer (find-file-noselect ledger-init-file-name)))
-            (setq ledger-environment-alist
-                  (ledger-init-parse-initialization init-buffer))
-            (kill-buffer init-buffer)))))))
+  (when (and ledger-init-file-name
+             (file-readable-p ledger-init-file-name))
+    (with-temp-buffer
+      (insert-file-contents ledger-init-file-name)
+      (setq ledger-environment-alist
+            (ledger-init-parse-initialization (current-buffer))))))
 
 (provide 'ledger-init)
 
