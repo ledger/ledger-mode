@@ -35,7 +35,11 @@
   "Variable to hold details about ledger-mode's environment.
 
 Adding the dotted pair (\"decimal-comma\" . t) will tell ledger
-to treat commas as decimal separator.")
+to treat commas as decimal separator.
+
+This variable is automatically populated by
+`ledger-init-load-init-file', which is called in the body of
+`ledger-mode'.")
 
 (defconst ledger-iso-date-format "%Y-%m-%d"
   "The format for ISO 8601 dates.")
@@ -79,7 +83,7 @@ Returns the current date if DATE is nil or not supplied."
       environment-alist)))
 
 (defun ledger-init-load-init-file ()
-  "Load and parse the .ledgerrc file."
+  "Load and parse the .ledgerrc file into `ledger-environment-alist'."
   (interactive)
   (when (and ledger-init-file-name
              (file-readable-p ledger-init-file-name))
