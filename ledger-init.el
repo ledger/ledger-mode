@@ -86,8 +86,7 @@ Returns the current date if DATE is nil or not supplied."
       (if (get-buffer init-base-name) ;; init file already loaded, parse it and leave it
           (setq ledger-environment-alist
                 (ledger-init-parse-initialization init-base-name))
-        (when (and (file-exists-p ledger-init-file-name)
-                   (file-readable-p ledger-init-file-name))
+        (when (file-readable-p ledger-init-file-name)
           (let ((init-buffer (find-file-noselect ledger-init-file-name)))
             (setq ledger-environment-alist
                   (ledger-init-parse-initialization init-buffer))
