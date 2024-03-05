@@ -66,21 +66,20 @@ Returns the current date if DATE is nil or not supplied."
   (with-current-buffer buffer
     (let (environment-alist)
       (goto-char (point-min))
-      (while (re-search-forward ledger-init-string-regex nil t )
+      (while (re-search-forward ledger-init-string-regex nil t)
         (let ((matchb (match-beginning 0)) ;; save the match data, string-match stamp on it
               (matche (match-end 0)))
           (end-of-line)
-          (setq environment-alist
-                (append environment-alist
-                        (list (cons (let ((flag (buffer-substring-no-properties (+ 2 matchb) matche)))
-                                      (if (string-match "[ \t\n\r]+\\'" flag)
-                                          (replace-match "" t t flag)
-                                        flag))
-                                    (let ((value (buffer-substring-no-properties  matche (point) )))
-                                      (if (> (length value) 0)
-                                          value
-                                        t))))))))
-      environment-alist)))
+          (push (cons (let ((flag (buffer-substring-no-properties (+ 2 matchb) matche)))
+                        (if (string-match "[ \t\n\r]+\\'" flag)
+                            (replace-match "" t t flag)
+                          flag))
+                      (let ((value (buffer-substring-no-properties matche (point))))
+                        (if (> (length value) 0)
+                            value
+                          t)))
+                environment-alist)))
+      (nreverse environment-alist))))
 
 (defun ledger-init-load-init-file ()
   "Load and parse the .ledgerrc file into `ledger-environment-alist'."
