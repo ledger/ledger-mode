@@ -35,7 +35,8 @@
 
 (defcustom ledger-accounts-file nil
   "The path to an optional file in which all accounts are used or declared.
-This file will then be used as a source for account name completions."
+This file will then be used as a source for account name completions.
+See ledger's \"account\" directive."
   :type 'file
   :group 'ledger)
 
