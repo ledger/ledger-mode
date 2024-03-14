@@ -746,6 +746,50 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=262"
   (should (equal '(-0.53 "USD") (ledger-split-commodity-string "-0.53 USD"))))
 
 
+(ert-deftest ledger-reconcile/test-030 ()
+  "`ledger-narrow-on-reconcile' basic functionality
+
+Regression test for #383.
+https://github.com/ledger/ledger-mode/issues/383"
+  :tags '(reconcile regress)
+
+  (let ((ledger-narrow-on-reconcile t))
+    (ledger-tests-with-temp-file
+        demo-ledger
+      (ledger-reconcile "Expenses:Books" '(0 "$"))
+      (switch-to-buffer ledger-reconcile-buffer-name)
+      (with-current-buffer ledger-buf
+        (should (equal (ledger-test-visible-buffer-string) "
+2011/01/27 Book Store
+  Expenses:Books                       $20.00
+  Liabilities:MasterCard
+
+2011/04/27 Bookstore
+  Expenses:Books                       $20.00
+  Assets:Checking
+")))
+
+      (setq ledger-post-account-alignment-column 2)
+      (setq ledger-post-amount-alignment-column 45)
+      (setq ledger-default-date-format "%Y/%m/%d")
+      ;; buffer overlays should be refreshed after adding xact
+      (ledger-reconcile-add "2011/06/15" "Bookstore")
+      (with-current-buffer ledger-buf
+        (should (equal (ledger-test-visible-buffer-string) "
+2011/01/27 Book Store
+  Expenses:Books                       $20.00
+  Liabilities:MasterCard
+
+2011/04/27 Bookstore
+  Expenses:Books                       $20.00
+  Assets:Checking
+
+2011/06/15 Bookstore
+  Expenses:Books                      $ 20.00
+  Assets:Checking
+"))))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here

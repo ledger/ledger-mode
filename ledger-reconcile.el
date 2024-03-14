@@ -302,13 +302,15 @@ Return the number of uncleared xacts found."
         (recenter)
         (ledger-highlight-xact-under-point)))))
 
-(defun ledger-reconcile-add ()
-  "Use ledger xact to add a new transaction."
-  (interactive)
+(defun ledger-reconcile-add (date xact)
+  "Use ledger xact to add a new transaction.
+
+When called interactively, prompt for DATE, then XACT."
+  (interactive
+   (list (ledger-read-date "Date: ")
+         (read-string "Transaction: " nil 'ledger-minibuffer-history)))
   (with-current-buffer ledger-buf
-    (let ((date (ledger-read-date "Date: "))
-          (text (read-string "Transaction: " nil 'ledger-minibuffer-history)))
-      (ledger-add-transaction (concat date " " text))))
+    (ledger-add-transaction (concat date " " xact)))
   (ledger-reconcile-refresh))
 
 (defun ledger-reconcile-delete ()
@@ -506,7 +508,6 @@ Return a count of the uncleared transactions."
 This is achieved by placing that transaction at the bottom of the main window.
 The key to this is to ensure the window is selected when the buffer point is
 moved and recentered.  If they aren't strange things happen."
-
   (let ((reconcile-window (get-buffer-window (get-buffer ledger-reconcile-buffer-name))))
     (when reconcile-window
       (fit-window-to-buffer reconcile-window)
@@ -517,6 +518,9 @@ moved and recentered.  If they aren't strange things happen."
         (recenter))
       (select-window reconcile-window)
       (ledger-reconcile-visit t))
+    (with-current-buffer ledger-buf
+      (when ledger-occur-mode
+        (ledger-occur-refresh)))
     (add-hook 'post-command-hook 'ledger-reconcile-track-xact nil t)))
 
 (defun ledger-reconcile-track-xact ()
