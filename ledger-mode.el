@@ -137,7 +137,7 @@ the balance into that."
                         (buffer-substring-no-properties (point-min) (1- (point-max)))
                       (concat account " is empty.")))))
     (when balance
-      (message balance))))
+      (display-message-or-buffer balance))))
 
 (defun ledger-display-ledger-stats ()
   "Display some summary statistics about the current ledger file."
