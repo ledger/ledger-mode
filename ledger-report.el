@@ -38,8 +38,6 @@
   (require 'rx)
   (require 'subr-x))
 
-(defvar ledger-buf)
-
 (defgroup ledger-report nil
   "Customization option for the Report buffer"
   :group 'ledger)
@@ -153,20 +151,21 @@ Calls `shrink-window-if-larger-than-buffer'."
 
 (defvar ledger-report-buffer-name "*Ledger Report*")
 
-(defvar ledger-report-name nil)
-(defvar ledger-report-cmd nil)
-(defvar ledger-report-name-prompt-history nil)
-(defvar ledger-report-cmd-prompt-history nil)
-(defvar ledger-report-saved nil)
-(defvar ledger-minibuffer-history nil)
-(defvar ledger-report-mode-abbrev-table)
-(defvar ledger-report-current-month nil)
-
-(defvar ledger-report-is-reversed nil)
-(defvar ledger-report-cursor-line-number nil)
+(defvar-local ledger-report-name nil)
+(defvar-local ledger-report-cmd nil)
+(defvar-local ledger-report-saved nil)
+(defvar-local ledger-report-current-month nil)
+(defvar-local ledger-report-is-reversed nil)
+(defvar-local ledger-report-cursor-line-number nil)
+(defvar-local ledger-report-ledger-buf nil)
 (defvar-local ledger-master-file nil
   "The master file for the current buffer.
 See documentation for the function `ledger-master-file'")
+
+(defvar ledger-report-name-prompt-history nil)
+(defvar ledger-report-cmd-prompt-history nil)
+(defvar ledger-minibuffer-history nil)
+(defvar ledger-report-mode-abbrev-table)
 
 (defun ledger-report-reverse-report ()
   "Reverse the order of the report."
@@ -288,12 +287,12 @@ used to generate the buffer, navigating the buffer, etc."
       (with-silent-modifications
         (erase-buffer)
         (ledger-report-mode)
-        (set (make-local-variable 'ledger-report-saved) nil)
-        (set (make-local-variable 'ledger-buf) buf)
-        (set (make-local-variable 'ledger-report-name) report-name)
-        (set (make-local-variable 'ledger-report-is-reversed) nil)
-        (set (make-local-variable 'ledger-report-current-month) nil)
-        (set 'ledger-master-file file)
+        (setq ledger-report-saved nil)
+        (setq ledger-report-ledger-buf buf)
+        (setq ledger-report-name report-name)
+        (setq ledger-report-is-reversed nil)
+        (setq ledger-report-current-month nil)
+        (setq ledger-master-file file)
         (ledger-do-report (ledger-report-cmd report-name edit)))
       (ledger-report-maybe-shrink-window)
       (run-hooks 'ledger-report-after-report-hook)
@@ -307,7 +306,7 @@ used to generate the buffer, navigating the buffer, etc."
   "Compute the string to be used as the header in the `ledger-report' buffer."
   (format "Ledger Report: %s -- Buffer: %s -- Command: %s"
           (propertize ledger-report-name 'face 'font-lock-constant-face)
-          (propertize (buffer-name ledger-buf) 'face 'font-lock-string-face)
+          (propertize (buffer-name ledger-report-ledger-buf) 'face 'font-lock-string-face)
           (propertize ledger-report-cmd 'face 'font-lock-comment-face)))
 
 (defun ledger-report-string-empty-p (s)
@@ -433,7 +432,7 @@ MONTH is of the form (YEAR . INDEX) where INDEX ranges from
                (f (cdr (assoc specifier ledger-report-format-specifiers))))
           (if f
               (let* ((arg (save-match-data
-                            (with-current-buffer ledger-buf
+                            (with-current-buffer ledger-report-ledger-buf
                               (funcall f))))
                      (quoted (if (listp arg)
                                  (mapconcat #'identity arg " ")
@@ -469,7 +468,7 @@ Optionally EDIT the command."
       (setq report-cmd (ledger-report-read-command report-cmd))
       (setq ledger-report-saved nil)) ;; this is a new report, or edited report
     (setq report-cmd (ledger-report-expand-format-specifiers report-cmd))
-    (set (make-local-variable 'ledger-report-cmd) report-cmd)
+    (setq ledger-report-cmd report-cmd)
     (or (ledger-report-string-empty-p report-name)
         (ledger-report-name-exists report-name)
         (progn
@@ -486,7 +485,7 @@ Optionally EDIT the command."
   "Rebuild report with transactions from current month + SHIFT."
   (let* ((current-month (or ledger-report-current-month (ledger-report--current-month)))
          (previous-month (ledger-report--shift-month current-month shift)))
-    (set (make-local-variable 'ledger-report-current-month) previous-month)
+    (setq ledger-report-current-month previous-month)
     (ledger-report-cmd ledger-report-name nil)
     (ledger-report-redo)))
 
