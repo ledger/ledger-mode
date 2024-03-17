@@ -471,7 +471,6 @@ Optionally EDIT the command."
     (when (or (null report-cmd) edit)
       (setq report-cmd (ledger-report-read-command report-cmd))
       (setq ledger-report-saved nil)) ;; this is a new report, or edited report
-    (setq report-cmd (ledger-report-expand-format-specifiers report-cmd))
     (set (make-local-variable 'ledger-report-cmd) report-cmd)
     (or (ledger-report-string-empty-p report-name)
         (ledger-report-name-exists report-name)
@@ -526,6 +525,7 @@ arguments returned by `ledger-report--compute-extra-args'."
          (marker-re (concat " *" (regexp-quote marker)))
          (args (ledger-report--compute-extra-args cmd))
          (args-str (concat " " (mapconcat #'shell-quote-argument args " ")))
+         (cmd (ledger-report-expand-format-specifiers cmd))
          (clean-cmd (replace-regexp-in-string marker-re "" cmd t t))
          (real-cmd (replace-regexp-in-string marker-re args-str cmd t t)))
     (setq header-line-format
