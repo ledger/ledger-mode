@@ -37,14 +37,16 @@
   "The path to an optional file in which all accounts are used or declared.
 This file will then be used as a source for account name completions.
 See ledger's \"account\" directive."
-  :type 'file
+  :type '(choice (const :tag "Use current buffer for completion" nil)
+                 file)
   :group 'ledger)
 
 (defcustom ledger-accounts-exclude-function nil
   "Function to exclude accounts from completion.
 Should be a predicate function that accepts one argument, an
 element of `ledger-accounts-list-in-buffer'."
-  :type 'function
+  :type '(choice (const :tag "Do not exclude any accounts from completion" nil)
+                 function)
   :group 'ledger
   :package-version '(ledger-mode . "2019-08-14"))
 
