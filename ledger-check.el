@@ -39,8 +39,8 @@
 
 (defvar ledger-check-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [return] 'ledger-report-visit-source)
-    (define-key map [?q] 'ledger-check-quit)
+    (define-key map (kbd "RET") #'ledger-report-visit-source)
+    (define-key map (kbd "q") #'ledger-check-quit)
     map)
   "Keymap for `ledger-check-mode'.")
 

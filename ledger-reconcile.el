@@ -607,29 +607,29 @@ moved and recentered.  If they aren't strange things happen."
 
 (defvar ledger-reconcile-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [(control ?m)] #'ledger-reconcile-visit)
-    (define-key map [return] #'ledger-reconcile-visit)
-    (define-key map [(control ?x) (control ?s)] #'ledger-reconcile-save)
-    (define-key map [(control ?l)] #'ledger-reconcile-refresh)
-    (define-key map [(control ?c) (control ?c)] #'ledger-reconcile-finish)
-    (define-key map [? ] #'ledger-reconcile-toggle)
-    (define-key map [?a] #'ledger-reconcile-add)
-    (define-key map [?d] #'ledger-reconcile-delete)
-    (define-key map [?g] #'ledger-reconcile);
-    (define-key map [?n] #'next-line)
-    (define-key map [?p] #'previous-line)
-    (define-key map [?t] #'ledger-reconcile-change-target)
-    (define-key map [?s] #'ledger-reconcile-save)
-    (define-key map [?q] #'ledger-reconcile-quit)
-    (define-key map [?b] #'ledger-display-balance)
+    (define-key map (kbd "C-m") #'ledger-reconcile-visit)
+    (define-key map (kbd "<return>") #'ledger-reconcile-visit)
+    (define-key map (kbd "C-x C-s") #'ledger-reconcile-save)
+    (define-key map (kbd "C-l") #'ledger-reconcile-refresh)
+    (define-key map (kbd "C-c C-c") #'ledger-reconcile-finish)
+    (define-key map (kbd "SPC") #'ledger-reconcile-toggle)
+    (define-key map (kbd "a") #'ledger-reconcile-add)
+    (define-key map (kbd "d") #'ledger-reconcile-delete)
+    (define-key map (kbd "g") #'ledger-reconcile);
+    (define-key map (kbd "n") #'next-line)
+    (define-key map (kbd "p") #'previous-line)
+    (define-key map (kbd "t") #'ledger-reconcile-change-target)
+    (define-key map (kbd "s") #'ledger-reconcile-save)
+    (define-key map (kbd "q") #'ledger-reconcile-quit)
+    (define-key map (kbd "b") #'ledger-display-balance)
 
-    (define-key map [(control ?c) (control ?o)] (ledger-reconcile-change-sort-key-and-refresh "(0)"))
+    (define-key map (kbd "C-c C-o") (ledger-reconcile-change-sort-key-and-refresh "(0)"))
 
-    (define-key map [(control ?c) (control ?a)] (ledger-reconcile-change-sort-key-and-refresh "(amount)"))
+    (define-key map (kbd "C-c C-a") (ledger-reconcile-change-sort-key-and-refresh "(amount)"))
 
-    (define-key map [(control ?c) (control ?d)] (ledger-reconcile-change-sort-key-and-refresh "(date)"))
+    (define-key map (kbd "C-c C-d") (ledger-reconcile-change-sort-key-and-refresh "(date)"))
 
-    (define-key map [(control ?c) (control ?p)] (ledger-reconcile-change-sort-key-and-refresh "(payee)"))
+    (define-key map (kbd "C-c C-p") (ledger-reconcile-change-sort-key-and-refresh "(payee)"))
     map)
   "Keymap for `ledger-reconcile-mode'.")
 
