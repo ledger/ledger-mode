@@ -117,6 +117,24 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1030"
 "))))
 
 
+(ert-deftest ledger-state/test-003 ()
+  "Regression test for #274
+https://github.com/ledger/ledger-mode/issues/274"
+  :tags '(state regress)
+
+  ;; deliberately no newline at the end of the file
+  (ledger-tests-with-temp-file
+   "2011/01/19 Grocery Store
+  Expenses:Food:Groceries             $ 44.00 ; hastag: not block
+  Assets:Checking"
+   (goto-char (point-min))
+   (ledger-toggle-current)
+   (should
+    (equal (buffer-string)
+           "2011/01/19 * Grocery Store
+  Expenses:Food:Groceries             $ 44.00 ; hastag: not block
+  Assets:Checking"))))
+
 (provide 'state-test)
 
 ;;; state-test.el ends here

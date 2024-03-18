@@ -217,17 +217,16 @@ dropped."
   (interactive)
   (if (or ledger-clear-whole-transactions
           (eq 'transaction (ledger-thing-at-point)))
-      (progn
+      (let ((end (save-excursion (ledger-navigate-end-of-xact) (point-marker))))
+        ;; clear state markings on postings
         (save-excursion
           (forward-line)
-          (goto-char (line-beginning-position))
-          (while (and (not (eolp))
-                      (save-excursion
-                        (not (eq 'transaction (ledger-thing-at-point)))))
-            (if (looking-at "\\s-+[*!]")
-                (ledger-toggle-current-posting style))
-            (forward-line)
-            (goto-char (line-beginning-position))))
+          (beginning-of-line)
+          (while (< (point) end)
+            (when (looking-at "\\s-+[*!]")
+              (ledger-toggle-current-posting style))
+            (forward-line)))
+        (set-marker end nil)
         (ledger-toggle-current-transaction style))
     (ledger-toggle-current-posting style)))
 
