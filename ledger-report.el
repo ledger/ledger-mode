@@ -436,7 +436,8 @@ MONTH is of the form (YEAR . INDEX) where INDEX ranges from
                               (funcall f))))
                      (quoted (if (listp arg)
                                  (mapconcat #'identity arg " ")
-                               (shell-quote-argument arg))))
+                               (save-match-data
+                                 (shell-quote-argument arg)))))
                 (setq expanded-cmd (replace-match quoted t t expanded-cmd))))))
       expanded-cmd)))
 
