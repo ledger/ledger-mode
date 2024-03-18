@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(require 'ledger-init)                  ;for `ledger-default-date-format'
+
 (declare-function ledger-master-file "ledger-report" ())
 
 (defconst ledger-version-needed "3.0.0"
