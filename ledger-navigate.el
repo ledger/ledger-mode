@@ -39,7 +39,9 @@
     (goto-char (point-max))))
 
 (defun ledger-navigate-start-xact-or-directive-p ()
-  "Return t if at the beginning of an empty or all-whitespace line."
+  "Return t if at the beginning line of an xact or directive.
+
+Assumes point is at the beginning of a line."
   (not (looking-at "[ \t]\\|\\(^$\\)")))
 
 (defun ledger-navigate-next-xact-or-directive ()
