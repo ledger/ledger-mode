@@ -32,7 +32,7 @@
 
 
 (defvar ledger-check-buffer-name "*Ledger Check*")
-(defvar ledger-original-window-cfg nil)
+(defvar-local ledger-check--original-window-configuration nil)
 
 
 
@@ -45,7 +45,7 @@
   "Keymap for `ledger-check-mode'.")
 
 (easy-menu-define ledger-check-mode-menu ledger-check-mode-map
-  "Ledger check menu"
+  "Ledger check menu."
   '("Check"
     ;; ["Re-run Check" ledger-check-redo]
     "---"
@@ -106,7 +106,7 @@
   "Quit the ledger check buffer."
   (interactive)
   (ledger-check-goto)
-  (set-window-configuration ledger-original-window-cfg)
+  (set-window-configuration ledger-check--original-window-configuration)
   (kill-buffer (get-buffer ledger-check-buffer-name)))
 
 (defun ledger-check-buffer ()
@@ -130,7 +130,7 @@ commands for navigating the buffer to the errors found, etc."
     (with-current-buffer
         (pop-to-buffer (get-buffer-create ledger-check-buffer-name))
       (ledger-check-mode)
-      (set (make-local-variable 'ledger-original-window-cfg) wcfg)
+      (setq ledger-check--original-window-configuration wcfg)
       (ledger-do-check)
       (shrink-window-if-larger-than-buffer)
       (set-buffer-modified-p nil)

@@ -40,10 +40,14 @@
 (declare-function ledger-read-account-with-prompt "ledger-mode" (prompt))
 (declare-function ledger-read-date "ledger-mode" (prompt))
 
-(defvar ledger-buf nil)
-(defvar ledger-bufs nil)
-(defvar ledger-acct nil)
-(defvar ledger-target nil)
+(defvar-local ledger-reconcile-ledger-buf nil
+  "Buffer from which the current reconcile buffer was created.")
+
+(defvar-local ledger-reconcile-account nil
+  "Account being reconciled in the current buffer.")
+
+(defvar-local ledger-reconcile-target nil
+  "Target amount for this reconciliation process.")
 
 (defgroup ledger-reconcile nil
   "Options for Ledger-mode reconciliation"
@@ -202,12 +206,12 @@ described above."
   "Display the cleared-or-pending balance.
 And calculate the target-delta of the account being reconciled."
   (interactive)
-  (let* ((pending (ledger-reconcile-get-cleared-or-pending-balance ledger-buf ledger-acct)))
+  (let* ((pending (ledger-reconcile-get-cleared-or-pending-balance ledger-reconcile-ledger-buf ledger-reconcile-account)))
     (when pending
-      (if ledger-target
+      (if ledger-reconcile-target
           (message "Cleared and Pending balance: %s,   Difference from target: %s"
                    (ledger-commodity-to-string pending)
-                   (ledger-commodity-to-string (ledger-subtract-commodity ledger-target pending)))
+                   (ledger-commodity-to-string (ledger-subtract-commodity ledger-reconcile-target pending)))
         (message "Pending balance: %s"
                  (ledger-commodity-to-string pending))))))
 
@@ -309,7 +313,7 @@ When called interactively, prompt for DATE, then XACT."
   (interactive
    (list (ledger-read-date "Date: ")
          (read-string "Transaction: " nil 'ledger-minibuffer-history)))
-  (with-current-buffer ledger-buf
+  (with-current-buffer ledger-reconcile-ledger-buf
     (ledger-add-transaction (concat date " " xact)))
   (ledger-reconcile-refresh))
 
@@ -353,9 +357,8 @@ When called interactively, prompt for DATE, then XACT."
   "Save the ledger buffer."
   (interactive)
   (with-selected-window (selected-window) ; restoring window is needed because after-save-hook will modify window and buffers
-    (dolist (buf (cons ledger-buf ledger-bufs))
-      (with-current-buffer buf
-        (basic-save-buffer)))))
+    (with-current-buffer ledger-reconcile-ledger-buf
+      (basic-save-buffer))))
 
 
 (defun ledger-reconcile-finish ()
@@ -386,7 +389,7 @@ exit reconcile mode if `ledger-reconcile-finish-force-quit'"
     (if reconcile-buf
         (with-current-buffer reconcile-buf
           (ledger-reconcile-quit-cleanup)
-          (setq buf ledger-buf)
+          (setq buf ledger-reconcile-ledger-buf)
           ;; Make sure you delete the window before you delete the buffer,
           ;; otherwise, madness ensues
           (delete-window (get-buffer-window reconcile-buf))
@@ -396,7 +399,7 @@ exit reconcile mode if `ledger-reconcile-finish-force-quit'"
 (defun ledger-reconcile-quit-cleanup ()
   "Cleanup all hooks established by reconcile mode."
   (interactive)
-  (let ((buf ledger-buf))
+  (let ((buf ledger-reconcile-ledger-buf))
     (if (buffer-live-p buf)
         (with-current-buffer buf
           (remove-hook 'after-save-hook 'ledger-reconcile-refresh-after-save t)
@@ -405,10 +408,10 @@ exit reconcile mode if `ledger-reconcile-finish-force-quit'"
             (ledger-highlight-xact-under-point))))))
 
 (defun ledger-marker-where-xact-is (emacs-xact posting)
-  "Find the position of the EMACS-XACT in the `ledger-buf'.
+  "Find the position of the EMACS-XACT in the `ledger-reconcile-ledger-buf'.
 POSTING is used in `ledger-clear-whole-transactions' is nil."
   (let ((buf (if (ledger-is-stdin (nth 0 emacs-xact))
-                 ledger-buf
+                 ledger-reconcile-ledger-buf
                (find-file-noselect (nth 0 emacs-xact)))))
     (cons
      buf
@@ -474,8 +477,8 @@ POSTING is used in `ledger-clear-whole-transactions' is nil."
   "SORT the uncleared transactions in the account.
 The sorted results are displayed in in the *Reconcile* buffer.
 Return a count of the uncleared transactions."
-  (let* ((buf ledger-buf)
-         (account ledger-acct)
+  (let* ((buf ledger-reconcile-ledger-buf)
+         (account ledger-reconcile-account)
          (sort-by (if sort
                       sort
                     "(date)"))
@@ -511,14 +514,14 @@ moved and recentered.  If they aren't strange things happen."
   (let ((reconcile-window (get-buffer-window (get-buffer ledger-reconcile-buffer-name))))
     (when reconcile-window
       (fit-window-to-buffer reconcile-window)
-      (with-current-buffer ledger-buf
+      (with-current-buffer ledger-reconcile-ledger-buf
         (add-hook 'kill-buffer-hook 'ledger-reconcile-quit nil t)
-        (if (get-buffer-window ledger-buf)
-            (select-window (get-buffer-window ledger-buf)))
+        (if (get-buffer-window ledger-reconcile-ledger-buf)
+            (select-window (get-buffer-window ledger-reconcile-ledger-buf)))
         (recenter))
       (select-window reconcile-window)
       (ledger-reconcile-visit t))
-    (with-current-buffer ledger-buf
+    (with-current-buffer ledger-reconcile-ledger-buf
       (when ledger-occur-mode
         (ledger-occur-refresh)))
     (add-hook 'post-command-hook 'ledger-reconcile-track-xact nil t)))
@@ -550,7 +553,10 @@ moved and recentered.  If they aren't strange things happen."
         (search-forward account nil t))))
 
 (defun ledger-reconcile (&optional account target)
-  "Start reconciling, prompt for ACCOUNT."
+  "Start reconciling, prompt for ACCOUNT.
+
+If TARGET is non-nil, it is used as the initial target for
+reconciliation, otherwise prompt for TARGET."
   (interactive)
   (let ((account (or account (ledger-read-account-with-prompt "Account to reconcile")))
         (buf (current-buffer))
@@ -559,11 +565,11 @@ moved and recentered.  If they aren't strange things happen."
     (when (ledger-reconcile-check-valid-account account)
       (if rbuf ;; *Reconcile* already exists
           (with-current-buffer rbuf
-            (set 'ledger-acct account) ;; already buffer local
+            (setq ledger-reconcile-account account)
             (when (not (eq buf rbuf))
               ;; called from some other ledger-mode buffer
               (ledger-reconcile-quit-cleanup)
-              (setq ledger-buf buf)) ;; should already be buffer-local
+              (setq ledger-reconcile-ledger-buf buf))
 
             (unless (get-buffer-window rbuf)
               (ledger-reconcile-open-windows buf rbuf)))
@@ -574,9 +580,8 @@ moved and recentered.  If they aren't strange things happen."
                                    (get-buffer-create ledger-reconcile-buffer-name))
           (ledger-reconcile-open-windows buf rbuf)
           (ledger-reconcile-mode)
-          (make-local-variable 'ledger-target)
-          (set (make-local-variable 'ledger-buf) buf)
-          (set (make-local-variable 'ledger-acct) account)))
+          (setq ledger-reconcile-ledger-buf buf)
+          (setq ledger-reconcile-account account)))
 
       (add-hook 'after-save-hook 'ledger-reconcile-refresh-after-save nil t)
 
@@ -594,7 +599,7 @@ moved and recentered.  If they aren't strange things happen."
 (defun ledger-reconcile-change-target (&optional target)
   "Change the TARGET amount for the reconciliation process."
   (interactive)
-  (setq ledger-target (or target (ledger-read-commodity-string ledger-reconcile-target-prompt-string)))
+  (setq ledger-reconcile-target (or target (ledger-read-commodity-string ledger-reconcile-target-prompt-string)))
   (ledger-display-balance))
 
 (defmacro ledger-reconcile-change-sort-key-and-refresh (sort-by)
