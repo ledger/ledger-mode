@@ -758,7 +758,7 @@ https://github.com/ledger/ledger-mode/issues/383"
         demo-ledger
       (ledger-reconcile "Expenses:Books" '(0 "$"))
       (switch-to-buffer ledger-reconcile-buffer-name)
-      (with-current-buffer ledger-buf
+      (with-current-buffer ledger-reconcile-ledger-buf
         (should (equal (ledger-test-visible-buffer-string) "
 2011/01/27 Book Store
   Expenses:Books                       $20.00
@@ -774,7 +774,7 @@ https://github.com/ledger/ledger-mode/issues/383"
       (setq ledger-default-date-format "%Y/%m/%d")
       ;; buffer overlays should be refreshed after adding xact
       (ledger-reconcile-add "2011/06/15" "Bookstore")
-      (with-current-buffer ledger-buf
+      (with-current-buffer ledger-reconcile-ledger-buf
         (should (equal (ledger-test-visible-buffer-string) "
 2011/01/27 Book Store
   Expenses:Books                       $20.00
