@@ -39,7 +39,7 @@
   (require 'subr-x))
 
 (defgroup ledger-report nil
-  "Customization option for the Report buffer"
+  "Customization option for the Report buffer."
   :group 'ledger)
 
 (defcustom ledger-reports
@@ -208,7 +208,7 @@ See documentation for the function `ledger-master-file'")
   "Keymap for `ledger-report-mode'.")
 
 (easy-menu-define ledger-report-mode-menu ledger-report-mode-map
-  "Ledger report menu"
+  "Ledger report menu."
   '("Reports"
     ["Select Report" ledger-report]
     ["Save Report" ledger-report-save]
