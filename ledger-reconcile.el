@@ -41,7 +41,6 @@
 (declare-function ledger-read-date "ledger-mode" (prompt))
 
 (defvar ledger-buf nil)
-(defvar ledger-bufs nil)
 (defvar ledger-acct nil)
 (defvar ledger-target nil)
 
@@ -353,9 +352,8 @@ When called interactively, prompt for DATE, then XACT."
   "Save the ledger buffer."
   (interactive)
   (with-selected-window (selected-window) ; restoring window is needed because after-save-hook will modify window and buffers
-    (dolist (buf (cons ledger-buf ledger-bufs))
-      (with-current-buffer buf
-        (basic-save-buffer)))))
+    (with-current-buffer ledger-buf
+      (basic-save-buffer))))
 
 
 (defun ledger-reconcile-finish ()
