@@ -22,7 +22,10 @@
 ;;; Commentary:
 ;; Flymake is the built-in Emacs package to support on-the-fly syntax checking.
 ;; This file adds support for flymake to `ledger-mode'.  Enable it by calling
-;; `flymake-mode' from a file-visiting ledger buffer.
+;; `ledger-flymake-enable' from a file-visiting ledger buffer.  To enable it
+;; automatically, put this in your .emacs:
+;;
+;;     (add-hook 'ledger-mode-hook #'ledger-flymake-enable)
 
 ;;; Code:
 (require 'cl-lib)
