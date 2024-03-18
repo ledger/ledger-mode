@@ -56,6 +56,67 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1030"
 " ))))
 
 
+(ert-deftest ledger-state/test-002 ()
+  "General tests for various behaviors of `ledger-toggle-current'."
+  :tags '(state)
+
+  (ledger-tests-with-temp-file
+      "\
+2024-01-01 * Grocery
+    Expenses:Groceries    50.00 USD
+    Expenses:Household    20.00 USD
+    Liabilities:Credit Card
+"
+    ;; toggling posting while xact is cleared causes other postings to be
+    ;; individually cleared
+    (forward-line)
+    (ledger-toggle-current)
+    (should (equal (buffer-string)
+                   "\
+2024-01-01 Grocery
+    Expenses:Groceries    50.00 USD
+    * Expenses:Household  20.00 USD
+    * Liabilities:Credit Card
+"))
+
+    ;; when state char is removed, amounts remain in the original column
+    (forward-line)
+    (ledger-toggle-current)
+    (forward-line)
+    (ledger-toggle-current)
+    (should (equal (buffer-string)
+                   "\
+2024-01-01 Grocery
+    Expenses:Groceries    50.00 USD
+    Expenses:Household    20.00 USD
+    Liabilities:Credit Card
+"))
+
+    ;; when state char is inserted, amounts remain in the original column
+    (forward-line -1)
+    (ledger-toggle-current)
+    (forward-line -1)
+    (ledger-toggle-current)
+    (should (equal (buffer-string)
+                   "\
+2024-01-01 Grocery
+    * Expenses:Groceries  50.00 USD
+    * Expenses:Household  20.00 USD
+    Liabilities:Credit Card
+"))
+
+    ;; toggling on xact causes the post state chars to be cleared
+    (forward-line -1)
+    (ledger-toggle-current)
+    (should (equal (buffer-string)
+                   "\
+2024-01-01 * Grocery
+    Expenses:Groceries    50.00 USD
+    Expenses:Household    20.00 USD
+    Liabilities:Credit Card
+"))))
+
+
 (provide 'state-test)
 
 ;;; state-test.el ends here
