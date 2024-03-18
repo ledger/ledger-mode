@@ -548,7 +548,10 @@ moved and recentered.  If they aren't strange things happen."
         (search-forward account nil t))))
 
 (defun ledger-reconcile (&optional account target)
-  "Start reconciling, prompt for ACCOUNT."
+  "Start reconciling, prompt for ACCOUNT.
+
+If TARGET is non-nil, it is used as the initial target for
+reconciliation, otherwise prompt for TARGET."
   (interactive)
   (let ((account (or account (ledger-read-account-with-prompt "Account to reconcile")))
         (buf (current-buffer))
