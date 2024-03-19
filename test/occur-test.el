@@ -93,6 +93,54 @@ https://github.com/ledger/ledger-mode/issues/54"
                 'ledger-occur-xact-face))))
 
 
+(ert-deftest ledger-occur/test-003 ()
+  "Additional tests for various edge cases."
+  :tags '(occur regress)
+
+  (ledger-tests-with-temp-file
+      "\
+2024-03-12 Grocery Store
+  Expenses:Food:Groceries     $50
+  Assets:Checking
+
+2024-03-15 Employer
+  * Assets:Checking           $2000.00
+  Income:Salary
+
+2024-03-19 Grocery Store
+  Expenses:Food:Groceries     $50
+  Assets:Checking
+"
+    ;; invisible on both sides of a visible portion
+    (ledger-occur "Employer")
+    (should
+     (equal (ledger-test-visible-buffer-string)
+            "\
+
+2024-03-15 Employer
+  * Assets:Checking           $2000.00
+  Income:Salary
+"))
+
+    ;; no matches
+    (ledger-occur "zzzzzz")
+    (should
+     (equal (ledger-test-visible-buffer-string)
+            "\
+2024-03-12 Grocery Store
+  Expenses:Food:Groceries     $50
+  Assets:Checking
+
+2024-03-15 Employer
+  * Assets:Checking           $2000.00
+  Income:Salary
+
+2024-03-19 Grocery Store
+  Expenses:Food:Groceries     $50
+  Assets:Checking
+"))))
+
+
 (provide 'occur-test)
 
 ;;; occur-test.el ends here
