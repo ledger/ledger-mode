@@ -128,6 +128,7 @@ Argument OVL-BOUNDS contains bounds for the transactions to be left visible."
       (ledger-occur-make-invisible-overlay (1+ end) (1- (car visible)))
       (setq beg (car visible))
       (setq end (cadr visible)))
+    (ledger-occur-make-visible-overlay beg end)
     (ledger-occur-make-invisible-overlay (1+ end) (point-max))))
 
 (defun ledger-occur-remove-overlays ()
