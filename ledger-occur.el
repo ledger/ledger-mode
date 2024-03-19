@@ -106,30 +106,31 @@ currently active."
 
 
 (defun ledger-occur-make-visible-overlay (beg end)
-  (let ((ovl (make-overlay beg end (current-buffer))))
+  "Make an overlay for a visible portion of the buffer, from BEG to END."
+  (let ((ovl (make-overlay beg end)))
     (overlay-put ovl ledger-occur-overlay-property-name t)
     (when ledger-occur-use-face-shown
       (overlay-put ovl 'font-lock-face 'ledger-occur-xact-face))))
 
 (defun ledger-occur-make-invisible-overlay (beg end)
-  (let ((ovl (make-overlay beg end (current-buffer))))
+  "Make an overlay for an invisible portion of the buffer, from BEG to END."
+  (let ((ovl (make-overlay beg end)))
     (overlay-put ovl ledger-occur-overlay-property-name t)
     (overlay-put ovl 'invisible t)))
 
 (defun ledger-occur-create-overlays (ovl-bounds)
   "Create the overlays for the visible transactions.
 Argument OVL-BOUNDS contains bounds for the transactions to be left visible."
-  (let* ((beg (caar ovl-bounds))
-         (end (cl-cadar ovl-bounds)))
-    (ledger-occur-remove-overlays)
-    (ledger-occur-make-invisible-overlay (point-min) (1- beg))
-    (dolist (visible (cdr ovl-bounds))
+  (ledger-occur-remove-overlays)
+  (let ((end-of-last-visible (point-min)))
+    (pcase-dolist (`(,beg ,end) ovl-bounds)
+      ;; keep newline before xact visible, but do not highlight it with
+      ;; `ledger-occur-xact-face'
+      (ledger-occur-make-invisible-overlay end-of-last-visible (1- beg))
       (ledger-occur-make-visible-overlay beg end)
-      (ledger-occur-make-invisible-overlay (1+ end) (1- (car visible)))
-      (setq beg (car visible))
-      (setq end (cadr visible)))
-    (ledger-occur-make-visible-overlay beg end)
-    (ledger-occur-make-invisible-overlay (1+ end) (point-max))))
+      ;; keep newline after xact visible
+      (setq end-of-last-visible (1+ end)))
+    (ledger-occur-make-invisible-overlay end-of-last-visible (point-max))))
 
 (defun ledger-occur-remove-overlays ()
   "Remove the transaction hiding overlays."
