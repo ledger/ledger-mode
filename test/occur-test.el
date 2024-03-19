@@ -35,7 +35,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=246"
   :tags '(occur regress)
 
   (ledger-tests-with-temp-file
-   "2011/01/02 Grocery Store
+      "2011/01/02 Grocery Store
   Expenses:Food:Groceries             $ 65.00
   * Assets:Checking
 
@@ -43,13 +43,54 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=246"
   * Assets:Checking                 $ 2000.00
   Income:Salary
 "
-   (ledger-occur "Groceries")
-   (should
-    (equal (ledger-test-visible-buffer-string)
-           "2011/01/02 Grocery Store
+    (ledger-occur "Groceries")
+    (should
+     (equal (ledger-test-visible-buffer-string)
+            "2011/01/02 Grocery Store
   Expenses:Food:Groceries             $ 65.00
   * Assets:Checking
 "))))
+
+(ert-deftest ledger-occur/test-002 ()
+  "Regression test for #54.
+https://github.com/ledger/ledger-mode/issues/54"
+  :tags '(occur regress)
+
+  (ledger-tests-with-temp-file
+      "\
+2024-03-12 Grocery Store
+  Expenses:Food:Groceries     $50
+  Assets:Checking
+
+2024-03-15 Employer
+  * Assets:Checking           $2000.00
+  Income:Salary
+
+2024-03-19 Grocery Store
+  Expenses:Food:Groceries     $50
+  Assets:Checking
+"
+    (ledger-occur "Groceries")
+    (should
+     (equal (ledger-test-visible-buffer-string)
+            "\
+2024-03-12 Grocery Store
+  Expenses:Food:Groceries     $50
+  Assets:Checking
+
+2024-03-19 Grocery Store
+  Expenses:Food:Groceries     $50
+  Assets:Checking
+"))
+
+    (setq ledger-occur-use-face-shown t)
+    (goto-char (point-min))
+    (search-forward "2024-03-12")
+    (should (eq (get-char-property (point) 'font-lock-face)
+                'ledger-occur-xact-face))
+    (search-forward "2024-03-19")
+    (should (eq (get-char-property (point) 'font-lock-face)
+                'ledger-occur-xact-face))))
 
 
 (provide 'occur-test)
