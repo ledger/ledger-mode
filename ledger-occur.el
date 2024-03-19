@@ -155,7 +155,9 @@ Argument OVL-BOUNDS contains bounds for the transactions to be left visible."
       (nreverse lines))))
 
 (defun ledger-occur-compress-matches (buffer-matches)
-  "identify sequential xacts to reduce number of overlays required"
+  "Identify sequential xacts to reduce number of overlays required.
+
+BUFFER-MATCHES should be a list of (BEG END) lists."
   (if buffer-matches
       (let ((points (list))
             (current-beginning (caar buffer-matches))
