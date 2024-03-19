@@ -92,8 +92,8 @@ currently active."
 (defun ledger-occur-prompt ()
   "Return the default value of the prompt.
 
-   Default value for prompt is a current word or active
-   region(selection), if its size is 1 line"
+Default value for prompt is the active region, if it is one line
+long, otherwise it is the word at point."
   (if (use-region-p)
       (let ((pos1 (region-beginning))
             (pos2 (region-end)))
