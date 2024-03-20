@@ -61,12 +61,15 @@ always located at the beginning of buffer."
           (ledger-init-file-name nil))
      (unwind-protect
          (with-current-buffer ledger-buffer
-           (switch-to-buffer ledger-buffer)    ; this selects window
+           (switch-to-buffer ledger-buffer) ; this selects window
            (ledger-mode)
            (insert ,contents)
            (goto-char (point-min))
            ,@body)
-       (and ledger-buffer (kill-buffer ledger-buffer))
+       (when (buffer-live-p ledger-buffer)
+         (with-current-buffer ledger-buffer
+           (set-buffer-modified-p nil)
+           (kill-buffer)))
        (ledger-tests-reset-custom-values 'ledger)
        (delete-file temp-file))))
 
