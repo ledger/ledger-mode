@@ -36,19 +36,20 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1107"
 
   (ledger-tests-with-temp-file
       demo-ledger
-    (ledger-reconcile "Assets:Checking" '(0 "$")) ; this moves to *reconcile* buffer
-    (other-window 1)                ; go to *ledger* buffer
-    (insert " ")                    ; simulate modification of ledger buffer
-    (delete-char -1)
-    (other-window 1)                ; back to *reconcile* buffer
-    (ledger-reconcile-save)         ; key 's'
-    (should ;; current buffer should be *reconcile* buffer
-     (equal (buffer-name)           ; current buffer name
-            ledger-reconcile-buffer-name))
-    (other-window 1)                ; switch to *other* window
-    (should ;; Expected: this must be ledger buffer
-     (equal (buffer-name)           ; current buffer name
-            (buffer-name ledger-buffer)))))
+    (let ((ledger-buf-window (selected-window)))
+      (ledger-reconcile "Assets:Checking" '(0 "$")) ; this moves to *reconcile* buffer
+      (select-window ledger-buf-window)             ; go to *ledger* buffer
+      (insert " ")                      ; simulate modification of ledger buffer
+      (delete-char -1)
+      (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; back to *reconcile* buffer
+      (ledger-reconcile-save)      ; key 's'
+      (should                      ; current buffer should be *reconcile* buffer
+       (equal (buffer-name)        ; current buffer name
+              ledger-reconcile-buffer-name))
+      (select-window ledger-buf-window) ; switch to *other* window
+      (should                           ; Expected: this must be ledger buffer
+       (equal (buffer-name)             ; current buffer name
+              (buffer-name ledger-buffer))))))
 
 
 (ert-deftest ledger-reconcile/test-002 ()
