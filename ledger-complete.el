@@ -203,14 +203,11 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
 
 (defun ledger-find-accounts-in-buffer ()
   (let ((account-tree (list t))
-        (account-elements nil)
-        (prefix ""))
+        (account-elements nil))
     (save-excursion
       (goto-char (point-min))
 
-      (dolist (account
-               (cl-remove-if-not (lambda (c) (string-prefix-p prefix c))
-                                 (ledger-accounts-list)))
+      (dolist (account (ledger-accounts-list))
         (let ((root account-tree))
           (setq account-elements
                 (split-string
