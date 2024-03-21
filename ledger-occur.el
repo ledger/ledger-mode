@@ -92,8 +92,8 @@ currently active."
 (defun ledger-occur-prompt ()
   "Return the default value of the prompt.
 
-   Default value for prompt is a current word or active
-   region(selection), if its size is 1 line"
+Default value for prompt is the active region, if it is one line
+long, otherwise it is the word at point."
   (if (use-region-p)
       (let ((pos1 (region-beginning))
             (pos2 (region-end)))
@@ -106,29 +106,31 @@ currently active."
 
 
 (defun ledger-occur-make-visible-overlay (beg end)
-  (let ((ovl (make-overlay beg end (current-buffer))))
+  "Make an overlay for a visible portion of the buffer, from BEG to END."
+  (let ((ovl (make-overlay beg end)))
     (overlay-put ovl ledger-occur-overlay-property-name t)
     (when ledger-occur-use-face-shown
       (overlay-put ovl 'font-lock-face 'ledger-occur-xact-face))))
 
 (defun ledger-occur-make-invisible-overlay (beg end)
-  (let ((ovl (make-overlay beg end (current-buffer))))
+  "Make an overlay for an invisible portion of the buffer, from BEG to END."
+  (let ((ovl (make-overlay beg end)))
     (overlay-put ovl ledger-occur-overlay-property-name t)
     (overlay-put ovl 'invisible t)))
 
 (defun ledger-occur-create-overlays (ovl-bounds)
   "Create the overlays for the visible transactions.
 Argument OVL-BOUNDS contains bounds for the transactions to be left visible."
-  (let* ((beg (caar ovl-bounds))
-         (end (cl-cadar ovl-bounds)))
-    (ledger-occur-remove-overlays)
-    (ledger-occur-make-invisible-overlay (point-min) (1- beg))
-    (dolist (visible (cdr ovl-bounds))
+  (ledger-occur-remove-overlays)
+  (let ((end-of-last-visible (point-min)))
+    (pcase-dolist (`(,beg ,end) ovl-bounds)
+      ;; keep newline before xact visible, but do not highlight it with
+      ;; `ledger-occur-xact-face'
+      (ledger-occur-make-invisible-overlay end-of-last-visible (1- beg))
       (ledger-occur-make-visible-overlay beg end)
-      (ledger-occur-make-invisible-overlay (1+ end) (1- (car visible)))
-      (setq beg (car visible))
-      (setq end (cadr visible)))
-    (ledger-occur-make-invisible-overlay (1+ end) (point-max))))
+      ;; keep newline after xact visible
+      (setq end-of-last-visible (1+ end)))
+    (ledger-occur-make-invisible-overlay end-of-last-visible (point-max))))
 
 (defun ledger-occur-remove-overlays ()
   "Remove the transaction hiding overlays."
@@ -153,7 +155,9 @@ Argument OVL-BOUNDS contains bounds for the transactions to be left visible."
       (nreverse lines))))
 
 (defun ledger-occur-compress-matches (buffer-matches)
-  "identify sequential xacts to reduce number of overlays required"
+  "Identify sequential xacts to reduce number of overlays required.
+
+BUFFER-MATCHES should be a list of (BEG END) lists."
   (if buffer-matches
       (let ((points (list))
             (current-beginning (caar buffer-matches))
