@@ -41,7 +41,8 @@ See ledger's
 \"account\" directive."
   :type '(choice (const :tag "Use current buffer for completion" nil)
                  file)
-  :group 'ledger)
+  :group 'ledger
+  :safe #'string-or-null-p)
 
 (defcustom ledger-payees-file nil
   "The path to an optional file in which all payees are used or declared.
@@ -50,7 +51,8 @@ completions instead of the current file.
 See ledger's \"payee\" directive."
   :type '(choice (const :tag "Use current buffer for completion" nil)
                  file)
-  :group 'ledger)
+  :group 'ledger
+  :safe #'string-or-null-p)
 
 (defcustom ledger-accounts-exclude-function nil
   "Function to exclude accounts from completion.
