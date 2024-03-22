@@ -623,27 +623,26 @@ IGNORE-AUTO and NOCONFIRM are for compatibility with
   "Save the current report command line as a named report."
   (interactive)
   (ledger-report-goto)
-  (let (existing-name)
-    (when (ledger-report-string-empty-p ledger-report-name)
-      (setq ledger-report-name (ledger-report-read-new-name)))
+  (when (ledger-report-string-empty-p ledger-report-name)
+    (setq ledger-report-name (ledger-report-read-new-name)))
 
-    (if (setq existing-name (ledger-report-name-exists ledger-report-name))
-        (cond ((y-or-n-p (format "Overwrite existing report named '%s'? "
-                                 ledger-report-name))
-               (if (string-equal
-                    ledger-report-cmd
-                    (car (cdr (assq existing-name ledger-reports))))
-                   (message "Nothing to save. Current command is identical to existing saved one")
-                 (progn
-                   (setq ledger-reports
-                         (assq-delete-all existing-name ledger-reports))
-                   (ledger-reports-add ledger-report-name ledger-report-cmd)
-                   (ledger-reports-custom-save))))
-              (t
-               (progn
-                 (setq ledger-report-name (ledger-report-read-new-name))
-                 (ledger-reports-add ledger-report-name ledger-report-cmd)
-                 (ledger-reports-custom-save)))))))
+  (when-let ((existing-name (ledger-report-name-exists ledger-report-name)))
+    (cond ((y-or-n-p (format "Overwrite existing report named '%s'? "
+                             ledger-report-name))
+           (if (string-equal
+                ledger-report-cmd
+                (car (cdr (assq existing-name ledger-reports))))
+               (message "Nothing to save. Current command is identical to existing saved one")
+             (progn
+               (setq ledger-reports
+                     (assq-delete-all existing-name ledger-reports))
+               (ledger-reports-add ledger-report-name ledger-report-cmd)
+               (ledger-reports-custom-save))))
+          (t
+           (progn
+             (setq ledger-report-name (ledger-report-read-new-name))
+             (ledger-reports-add ledger-report-name ledger-report-cmd)
+             (ledger-reports-custom-save))))))
 
 (defun ledger-report-previous-month ()
   "Rebuild report with transactions from the previous month."
