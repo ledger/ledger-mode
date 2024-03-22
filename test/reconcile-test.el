@@ -812,6 +812,26 @@ https://github.com/ledger/ledger-mode/issues/416"
     (ledger-reconcile "Liabilities:MasterCard" (ledger-split-commodity-string "$20"))))
 
 
+(ert-deftest ledger-reconcile/test-032 ()
+  "Regression test for #408.
+
+https://github.com/ledger/ledger-mode/issues/408"
+  :tags '(reconcile regress)
+
+  (ledger-tests-with-temp-file
+   demo-ledger
+   (let ((ledger-reconcile-default-date-format "%Y-%m-%d"))
+     (ledger-reconcile "Expenses:Books" '(0 "$")))
+   (set-buffer ledger-reconcile-buffer-name)
+   (should
+    (equal
+     (buffer-string)
+     "Reconciling account Expenses:Books
+
+2011-01-27      Book Store                                         Expenses:Books                         $ 20.00
+2011-04-27      Bookstore                                          Expenses:Books                         $ 20.00"))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
