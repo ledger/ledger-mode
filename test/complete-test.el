@@ -298,7 +298,6 @@ account Assets:Checking:Bank B")
 \tExpenses\t-11.99 CAD")))))
 
 (defvar ledger-flymake-be-pedantic)
-(defvar flycheck-ledger-pedantic)
 
 (ert-deftest ledger-complete/accounts-list-in-buffer ()
   "https://github.com/ledger/ledger-mode/issues/380"
@@ -318,14 +317,12 @@ account Expenses:Groceries
 2023-12-04 Grocery Store
 \tExpenses:Groceries\t50 USD
 \tLiabilities:Credit Card"
-    (let ((ledger-flymake-be-pedantic nil)
-          (flycheck-ledger-pedantic nil))
+    (let ((ledger-flymake-be-pedantic nil))
       (should (equal (ledger-accounts-list-in-buffer)
                      '("Expenses:Food"
                        "Expenses:Groceries"
                        "Liabilities:Credit Card"))))
-    (let ((ledger-flymake-be-pedantic t)
-          (flycheck-ledger-pedantic t))
+    (let ((ledger-flymake-be-pedantic t))
       (should (equal (ledger-accounts-list-in-buffer)
                      '("Expenses:Food"
                        "Expenses:Groceries"))))))
