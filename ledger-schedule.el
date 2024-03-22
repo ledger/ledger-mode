@@ -318,15 +318,13 @@ Use a prefix arg to change the default value"
                          (read-number "Look backward: " ledger-schedule-look-backward)
                          (read-number "Look forward: " ledger-schedule-look-forward))
                  (list ledger-schedule-file ledger-schedule-look-backward ledger-schedule-look-forward)))
-  (if (and file
-           (file-exists-p file))
-      (progn
-        (ledger-schedule-create-auto-buffer
-         (ledger-schedule-scan-transactions file)
-         look-backward
-         look-forward)
-        (pop-to-buffer ledger-schedule-buffer-name))
-    (error "Could not find ledger schedule file at %s" file)))
+  (unless (and file (file-exists-p file))
+    (error "Could not find ledger schedule file at %s" file))
+  (ledger-schedule-create-auto-buffer
+   (ledger-schedule-scan-transactions file)
+   look-backward
+   look-forward)
+  (pop-to-buffer ledger-schedule-buffer-name))
 
 
 (provide 'ledger-schedule)

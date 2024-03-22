@@ -148,13 +148,12 @@ longer ones are after the value."
   (let ((str (read-from-minibuffer
               (concat prompt " (" ledger-reconcile-default-commodity "): ")))
         comm)
-    (if (and (> (length str) 0)
+    (when (and (> (length str) 0)
              (ledger-split-commodity-string str))
-        (progn
-          (setq comm (ledger-split-commodity-string str))
-          (if (cadr comm)
-              comm
-            (list (car comm) ledger-reconcile-default-commodity))))))
+      (setq comm (ledger-split-commodity-string str))
+      (if (cadr comm)
+          comm
+        (list (car comm) ledger-reconcile-default-commodity)))))
 
 (provide 'ledger-commodities)
 

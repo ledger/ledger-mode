@@ -51,8 +51,8 @@ Assumes point is at the beginning of a line."
   (if (ledger-navigate-start-xact-or-directive-p) ; if we are the start of an xact, move forward to the next xact
       (progn
         (forward-line)
-        (if (not (ledger-navigate-start-xact-or-directive-p)) ; we have moved forward and are not at another xact, recurse forward
-            (ledger-navigate-next-xact-or-directive)))
+        (unless (ledger-navigate-start-xact-or-directive-p) ; we have moved forward and are not at another xact, recurse forward
+          (ledger-navigate-next-xact-or-directive)))
     (while (not (or (eobp)  ; we didn't start off at the beginning of an xact
                     (ledger-navigate-start-xact-or-directive-p)))
       (forward-line))))
@@ -124,18 +124,17 @@ Requires empty line separating xacts."
     (goto-char begin)
     (cond
      ((looking-at comment-re)
-      (progn
-        (ledger-navigate-skip-lines-backwards comment-re)
-        ;; We are either at the beginning of the buffer, or we found
-        ;; a line outside the comment, or both.  If we are outside
-        ;; the comment then we need to move forward a line.
-        (unless (looking-at comment-re)
-          (forward-line 1)
-          (beginning-of-line))
-        (setq begin (point))
-        (goto-char pos)
-        (ledger-navigate-skip-lines-forwards comment-re)
-        (setq end (point))))
+      (ledger-navigate-skip-lines-backwards comment-re)
+      ;; We are either at the beginning of the buffer, or we found
+      ;; a line outside the comment, or both.  If we are outside
+      ;; the comment then we need to move forward a line.
+      (unless (looking-at comment-re)
+        (forward-line 1)
+        (beginning-of-line))
+      (setq begin (point))
+      (goto-char pos)
+      (ledger-navigate-skip-lines-forwards comment-re)
+      (setq end (point)))
      ((looking-at "\\(?:comment\\|test\\)\\>")
       (setq end (or (save-match-data
                       (re-search-forward "^end[[:blank:]]+\\(?:comment\\|test\\)\\_>"))
@@ -153,14 +152,13 @@ Requires empty line separating xacts."
         (comment-re " *;"))
     ;; handle block comments here
     (beginning-of-line)
-    (if (looking-at comment-re)
-        (progn
-          (ledger-navigate-skip-lines-backwards comment-re)
-          (setq begin (point))
-          (goto-char pos)
-          (beginning-of-line)
-          (ledger-navigate-skip-lines-forwards comment-re)
-          (setq end (point))))
+    (when (looking-at comment-re)
+      (ledger-navigate-skip-lines-backwards comment-re)
+      (setq begin (point))
+      (goto-char pos)
+      (beginning-of-line)
+      (ledger-navigate-skip-lines-forwards comment-re)
+      (setq end (point)))
     (list begin end)))
 
 

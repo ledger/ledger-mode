@@ -633,16 +633,14 @@ IGNORE-AUTO and NOCONFIRM are for compatibility with
                 ledger-report-cmd
                 (car (cdr (assq existing-name ledger-reports))))
                (message "Nothing to save. Current command is identical to existing saved one")
-             (progn
-               (setq ledger-reports
-                     (assq-delete-all existing-name ledger-reports))
-               (ledger-reports-add ledger-report-name ledger-report-cmd)
-               (ledger-reports-custom-save))))
-          (t
-           (progn
-             (setq ledger-report-name (ledger-report-read-new-name))
+             (setq ledger-reports
+                   (assq-delete-all existing-name ledger-reports))
              (ledger-reports-add ledger-report-name ledger-report-cmd)
-             (ledger-reports-custom-save))))))
+             (ledger-reports-custom-save)))
+          (t
+           (setq ledger-report-name (ledger-report-read-new-name))
+           (ledger-reports-add ledger-report-name ledger-report-cmd)
+           (ledger-reports-custom-save)))))
 
 (defun ledger-report-previous-month ()
   "Rebuild report with transactions from the previous month."

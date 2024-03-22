@@ -500,19 +500,17 @@ Return a count of the uncleared transactions."
             (ledger-exec-ledger buf (current-buffer)
                                 "--uncleared" "--real" "emacs" "--sort" sort-by account)
             (goto-char (point-min))
-            (unless (eobp)
-              (if (looking-at "(")
-                  (read (current-buffer))))))
+            (when (and (not (eobp)) (looking-at "("))
+              (read (current-buffer)))))
          (fmt (ledger-reconcile-compile-format-string ledger-reconcile-buffer-line-format)))
-    (if (> (length xacts) 0)
-        (progn
-          (if ledger-reconcile-buffer-header
-              (insert (format ledger-reconcile-buffer-header account)))
-          (dolist (xact xacts)
-            (ledger-reconcile-format-xact xact fmt))
-          (goto-char (point-max))
-          (delete-char -1)) ;gets rid of the extra line feed at the bottom of the list
-      (insert (concat "There are no uncleared entries for " account)))
+    (if (null xacts)
+        (insert (concat "There are no uncleared entries for " account))
+      (if ledger-reconcile-buffer-header
+          (insert (format ledger-reconcile-buffer-header account)))
+      (dolist (xact xacts)
+        (ledger-reconcile-format-xact xact fmt))
+      (goto-char (point-max))
+      (delete-char -1)) ;gets rid of the extra line feed at the bottom of the list
     (goto-char (point-min))
     (set-buffer-modified-p nil)
     (setq buffer-read-only t)

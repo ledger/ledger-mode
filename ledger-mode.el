@@ -217,10 +217,7 @@ With a prefix argument, remove the effective date."
   (let ((start (point-min-marker))
         (end (point-max-marker))
         (distance-in-xact (- (point) (ledger-navigate-beginning-of-xact))))
-    (beginning-of-line)
-    (let ((target (buffer-substring (point) (progn
-                                              (end-of-line)
-                                              (point)))))
+    (let ((target (buffer-substring (line-beginning-position) (line-end-position))))
       (goto-char start)
       (untabify start end)
       (ledger-sort-buffer)
