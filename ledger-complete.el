@@ -153,7 +153,7 @@ Then one of the elements this function returns will be
          (lambda (_pos _date _state _payee)
            (let ((end (save-excursion (ledger-navigate-end-of-xact))))
              (forward-line)
-             (while (re-search-forward ledger-account-name-or-directive-regex end t)
+             (while (re-search-forward ledger-account-any-status-regex end t)
                (let ((account (match-string-no-properties 1)))
                  (unless (gethash account seen)
                    (puthash account t seen)
