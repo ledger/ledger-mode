@@ -309,16 +309,12 @@ used to generate the buffer, navigating the buffer, etc."
           (propertize (buffer-name ledger-report-ledger-buf) 'face 'font-lock-string-face)
           (propertize ledger-report-cmd 'face 'font-lock-comment-face)))
 
-(defun ledger-report-string-empty-p (s)
-  "Check S for the empty string."
-  (string-equal "" s))
-
 (defun ledger-report-name-exists (name)
   "Check to see if the given report NAME exists.
 
 If exists, returns the object naming the report, otherwise
 returns nil."
-  (unless (ledger-report-string-empty-p name)
+  (unless (string-empty-p name)
     (car (assoc name ledger-reports))))
 
 (defun ledger-reports-add (name cmd)
@@ -471,7 +467,7 @@ Optionally EDIT the command."
       (setq ledger-report-saved nil)) ;; this is a new report, or edited report
     (setq report-cmd (ledger-report-expand-format-specifiers report-cmd))
     (setq ledger-report-cmd report-cmd)
-    (or (ledger-report-string-empty-p report-name)
+    (or (string-empty-p report-name)
         (ledger-report-name-exists report-name)
         (progn
           (ledger-reports-add report-name report-cmd)
@@ -614,7 +610,7 @@ IGNORE-AUTO and NOCONFIRM are for compatibility with
 (defun ledger-report-read-new-name ()
   "Read the name for a new report from the minibuffer."
   (let ((name ""))
-    (while (ledger-report-string-empty-p name)
+    (while (string-empty-p name)
       (setq name (read-from-minibuffer "Report name: " nil nil nil
                                        'ledger-report-name-prompt-history)))
     name))
@@ -623,7 +619,7 @@ IGNORE-AUTO and NOCONFIRM are for compatibility with
   "Save the current report command line as a named report."
   (interactive)
   (ledger-report-goto)
-  (when (ledger-report-string-empty-p ledger-report-name)
+  (when (string-empty-p ledger-report-name)
     (setq ledger-report-name (ledger-report-read-new-name)))
 
   (when-let ((existing-name (ledger-report-name-exists ledger-report-name)))
