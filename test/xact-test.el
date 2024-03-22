@@ -126,6 +126,46 @@ https://github.com/ledger/ledger-mode/issues/307"
     Assets:Bar
 "))))
 
+(ert-deftest ledger-xact/test-004 ()
+  "Add xact following all other xacts."
+  :tags '(xact)
+
+  (ledger-tests-with-temp-file
+      "\
+2013/05/01 foo
+    Expenses:Foo                              $10.00
+    Assets:Bar
+
+2013/05/02=2013/05/03 foo
+    Expenses:Foo                            $10.00
+    Assets:Bar
+
+2013/05/03 foo
+    Expenses:Foo                            $10.00
+    Assets:Bar
+"
+
+    (ledger-add-transaction "2013/05/04 foo")
+    (should
+     (equal (buffer-string)
+            "\
+2013/05/01 foo
+    Expenses:Foo                              $10.00
+    Assets:Bar
+
+2013/05/02=2013/05/03 foo
+    Expenses:Foo                            $10.00
+    Assets:Bar
+
+2013/05/03 foo
+    Expenses:Foo                            $10.00
+    Assets:Bar
+
+2013/05/04 foo
+    Expenses:Foo                              $10.00
+    Assets:Bar
+"))))
+
 (provide 'xact-test)
 
 ;;; xact-test.el ends here
