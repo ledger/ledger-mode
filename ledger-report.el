@@ -28,8 +28,10 @@
 (require 'ledger-xact)
 (require 'ledger-navigate)
 (require 'ledger-commodities)
+(require 'ledger-complete)
 (declare-function ledger-read-string-with-default "ledger-mode" (prompt default))
 (declare-function ledger-read-account-with-prompt "ledger-mode" (prompt))
+(declare-function ledger-read-payee-with-prompt "ledger-mode" (prompt))
 
 (require 'easymenu)
 (require 'ansi-color)
@@ -360,12 +362,7 @@ which is included in some other file."
 The user is prompted to enter a payee and that is substituted.
 If point is in an xact, the payee for that xact is used as the
 default."
-  ;; It is intended completion should be available on existing
-  ;; payees, but the list of possible completions needs to be
-  ;; developed to allow this.
-  (if-let ((payee (ledger-xact-payee)))
-      (ledger-read-string-with-default "Payee" (regexp-quote payee))
-    (ledger-read-string-with-default "Payee" nil)))
+  (ledger-read-payee-with-prompt "Payee"))
 
 (defun ledger-report-account-format-specifier ()
   "Substitute an account name.

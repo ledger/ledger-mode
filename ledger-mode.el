@@ -96,6 +96,13 @@
                                            (regexp-quote account))
                                          (ledger-accounts-list))))
 
+(defun ledger-read-payee-with-prompt (prompt)
+  "Read a payee from the minibuffer with PROMPT."
+  (ledger-completing-read-with-default prompt
+                                       (when-let ((payee (ledger-xact-payee)))
+                                         (regexp-quote payee))
+                                       (ledger-payees-list)))
+
 (defun ledger-read-date (prompt)
   "Return user-supplied date after `PROMPT', defaults to today.
 This uses `org-read-date', which see."
