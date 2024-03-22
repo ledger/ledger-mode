@@ -316,8 +316,8 @@ used to generate the buffer, navigating the buffer, etc."
 (defun ledger-report-name-exists (name)
   "Check to see if the given report NAME exists.
 
-   If name exists, returns the object naming the report,
-   otherwise returns nil."
+If exists, returns the object naming the report, otherwise
+returns nil."
   (unless (ledger-report-string-empty-p name)
     (car (assoc name ledger-reports))))
 
@@ -338,10 +338,10 @@ used to generate the buffer, navigating the buffer, etc."
 (defun ledger-report-ledger-file-format-specifier ()
   "Substitute the full path to master or current ledger file.
 
-   The master file name is determined by the variable `ledger-master-file'
-   buffer-local variable which can be set using file variables.
-   If it is set, it is used, otherwise the current buffer file is
-   used."
+The master file name is determined by the function
+`ledger-master-file', which depends on the variable of the same
+name.  If it is non-nil, it is used, otherwise the current
+buffer's file is used."
   (ledger-master-file))
 
 ;; General helper functions
@@ -349,10 +349,11 @@ used to generate the buffer, navigating the buffer, etc."
 (defun ledger-master-file ()
   "Return the master file for a ledger file.
 
-   The master file is either the file for the current ledger buffer or the
-   file specified by the buffer-local variable `ledger-master-file'.  Typically
-   this variable would be set in a file local variable comment block at the
-   end of a ledger file which is included in some other file."
+The master file is either the file for the current ledger buffer
+or the file specified by the buffer-local variable
+`ledger-master-file'.  Typically this variable would be set in a
+file local variable comment block at the end of a ledger file
+which is included in some other file."
   (if ledger-master-file
       (expand-file-name ledger-master-file)
     (buffer-file-name)))
@@ -360,9 +361,9 @@ used to generate the buffer, navigating the buffer, etc."
 (defun ledger-report-payee-format-specifier ()
   "Substitute a payee name.
 
-   The user is prompted to enter a payee and that is substituted.  If
-   point is in an xact, the payee for that xact is used as the
-   default."
+The user is prompted to enter a payee and that is substituted.
+If point is in an xact, the payee for that xact is used as the
+default."
   ;; It is intended completion should be available on existing
   ;; payees, but the list of possible completions needs to be
   ;; developed to allow this.
@@ -373,10 +374,10 @@ used to generate the buffer, navigating the buffer, etc."
 (defun ledger-report-account-format-specifier ()
   "Substitute an account name.
 
-   The user is prompted to enter an account name, which can be any
-   regular expression identifying an account.  If point is on an account
-   posting line for an xact, the full account name on that line is
-   the default."
+The user is prompted to enter an account name, which can be any
+regular expression identifying an account.  If point is on an
+account posting line for an xact, the full account name on that
+line is the default."
   (ledger-read-account-with-prompt "Account"))
 
 (defun ledger-report--current-month ()
