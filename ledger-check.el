@@ -109,19 +109,22 @@
   (set-window-configuration ledger-check--original-window-configuration)
   (kill-buffer (get-buffer ledger-check-buffer-name)))
 
-(defun ledger-check-buffer ()
+(defun ledger-check-buffer (&optional interactive)
   "Check the current buffer for errors.
 
 Runs ledger with --explicit and --strict report errors and assist
 with fixing them.
 
 The output buffer will be in `ledger-check-mode', which defines
-commands for navigating the buffer to the errors found, etc."
-  (interactive
-   (progn
-     (when (and (buffer-modified-p)
-                (y-or-n-p "Buffer modified, save it? "))
-       (save-buffer))))
+commands for navigating the buffer to the errors found, etc.
+
+When INTERACTIVE is non-nil (i.e., when called interactively),
+prompt to save if the current buffer is modified."
+  (interactive "p")
+  (when (and interactive
+             (buffer-modified-p)
+             (y-or-n-p "Buffer modified, save it? "))
+    (save-buffer))
   (let ((_buf (find-file-noselect (ledger-master-file)))
         (cbuf (get-buffer ledger-check-buffer-name))
         (wcfg (current-window-configuration)))
