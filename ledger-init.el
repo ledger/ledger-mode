@@ -53,11 +53,16 @@ ISO 8601 dates."
   :package-version '(ledger-mode . "4.0.0")
   :group 'ledger)
 
-(defun ledger-format-date (&optional date)
+(defun ledger-format-date (&optional date format)
   "Format DATE according to the current preferred date format.
-Returns the current date if DATE is nil or not supplied."
+Returns the current date if DATE is nil or not supplied.
+
+If FORMAT is provided, use that as the date format.  Otherwise,
+use the --input-date-format specified in `ledger-init-file-name',
+or if none, use `ledger-default-date-format'."
   (format-time-string
-   (or (cdr (assoc "input-date-format" ledger-environment-alist))
+   (or format
+       (cdr (assoc "input-date-format" ledger-environment-alist))
        ledger-default-date-format)
    date))
 
