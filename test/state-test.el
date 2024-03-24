@@ -135,6 +135,32 @@ https://github.com/ledger/ledger-mode/issues/274"
   Expenses:Food:Groceries             $ 44.00 ; hastag: not block
   Assets:Checking"))))
 
+
+(ert-deftest ledger-state/test-004 ()
+  "Regression test for #374
+https://github.com/ledger/ledger-mode/issues/374"
+
+  (ledger-tests-with-temp-file
+      "2024/01/01 Test
+    Expenses                                   $4.00
+    Assets
+
+;; Some comments.
+;; Try hitting `ledger-toggle-current' from this line
+"
+    (setq ledger-clear-whole-transactions t)
+    (goto-char (1- (point-max)))
+    (ledger-toggle-current)
+    (should
+     (equal (buffer-string)
+            "2024/01/01 Test
+    Expenses                                   $4.00
+    Assets
+
+;; Some comments.
+;; Try hitting `ledger-toggle-current' from this line
+"))))
+
 (provide 'state-test)
 
 ;;; state-test.el ends here

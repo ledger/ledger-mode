@@ -215,20 +215,21 @@ dropped."
 (defun ledger-toggle-current (&optional style)
   "Toggle the current thing at point with optional STYLE."
   (interactive)
-  (if (or ledger-clear-whole-transactions
-          (eq 'transaction (ledger-thing-at-point)))
-      (let ((end (save-excursion (ledger-navigate-end-of-xact) (point-marker))))
-        ;; clear state markings on postings
-        (save-excursion
-          (forward-line)
-          (beginning-of-line)
-          (while (< (point) end)
-            (when (looking-at "\\s-+[*!]")
-              (ledger-toggle-current-posting style))
-            (forward-line)))
-        (set-marker end nil)
-        (ledger-toggle-current-transaction style))
-    (ledger-toggle-current-posting style)))
+  (let ((thing (ledger-thing-at-point)))
+    (if (or (and ledger-clear-whole-transactions (eq 'posting thing))
+            (eq 'transaction thing))
+        (let ((end (save-excursion (ledger-navigate-end-of-xact) (point-marker))))
+          ;; clear state markings on postings
+          (save-excursion
+            (forward-line)
+            (beginning-of-line)
+            (while (< (point) end)
+              (when (looking-at "\\s-+[*!]")
+                (ledger-toggle-current-posting style))
+              (forward-line)))
+          (set-marker end nil)
+          (ledger-toggle-current-transaction style))
+      (ledger-toggle-current-posting style))))
 
 (defun ledger-toggle-current-transaction (&optional style)
   "Toggle the transaction at point using optional STYLE."
