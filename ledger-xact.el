@@ -88,13 +88,6 @@ When nil, `ledger-add-transaction' will not prompt twice."
   (when-let ((xact-context (ledger-xact-context)))
     (ledger-context-field-value xact-context 'date)))
 
-(defun ledger-time-less-p (t1 t2)
-  "Say whether time value T1 is less than time value T2."
-  ;; TODO: assert listp, or support when both are strings
-  (or (< (car t1) (car t2))
-      (and (= (car t1) (car t2))
-           (< (nth 1 t1) (nth 1 t2)))))
-
 (defun ledger-xact-find-slot (moment)
   "Find the right place in the buffer for a transaction at MOMENT.
 MOMENT is an encoded date"
@@ -103,9 +96,9 @@ MOMENT is an encoded date"
       (ledger-xact-iterate-transactions
        (lambda (start date _mark _desc)
          (setq last-xact-start start)
-         (when (ledger-time-less-p moment date)
+         (when (time-less-p moment date)
            (throw 'found t)))))
-    ;; If we are inserting at the end of the buffer, insert an extra newliner
+    ;; If we are inserting at the end of the buffer, insert an extra newline
     (when (and (eobp) last-xact-start)
       (let ((end (cadr (ledger-navigate-find-xact-extents last-xact-start))))
         (goto-char end)
