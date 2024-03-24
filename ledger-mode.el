@@ -235,6 +235,32 @@ With a prefix argument, remove the effective date."
       (beginning-of-line)
       (forward-char distance-in-xact))))
 
+(defun ledger-rename-account (old new &optional toplevel-only)
+  "Rename account with name OLD to name NEW.
+
+Affects account names mentioned in postings as well as declared
+with the \"account\" directive.
+
+By default, child accounts of OLD are also renamed to
+corresponding child accounts of NEW.  With \\[universal-argument]
+prefix, child accounts are not renamed.  When called from Lisp,
+TOPLEVEL-ONLY has the same meaning."
+  (interactive "sOld name: \nsNew name: \nP")
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward ledger-account-name-or-directive-regex nil t)
+      (let ((account (match-string 1)))
+        (cond
+         ((string-equal account old)
+          (replace-match new 'fixedcase 'literal nil 1))
+         ((and (not toplevel-only)
+               (string-prefix-p (concat old ":") account))
+          (replace-match
+           (concat new (substring account (length old)))
+           'fixedcase 'literal nil 1))))))
+  (when ledger-post-auto-align
+    (ledger-post-align-postings (point-min) (point-max))))
+
 (defvar ledger-mode-syntax-table
   (let ((table (make-syntax-table text-mode-syntax-table)))
     (modify-syntax-entry ?\; "<" table)

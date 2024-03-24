@@ -75,6 +75,44 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
     (comment-dwim nil)
     (should (string-match (rx buffer-start "#" (0+ whitespace)) (buffer-string)))))
 
+
+(ert-deftest ledger-mode/test-004 ()
+  "Baseline test for `ledger-rename-account'."
+  :tags '(mode baseline)
+  (ledger-tests-with-temp-file
+      "2024-04-01 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"
+    (save-buffer)
+
+    (ledger-rename-account
+     "Expenses:Groceries"
+     "Expenses:Grocery")
+
+    (should
+     (equal (buffer-string)
+            "2024-04-01 Grocery Store
+    Expenses:Grocery                             $30
+    Expenses:Grocery:Snacks                      $10
+    Assets:Cash
+"))
+
+    (revert-buffer t t)
+    (ledger-rename-account
+     "Expenses:Groceries"
+     "Expenses:Grocery"
+     'toplevel-only)
+
+    (should
+     (equal (buffer-string)
+            "2024-04-01 Grocery Store
+    Expenses:Grocery                             $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"))))
+
 (provide 'mode-test)
 
 ;;; mode-test.el ends here
