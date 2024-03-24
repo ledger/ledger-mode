@@ -71,9 +71,7 @@
   "Sort the region from BEG to END in chronological order."
   (interactive "r") ;; load beg and end from point and mark
   ;; automagically
-  (let* ((new-beg beg)
-         (new-end end)
-         (bounds (ledger-navigate-find-xact-extents (point)))
+  (let* ((bounds (ledger-navigate-find-xact-extents (point)))
          (point-delta (- (point) (car bounds)))
          (target-xact (buffer-substring (car bounds) (cadr bounds)))
          (inhibit-modification-hooks t))
@@ -85,31 +83,30 @@
         ;; make sure point is at the beginning of a xact
         (unless (looking-at ledger-payee-any-status-regex)
           (ledger-navigate-next-xact))
-        (setq new-beg (point))
+        (setq beg (point))
         (goto-char end)
         (ledger-navigate-next-xact)
         ;; make sure end of region is at the beginning of next record
         ;; after the region
-        (setq new-end (point))
-        (narrow-to-region new-beg new-end)
-        (goto-char new-beg)
+        (setq end (point))
+        (narrow-to-region beg end)
+        (goto-char beg)
 
         (let ((inhibit-field-text-motion t))
           (sort-subr
            nil
-           'ledger-navigate-next-xact
-           'ledger-navigate-end-of-xact
-           'ledger-sort-startkey))))
+           #'ledger-navigate-next-xact
+           #'ledger-navigate-end-of-xact
+           #'ledger-sort-startkey))))
 
     (goto-char (point-min))
-    (re-search-forward (regexp-quote target-xact))
+    (search-forward target-xact)
     (goto-char (+ (match-beginning 0) point-delta))))
 
 (defun ledger-sort-buffer ()
   "Sort the entire buffer."
   (interactive)
-  (let (sort-start
-        sort-end)
+  (let (sort-start sort-end)
     (save-excursion
       (goto-char (point-min))
       (setq sort-start (ledger-sort-find-start)
