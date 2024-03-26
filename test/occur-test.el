@@ -141,6 +141,47 @@ https://github.com/ledger/ledger-mode/issues/54"
 "))))
 
 
+(ert-deftest ledger-occur/test-004 ()
+  "Regression test for #415
+https://github.com/ledger/ledger-mode/issues/415"
+  :tags '(occur regress)
+
+  (ledger-tests-with-temp-file
+      "\
+2011/01/02 Grocery Store
+  Expenses:Food:Groceries             $ 65.00
+  * Assets:Checking
+
+2011/01/05 Employer
+  * Assets:Checking                 $ 2000.00
+  Income:Salary
+"
+
+    (save-buffer)
+    (ledger-occur "Groceries")
+    (should
+     (equal
+      (ledger-test-visible-buffer-string)
+      "\
+2011/01/02 Grocery Store
+  Expenses:Food:Groceries             $ 65.00
+  * Assets:Checking
+"))
+    (revert-buffer t t)
+    (should
+     (equal
+      (ledger-test-visible-buffer-string)
+      "\
+2011/01/02 Grocery Store
+  Expenses:Food:Groceries             $ 65.00
+  * Assets:Checking
+
+2011/01/05 Employer
+  * Assets:Checking                 $ 2000.00
+  Income:Salary
+"))))
+
+
 (provide 'occur-test)
 
 ;;; occur-test.el ends here

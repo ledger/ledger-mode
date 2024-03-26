@@ -45,9 +45,8 @@ This uses `ledger-occur-xact-face'."
 (defvar ledger-occur-history nil
   "History of previously searched expressions for the prompt.")
 
-(defvar ledger-occur-current-regex nil
+(defvar-local ledger-occur-current-regex nil
   "Pattern currently applied to narrow the buffer.")
-(make-variable-buffer-local 'ledger-occur-current-regex)
 
 (defvar ledger-occur-mode-map
   (let ((map (make-sparse-keymap)))
@@ -63,7 +62,9 @@ The pattern is given by `ledger-occur-current-regex'."
   :lighter (:eval (format " Ledger-Narrow(%s)" ledger-occur-current-regex))
   :keymap ledger-occur-mode-map
   (if (and ledger-occur-current-regex ledger-occur-mode)
-      (ledger-occur-refresh)
+      (progn (ledger-occur-refresh)
+             ;; Clear overlays after revert-buffer and similar commands.
+             (add-hook 'change-major-mode-hook #'ledger-occur-remove-overlays nil t))
     (ledger-occur-remove-overlays)
     (message "Showing all transactions")))
 
