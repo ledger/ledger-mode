@@ -94,16 +94,26 @@ Returns a list with (value commodity)."
           (split-string str "[\n\r]")))
 
 (defun ledger-subtract-commodity (c1 c2)
-  "Subtract C2 from C1, ensuring their commodities match."
-  (if (string= (cadr c1) (cadr c2))
-      (list (-(car c1) (car c2)) (cadr c1))
-    (error "Can't subtract different commodities %S from %S" c2 c1)))
+  "Subtract C2 from C1, ensuring their commodities match.
+
+As an exception, if the quantity of C2 is zero, C1 is returned
+directly."
+  (cond
+   ((zerop (car c2)) c1)
+   ((string= (cadr c1) (cadr c2))
+    (list (- (car c1) (car c2)) (cadr c1)))
+   (t (error "Can't subtract different commodities %S from %S" c2 c1))))
 
 (defun ledger-add-commodity (c1 c2)
-  "Add C1 and C2, ensuring their commodities match."
-  (if (string= (cadr c1) (cadr c2))
-      (list (+ (car c1) (car c2)) (cadr c1))
-    (error "Can't add different commodities, %S to %S" c1 c2)))
+  "Add C1 and C2, ensuring their commodities match.
+
+As an exception, if the quantity of C2 is zero, C1 is returned
+directly."
+  (cond
+   ((zerop (car c2)) c1)
+   ((string= (cadr c1) (cadr c2))
+    (list (+ (car c1) (car c2)) (cadr c1)))
+   (t (error "Can't add different commodities, %S to %S" c1 c2))))
 
 (defun ledger-strip (str char)
   "Return STR with CHAR removed."
