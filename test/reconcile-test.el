@@ -790,6 +790,28 @@ https://github.com/ledger/ledger-mode/issues/383"
 "))))))
 
 
+(ert-deftest ledger-reconcile/test-031 ()
+  "Regression test for #416
+https://github.com/ledger/ledger-mode/issues/416"
+
+  (ledger-tests-with-temp-file
+      "\
+2011/01/27 * Book Store
+  Expenses:Books                       $20.00
+  Liabilities:MasterCard
+
+2011/02/15 * Bank
+  Liabilities:MasterCard               $20.00
+  Assets:Checking
+
+2011/02/27 Book Store
+  Expenses:Books                       $20.00
+  Liabilities:MasterCard
+"
+
+    (ledger-reconcile "Liabilities:MasterCard" (ledger-split-commodity-string "$20"))))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here
