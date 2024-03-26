@@ -49,7 +49,12 @@ This uses `ledger-occur-xact-face'."
   "Pattern currently applied to narrow the buffer.")
 (make-variable-buffer-local 'ledger-occur-current-regex)
 
-(defvar ledger-occur-mode-map (make-sparse-keymap))
+(defvar ledger-occur-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-g") #'ledger-occur-refresh)
+    (define-key map (kbd "C-c C-f") #'ledger-occur-mode)
+    map)
+  "Keymap used by `ledger-occur-mode'.")
 
 (define-minor-mode ledger-occur-mode
   "A minor mode which display only transactions matching a pattern.
@@ -61,9 +66,6 @@ The pattern is given by `ledger-occur-current-regex'."
       (ledger-occur-refresh)
     (ledger-occur-remove-overlays)
     (message "Showing all transactions")))
-
-(define-key ledger-occur-mode-map (kbd "C-c C-g") #'ledger-occur-refresh)
-(define-key ledger-occur-mode-map (kbd "C-c C-f") #'ledger-occur-mode)
 
 (defun ledger-occur-refresh ()
   "Re-apply the current narrowing expression."
