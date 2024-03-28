@@ -475,8 +475,10 @@ POSTING is used in `ledger-clear-whole-transactions' is nil."
       (ledger-reconcile-format-posting beg
                                        where
                                        fmt
-                                       (ledger-format-date (nth 2 xact))  ; date
-                                       (if (nth 3 xact) (nth 3 xact) "")  ; code
+                                       (ledger-format-date
+                                        (nth 2 xact)
+                                        ledger-reconcile-default-date-format) ; date
+                                       (if (nth 3 xact) (nth 3 xact) "") ; code
                                        (nth 3 posting)  ; status
                                        (ledger-reconcile-truncate-right
                                         (nth 4 xact)  ; payee
