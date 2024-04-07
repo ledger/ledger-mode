@@ -221,51 +221,50 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                   (cdr root))
           'string-lessp))))
 
+(defvar ledger-complete--current-time-for-testing nil
+  "Internal, used for testing only.")
+
 (defun ledger-complete-date (month-string day-string)
   "Complete a date."
-  (let*
-      ((now (current-time))
-       (decoded (decode-time now))
-       (this-month (nth 4 decoded))
-       (this-year (nth 5 decoded))
-       (last-month (if (> this-month 1) (1- this-month) 12))
-       (last-year (1- this-year))
-       (last-month-year (if (> this-month 1) this-year last-year))
-       (month (and month-string
-                   (string-to-number month-string)))
-       (day (string-to-number day-string))
-       (dates (list (encode-time 0 0 0 day (or month this-month) this-year)
-                    (if month
-                        (encode-time 0 0 0 day month last-year)
-                      (encode-time 0 0 0 day last-month last-month-year)))))
-    (lambda (_string _predicate _all)
-      (concat (ledger-format-date
-               (cl-find-if (lambda (date) (not (time-less-p now date))) dates))
-              (and (= (point) (line-end-position)) " ")))))
+  (let* ((now (or ledger-complete--current-time-for-testing (current-time)))
+         (decoded (decode-time now))
+         (this-month (nth 4 decoded))
+         (this-year (nth 5 decoded))
+         (last-month (if (> this-month 1) (1- this-month) 12))
+         (last-year (1- this-year))
+         (last-month-year (if (> this-month 1) this-year last-year))
+         (month (and month-string
+                     (string-to-number month-string)))
+         (day (string-to-number day-string))
+         (dates (list (encode-time 0 0 0 day (or month this-month) this-year)
+                      (if month
+                          (encode-time 0 0 0 day month last-year)
+                        (encode-time 0 0 0 day last-month last-month-year)))))
+    (list (concat (ledger-format-date
+                   (cl-find-if (lambda (date) (not (time-less-p now date))) dates))
+                  (and (= (point) (line-end-position)) " ")))))
 
 (defun ledger-complete-effective-date
     (tx-year-string tx-month-string tx-day-string
                     month-string day-string)
   "Complete an effective date."
-  (let*
-      ((tx-year (string-to-number tx-year-string))
-       (tx-month (string-to-number tx-month-string))
-       (tx-day (string-to-number tx-day-string))
-       (tx-date (encode-time 0 0 0 tx-day tx-month tx-year))
-       (next-month (if (< tx-month 12) (1+ tx-month) 1))
-       (next-year (1+ tx-year))
-       (next-month-year (if (< tx-month 12) tx-year next-year))
-       (month (and month-string
-                   (string-to-number month-string)))
-       (day (string-to-number day-string))
-       (dates (list (encode-time 0 0 0 day (or month tx-month) tx-year)
-                    (if month
-                        (encode-time 0 0 0 day month next-year)
-                      (encode-time 0 0 0 day next-month next-month-year)))))
-    (lambda (_string _predicate _all)
-      (concat (ledger-format-date
-               (cl-find-if (lambda (date) (not (time-less-p date tx-date))) dates))
-              (and (= (point) (line-end-position)) " ")))))
+  (let* ((tx-year (string-to-number tx-year-string))
+         (tx-month (string-to-number tx-month-string))
+         (tx-day (string-to-number tx-day-string))
+         (tx-date (encode-time 0 0 0 tx-day tx-month tx-year))
+         (next-month (if (< tx-month 12) (1+ tx-month) 1))
+         (next-year (1+ tx-year))
+         (next-month-year (if (< tx-month 12) tx-year next-year))
+         (month (and month-string
+                     (string-to-number month-string)))
+         (day (string-to-number day-string))
+         (dates (list (encode-time 0 0 0 day (or month tx-month) tx-year)
+                      (if month
+                          (encode-time 0 0 0 day month next-year)
+                        (encode-time 0 0 0 day next-month next-month-year)))))
+    (list (concat (ledger-format-date
+                   (cl-find-if (lambda (date) (not (time-less-p date tx-date))) dates))
+                  (and (= (point) (line-end-position)) " ")))))
 
 (defun ledger-complete-at-point ()
   "Do appropriate completion for the thing at point."
