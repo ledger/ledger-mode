@@ -195,6 +195,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
 2019/06/28 Foobar"))))
 
 (ert-deftest ledger-complete/test-find-accounts-in-buffer ()
+  :tags '(complete)
   (let ((ledger "*** Expenses
 account Expenses:Accommodation
 account Assets:Cash  ; some comment
@@ -226,6 +227,7 @@ tag ofxid
                 "Something"))))))
 
 (ert-deftest ledger-complete/test-find-accounts-with-spaces-in-buffer ()
+  :tags '(complete)
   (let ((ledger "*** Expenses
 account Expenses:The Bakery
 "))
@@ -238,7 +240,7 @@ account Expenses:The Bakery
 
 (ert-deftest ledger-complete/test-ledger-accounts-exclude-function ()
   ;; TODO: Why doesn't this work in batch?
-  :tags '(interactive)
+  :tags '(complete interactive)
   (with-temp-buffer
     (insert "account Assets:Checking:Bank A
     assert date<=[1990-01-01]
@@ -257,6 +259,7 @@ account Assets:Checking:Bank B")
                            "Assets:Checking:Bank B"))))))
 
 (ert-deftest ledger-complete/test-account-completion-in-steps ()
+  :tags '(complete)
   (let ((completion-cycle-threshold t)
         (ledger-complete-in-steps t))
     (ledger-tests-with-temp-file
