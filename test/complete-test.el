@@ -199,9 +199,9 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
 account Expenses:Accommodation
 account Assets:Cash  ; some comment
 account Assets:Current
-;    alias 1187465S022    -- Ideally this line could be uncommented
+    alias 1187465S022
 commodity EUR
-;    format 1,000.00 EUR  -- Ideally this line could be uncommented
+    format 1,000.00 EUR
 tag ofxid
 2018/05/07 * Company
     Assets:Current  -38.33 EUR
