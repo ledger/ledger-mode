@@ -365,6 +365,56 @@ account Expenses:Groceries
                      '("Expenses:Food"
                        "Expenses:Groceries"))))))
 
+(defvar ledger-complete--current-time-for-testing)
+
+(ert-deftest ledger-complete/date-month-day ()
+  "Test completing an incomplete date with only a month and day.
+https://github.com/ledger/ledger-mode/issues/419"
+  :tags '(complete regress)
+  (let ((ledger-complete--current-time-for-testing ;2024-01-21
+         (encode-time 0 0 0 21 1 2024))
+        (ledger-default-date-format ledger-iso-date-format)
+        ;; TODO: Set up date completion so that it does not require a specific
+        ;; completion-style setting.
+        (completion-styles '(flex)))
+    (ledger-tests-with-temp-file
+        "01-19"
+      (goto-char (point-max))
+      (completion-at-point)
+      (should
+       (equal (buffer-string)
+              "2024-01-19 "))
+
+      (erase-buffer)
+      (insert "01-23")
+      (completion-at-point)
+      (should
+       (equal (buffer-string)
+              "2023-01-23 ")))))
+
+(ert-deftest ledger-complete/date-day-only ()
+  "Test completing an incomplete date with only a day.
+https://github.com/ledger/ledger-mode/issues/419"
+  :tags '(complete regress)
+  (let ((ledger-complete--current-time-for-testing ;2024-01-21
+         (encode-time 0 0 0 21 1 2024))
+        (ledger-default-date-format ledger-iso-date-format)
+        (completion-styles '(flex)))
+    (ledger-tests-with-temp-file
+        "19"
+      (goto-char (point-max))
+      (completion-at-point)
+      (should
+       (equal (buffer-string)
+              "2024-01-19 "))
+
+      (erase-buffer)
+      (insert "23")
+      (completion-at-point)
+      (should
+       (equal (buffer-string)
+              "2023-12-23 ")))))
+
 (provide 'complete-test)
 
 ;;; complete-test.el ends here

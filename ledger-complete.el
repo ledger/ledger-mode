@@ -221,10 +221,13 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                   (cdr root))
           'string-lessp))))
 
+(defvar ledger-complete--current-time-for-testing nil
+  "Internal, used for testing only.")
+
 (defun ledger-complete-date (month-string day-string)
   "Complete a date."
   (let*
-      ((now (current-time))
+      ((now (or ledger-complete--current-time-for-testing (current-time)))
        (decoded (decode-time now))
        (this-month (nth 4 decoded))
        (this-year (nth 5 decoded))
