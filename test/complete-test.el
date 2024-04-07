@@ -239,8 +239,7 @@ account Expenses:The Bakery
                 "Expenses:The Bakery"))))))
 
 (ert-deftest ledger-complete/test-ledger-accounts-exclude-function ()
-  ;; TODO: Why doesn't this work in batch?
-  :tags '(complete interactive)
+  :tags '(complete)
   (with-temp-buffer
     (insert "account Assets:Checking:Bank A
     assert date<=[1990-01-01]
