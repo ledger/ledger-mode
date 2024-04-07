@@ -283,15 +283,19 @@ an alist (ACCOUNT-ELEMENT . NODE)."
         realign-after
         delete-suffix)
     (cond (;; Date
-           (looking-back (concat "^" ledger-incomplete-date-regexp) (line-beginning-position))
+           (save-excursion
+             (skip-chars-forward "0-9/-")
+             (looking-back (concat "^" ledger-incomplete-date-regexp) (line-beginning-position)))
            (setq collection (ledger-complete-date (match-string 1) (match-string 2))
                  start (match-beginning 0)
                  delete-suffix (save-match-data
                                  (when (looking-at (rx (one-or-more (or digit (any ?/ ?-)))))
                                    (length (match-string 0))))))
           (;; Effective dates
-           (looking-back (concat "^" ledger-iso-date-regexp "=" ledger-incomplete-date-regexp)
-                         (line-beginning-position))
+           (save-excursion
+             (skip-chars-forward "0-9/-")
+             (looking-back (concat "^" ledger-iso-date-regexp "=" ledger-incomplete-date-regexp)
+                           (line-beginning-position)))
            (setq start (line-beginning-position))
            (setq collection (ledger-complete-effective-date
                              (match-string 2) (match-string 3) (match-string 4)
