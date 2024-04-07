@@ -409,7 +409,17 @@ https://github.com/ledger/ledger-mode/issues/419"
       (completion-at-point)
       (should
        (equal (buffer-string)
-              "2023-12-23 ")))))
+              "2023-12-23 "))
+
+      (erase-buffer)
+      (insert "23")
+      (backward-char)
+      ;; completion uses whole day number, not just the part before point
+      (completion-at-point)
+      (should
+       ;; TODO: Ideally, this should include a trailing space too.
+       (equal (buffer-string)
+              "2023-12-23")))))
 
 (provide 'complete-test)
 
