@@ -373,10 +373,7 @@ https://github.com/ledger/ledger-mode/issues/419"
   :tags '(complete regress)
   (let ((ledger-complete--current-time-for-testing ;2024-01-21
          (encode-time 0 0 0 21 1 2024))
-        (ledger-default-date-format ledger-iso-date-format)
-        ;; TODO: Set up date completion so that it does not require a specific
-        ;; completion-style setting.
-        (completion-styles '(flex)))
+        (ledger-default-date-format ledger-iso-date-format))
     (ledger-tests-with-temp-file
         "01-19"
       (goto-char (point-max))
@@ -398,8 +395,7 @@ https://github.com/ledger/ledger-mode/issues/419"
   :tags '(complete regress)
   (let ((ledger-complete--current-time-for-testing ;2024-01-21
          (encode-time 0 0 0 21 1 2024))
-        (ledger-default-date-format ledger-iso-date-format)
-        (completion-styles '(flex)))
+        (ledger-default-date-format ledger-iso-date-format))
     (ledger-tests-with-temp-file
         "19"
       (goto-char (point-max))

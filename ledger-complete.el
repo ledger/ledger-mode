@@ -240,9 +240,14 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                       (if month
                           (encode-time 0 0 0 day month last-year)
                         (encode-time 0 0 0 day last-month last-month-year)))))
-    (list (concat (ledger-format-date
-                   (cl-find-if (lambda (date) (not (time-less-p now date))) dates))
-                  (and (= (point) (line-end-position)) " ")))))
+    (let ((collection
+           (list (concat (ledger-format-date
+                          (cl-find-if (lambda (date) (not (time-less-p now date))) dates))
+                         (and (= (point) (line-end-position)) " ")))))
+      (lambda (string predicate action)
+        (if (eq action 'metadata)
+            '(metadata (category . ledger-date))
+          (complete-with-action action collection string predicate))))))
 
 (defun ledger-complete-effective-date
     (tx-year-string tx-month-string tx-day-string
@@ -262,9 +267,14 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                       (if month
                           (encode-time 0 0 0 day month next-year)
                         (encode-time 0 0 0 day next-month next-month-year)))))
-    (list (concat (ledger-format-date
-                   (cl-find-if (lambda (date) (not (time-less-p date tx-date))) dates))
-                  (and (= (point) (line-end-position)) " ")))))
+    (let ((collection
+           (list (concat (ledger-format-date
+                          (cl-find-if (lambda (date) (not (time-less-p date tx-date))) dates))
+                         (and (= (point) (line-end-position)) " ")))))
+      (lambda (string predicate action)
+        (if (eq action 'metadata)
+            '(metadata (category . ledger-date))
+          (complete-with-action action collection string predicate))))))
 
 (defun ledger-complete-at-point ()
   "Do appropriate completion for the thing at point."
@@ -291,7 +301,7 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                (save-excursion
                  (prog1 (ledger-thing-at-point)
                    (setq start (point)))))
-           (setq collection #'ledger-payees-list))
+           (setq collection (cons 'nullary #'ledger-payees-list)))
           (;; Accounts
            (save-excursion
              (back-to-indentation)
@@ -301,17 +311,27 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                                  (when (search-forward-regexp (rx (or eol (or ?\t (repeat 2 space)))) (line-end-position) t)
                                    (- (match-beginning 0) end)))
                  realign-after t
-                 collection (if ledger-complete-in-steps
-                                #'ledger-complete-account-next-steps
-                              #'ledger-accounts-list))))
+                 collection (cons 'nullary
+                                  (if ledger-complete-in-steps
+                                      #'ledger-complete-account-next-steps
+                                    #'ledger-accounts-list)))))
     (when collection
       (let ((prefix (buffer-substring-no-properties start end)))
         (list start end
-              (if (functionp collection)
-                  (completion-table-with-cache
-                   (lambda (_)
-                     (cl-remove-if (apply-partially 'string= prefix) (funcall collection))))
-                collection)
+              (pcase collection
+                ;; `func-arity' isn't available until Emacs 26, so we have to
+                ;; manually track the arity of the functions.
+                (`(nullary . ,f)
+                 ;; a nullary function that returns a completion collection
+                 (completion-table-with-cache
+                  (lambda (_)
+                    (cl-remove-if (apply-partially 'string= prefix) (funcall f)))))
+                ((pred functionp)
+                 ;; a completion table
+                 collection)
+                (_
+                 ;; a static completion collection
+                 collection))
               :exit-function (lambda (&rest _)
                                (when delete-suffix
                                  (delete-char delete-suffix))
@@ -360,6 +380,8 @@ payee."
     ;; Move to amount on first posting line
     (when (re-search-backward "\t\\| [ \t]" nil t)
       (goto-char (match-end 0)))))
+
+(add-to-list 'completion-category-defaults '(ledger-date (styles . (substring))))
 
 (provide 'ledger-complete)
 
