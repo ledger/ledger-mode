@@ -224,7 +224,7 @@ an alist (ACCOUNT-ELEMENT . NODE)."
 (defvar ledger-complete--current-time-for-testing nil
   "Internal, used for testing only.")
 
-(defun ledger-complete-date (month-string day-string)
+(defun ledger-complete-date (month-string day-string date-at-eol-p)
   "Complete a date."
   (let* ((now (or ledger-complete--current-time-for-testing (current-time)))
          (decoded (decode-time now))
@@ -243,7 +243,7 @@ an alist (ACCOUNT-ELEMENT . NODE)."
     (let ((collection
            (list (concat (ledger-format-date
                           (cl-find-if (lambda (date) (not (time-less-p now date))) dates))
-                         (and (= (point) (line-end-position)) " ")))))
+                         (when date-at-eol-p " ")))))
       (lambda (string predicate action)
         (if (eq action 'metadata)
             '(metadata (category . ledger-date))
@@ -251,7 +251,8 @@ an alist (ACCOUNT-ELEMENT . NODE)."
 
 (defun ledger-complete-effective-date
     (tx-year-string tx-month-string tx-day-string
-                    month-string day-string)
+                    month-string day-string
+                    date-at-eol-p)
   "Complete an effective date."
   (let* ((tx-year (string-to-number tx-year-string))
          (tx-month (string-to-number tx-month-string))
@@ -270,7 +271,7 @@ an alist (ACCOUNT-ELEMENT . NODE)."
     (let ((collection
            (list (concat (ledger-format-date
                           (cl-find-if (lambda (date) (not (time-less-p date tx-date))) dates))
-                         (and (= (point) (line-end-position)) " ")))))
+                         (when date-at-eol-p " ")))))
       (lambda (string predicate action)
         (if (eq action 'metadata)
             '(metadata (category . ledger-date))
@@ -286,7 +287,9 @@ an alist (ACCOUNT-ELEMENT . NODE)."
            (save-excursion
              (skip-chars-forward "0-9/-")
              (looking-back (concat "^" ledger-incomplete-date-regexp) (line-beginning-position)))
-           (setq collection (ledger-complete-date (match-string 1) (match-string 2))
+           (setq collection (ledger-complete-date (match-string 1)
+                                                  (match-string 2)
+                                                  (= (line-end-position) (match-end 0)))
                  start (match-beginning 0)
                  delete-suffix (save-match-data
                                  (when (looking-at (rx (one-or-more (or digit (any ?/ ?-)))))
@@ -299,7 +302,8 @@ an alist (ACCOUNT-ELEMENT . NODE)."
            (setq start (line-beginning-position))
            (setq collection (ledger-complete-effective-date
                              (match-string 2) (match-string 3) (match-string 4)
-                             (match-string 5) (match-string 6))))
+                             (match-string 5) (match-string 6)
+                             (= (line-end-position) (match-end 0)))))
           (;; Payees
            (eq 'transaction
                (save-excursion
