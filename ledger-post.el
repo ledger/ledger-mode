@@ -27,6 +27,10 @@
 (require 'ledger-navigate)
 
 (declare-function calc-renumber-stack "calc" ())
+(declare-function ledger-add-commodity "ledger-commodities" (c1 c2))
+(declare-function ledger-commodity-to-string "ledger-commodities" (c1))
+(declare-function ledger-negate-commodity "ledger-commodities" (c))
+(declare-function ledger-split-commodity-string "ledger-commodities" (str))
 (declare-function ledger-string-to-number "ledger-commodities" (str &optional decimal-comma))
 
 ;;; Code:
@@ -187,6 +191,56 @@ the amount and return to ledger."
         (insert "  "))
       (push-mark (point) 'nomsg)
       (calc))))
+
+(defun ledger-post-xact-total ()
+  "Return (TOTAL . MISSING-COUNT) for the transaction at point.
+
+TOTAL is a commoditized amount representing the total amount of
+the postings in the transaction.
+
+MISSING-COUNT is the number of postings in the transaction that
+do not have an amount specified (such postings do not contribute
+to TOTAL).
+
+Error if the commodities do not match."
+  (save-excursion
+    (pcase-let ((`(,begin ,end) (ledger-navigate-find-xact-extents (point))))
+      (goto-char begin)
+      (cl-loop
+       while (re-search-forward ledger-post-line-regexp end t)
+       for amount-string = (match-string ledger-regex-post-line-group-amount)
+       count (not amount-string) into missing-count
+       if amount-string
+       collect (ledger-split-commodity-string amount-string) into amounts
+       finally return (cons (if amounts
+                                (cl-reduce #'ledger-add-commodity amounts)
+                              '(0 nil))
+                            missing-count)))))
+
+(defun ledger-post-fill ()
+  "Find a posting with no amount and insert it.
+
+Even if ledger allows for one missing amount per transaction, you
+might want to insert it anyway."
+  (interactive)
+  (pcase-let* ((`(,begin ,end) (ledger-navigate-find-xact-extents (point)))
+               (`(,total . ,missing-count) (ledger-post-xact-total))
+               (missing-amount (ledger-negate-commodity total))
+               (missing-non-zero (> (abs (car missing-amount)) 0.0001)))
+    (pcase missing-count
+      (0 (when missing-non-zero
+           (user-error "Postings do not balance, but no posting to fill")))
+      (1 (when missing-non-zero
+           (goto-char begin)
+           (cl-loop
+            while (re-search-forward ledger-post-line-regexp end t)
+            unless (match-beginning ledger-regex-post-line-group-amount)
+            do
+            (goto-char (match-end ledger-regex-post-line-group-account))
+            (insert "  " (ledger-commodity-to-string missing-amount))
+            and return nil)
+           (ledger-post-align-xact (point))))
+      (_ (user-error "More than one posting with missing amount")))))
 
 (provide 'ledger-post)
 

@@ -115,6 +115,10 @@ directly."
     (list (+ (car c1) (car c2)) (cadr c1)))
    (t (error "Can't add different commodities: %S + %S" c1 c2))))
 
+(defun ledger-negate-commodity (c)
+  "Return the negative of the commoditized amount C."
+  (list (- (car c)) (cadr c)))
+
 (defun ledger-strip (str char)
   "Return STR with CHAR removed."
   (replace-regexp-in-string char "" str))

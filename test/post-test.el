@@ -454,6 +454,108 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
 " ))))
 
 
+(ert-deftest ledger-post/test-post-fill-001 ()
+  "Basic functionality test for `ledger-post-fill'."
+  :tags '(post)
+
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar
+"
+    (ledger-post-fill)
+    (should
+     (equal (buffer-string)
+            "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar                                 $ -10
+")))
+
+  ;; no commodity
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                  10
+    Assets:Bar
+"
+    (ledger-post-fill)
+    (should
+     (equal (buffer-string)
+            "\
+2013-05-01 foo
+    Expenses:Foo                                  10
+    Assets:Bar                                   -10
+")))
+
+  ;; does not interfere with comments on posting line
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                  10
+    Assets:Bar  ; Payee: bar
+"
+    (ledger-post-fill)
+    (should
+     (equal (buffer-string)
+            "\
+2013-05-01 foo
+    Expenses:Foo                                  10
+    Assets:Bar                                   -10  ; Payee: bar
+")))
+
+  ;; no posting with missing amounts, but they balance
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar                                  $-10
+"
+    (ledger-post-fill)
+    (should
+     (equal (buffer-string)
+            "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar                                  $-10
+"))))
+
+
+(ert-deftest ledger-post/test-post-fill-002 ()
+  "`ledger-post-fill' error cases."
+  :tags '(post)
+
+  ;; mismatched commodities
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Expenses:Baz                                  10 €
+    Assets:Bar
+"
+    (should-error (ledger-post-fill)))
+
+  ;; more than one missing amount
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Expenses:Baz
+    Assets:Bar
+"
+    (should-error (ledger-post-fill)))
+
+  ;; no missing amount, and amounts don't balance
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Expenses:Baz                                  $5
+"
+    (should-error (ledger-post-fill))))
+
+
 (provide 'post-test)
 
 ;;; post-test.el ends here
