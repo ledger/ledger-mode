@@ -109,7 +109,7 @@ where the \"users\" point was."
     (list line-type field fields)))
 
 (defun ledger-thing-at-point ()
-  "Describe thing at point.  Return \='transaction, \='posting, \='day, or nil.
+  "Describe thing at point.  Return \\='transaction, \\='posting, \\='day, or nil.
 
 Leave point at the beginning of the thing at point, otherwise do not move point."
   (let ((here (point)))
