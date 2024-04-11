@@ -317,8 +317,10 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
                              (match-string 2) (match-string 3) (match-string 4)
                              (match-string 5) (match-string 6))))
           (;; Payees
-           (eq (save-excursion (ledger-thing-at-point)) 'transaction)
-           (setq start (save-excursion (backward-word) (point)))
+           (eq 'transaction
+               (save-excursion
+                 (prog1 (ledger-thing-at-point)
+                   (setq start (point)))))
            (setq collection #'ledger-payees-list))
           (;; Accounts
            (save-excursion

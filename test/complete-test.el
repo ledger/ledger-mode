@@ -194,6 +194,29 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
            "payee Foobar
 2019/06/28 Foobar"))))
 
+(eval-when-compile
+  (when (< emacs-major-version 28)
+    (defvar inhibit-interaction)))
+
+(ert-deftest ledger-complete/test-complete-payee-multiple-words ()
+  "Regression test for #420.
+https://github.com/ledger/ledger-mode/issues/420"
+  :tags '(complete regress)
+  (ledger-tests-with-temp-file
+   "payee Foo Bar
+payee Bar Baz
+
+2019/06/28 Foo B"
+   (goto-char (point-max))
+   (let ((inhibit-interaction t))       ;require a unique match
+     (completion-at-point))
+   (should
+    (equal (buffer-string)
+           "payee Foo Bar
+payee Bar Baz
+
+2019/06/28 Foo Bar"))))
+
 (ert-deftest ledger-complete/test-find-accounts-in-buffer ()
   :tags '(complete)
   (let ((ledger "*** Expenses
