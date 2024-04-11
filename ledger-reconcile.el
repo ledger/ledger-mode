@@ -36,7 +36,8 @@
 (require 'ledger-exec)
 (require 'ledger-navigate)
 (require 'ledger-state)
-(declare-function ledger-insert-effective-date "ledger-mode" (&optional date))
+(declare-function ledger-insert-effective-date "ledger-mode"
+                  (&optional start end date))
 (declare-function ledger-read-account-with-prompt "ledger-mode" (prompt))
 (declare-function ledger-read-date "ledger-mode" (prompt))
 
