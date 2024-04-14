@@ -69,6 +69,11 @@ When nil, `ledger-add-transaction' will not prompt twice."
             (move-overlay ledger-xact-highlight-overlay b (+ 1 e))
           (move-overlay ledger-xact-highlight-overlay 1 1))))))
 
+(defun ledger-highlight--before-revert ()
+  "Clean up highlighting overlay before reverting buffer."
+  (when ledger-xact-highlight-overlay
+    (delete-overlay ledger-xact-highlight-overlay)))
+
 (defun ledger-xact-context ()
   "Return the context of the transaction containing point or nil."
   (let ((i 0))

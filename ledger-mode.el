@@ -330,6 +330,8 @@ With a prefix argument, remove the effective date."
   (add-hook 'after-save-hook 'ledger-report-redo nil t)
 
   (add-hook 'post-command-hook 'ledger-highlight-xact-under-point nil t)
+  (add-hook 'before-revert-hook 'ledger-highlight--before-revert nil t)
+  (add-hook 'after-revert-hook 'ledger-highlight-xact-under-point nil t)
 
   (ledger-init-load-init-file)
   (setq-local comment-start ";")
