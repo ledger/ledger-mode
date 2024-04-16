@@ -37,8 +37,7 @@
   "The path to an optional file in which all accounts are used or declared.
 This file will then be used as a source for account name
 completions instead of the current file.
-See ledger's
-\"account\" directive."
+See ledger's \"account\" directive."
   :type '(choice (const :tag "Use current buffer for completion" nil)
                  file)
   :group 'ledger
