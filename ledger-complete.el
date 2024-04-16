@@ -201,7 +201,11 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
           (ledger-accounts-list-in-buffer)))
     (ledger-accounts-list-in-buffer)))
 
-(defun ledger-find-accounts-in-buffer ()
+(defun ledger-accounts-tree ()
+  "Return a tree of all accounts in the buffer.
+
+Each node in the tree is a list (t . CHILDREN), where CHILDREN is
+an alist (ACCOUNT-ELEMENT . NODE)."
   (let ((account-tree (list t))
         (account-elements nil))
     (save-excursion
@@ -222,11 +226,11 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
             (setq account-elements (cdr account-elements))))))
     account-tree))
 
-(defun ledger-accounts-tree ()
-  "Return a tree of all accounts in the buffer."
+(defun ledger-complete-account-next-steps ()
+  "Return a list of next steps for the account prefix at point."
   (let* ((current (caar (ledger-parse-arguments)))
          (elements (and current (split-string current ":")))
-         (root (ledger-find-accounts-in-buffer))
+         (root (ledger-accounts-tree))
          (prefix nil))
     (while (cdr elements)
       (let ((xact (assoc (car elements) root)))
@@ -332,7 +336,7 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
                                    (- (match-beginning 0) end)))
                  realign-after t
                  collection (if ledger-complete-in-steps
-                                #'ledger-accounts-tree
+                                #'ledger-complete-account-next-steps
                               #'ledger-accounts-list))))
     (when collection
       (let ((prefix (buffer-substring-no-properties start end)))
