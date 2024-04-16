@@ -414,7 +414,11 @@ MONTH is of the form (YEAR . INDEX) where INDEX ranges from
       (format "%s-%s" year month-index))))
 
 (defun ledger-report-expand-format-specifiers (report-cmd)
-  "Expand format specifiers in REPORT-CMD with thing under point."
+  "Expand format specifiers in REPORT-CMD.
+
+Format specifiers are defined in the
+`ledger-report-format-specifiers' alist.  The functions are
+called in the ledger buffer for which the report is being run."
   (save-match-data
     (let ((ledger-buf ledger-report-ledger-buf))
       (with-temp-buffer
