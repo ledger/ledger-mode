@@ -206,25 +206,16 @@ Looks in `ledger-accounts-file' if set, otherwise the current buffer."
 
 Each node in the tree is a list (t . CHILDREN), where CHILDREN is
 an alist (ACCOUNT-ELEMENT . NODE)."
-  (let ((account-tree (list t))
-        (account-elements nil))
-    (save-excursion
-      (goto-char (point-min))
-
-      (dolist (account (ledger-accounts-list))
-        (let ((root account-tree))
-          (setq account-elements
-                (split-string
-                 account ":"))
-          (while account-elements
-            (let ((xact (assoc (car account-elements) root)))
-              (if xact
-                  (setq root (cdr xact))
-                (setq xact (cons (car account-elements) (list t)))
-                (nconc root (list xact))
-                (setq root (cdr xact))))
-            (setq account-elements (cdr account-elements))))))
-    account-tree))
+  (let ((account-tree (list t)))
+    (dolist (account (ledger-accounts-list) account-tree)
+      (let ((root account-tree)
+            (account-elements (split-string account ":")))
+        (dolist (element account-elements)
+          (let ((node (assoc element root)))
+            (unless node
+              (setq node (cons element (list t)))
+              (nconc root (list node)))
+            (setq root (cdr node))))))))
 
 (defun ledger-complete-account-next-steps ()
   "Return a list of next steps for the account prefix at point."
