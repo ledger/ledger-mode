@@ -416,24 +416,22 @@ MONTH is of the form (YEAR . INDEX) where INDEX ranges from
 (defun ledger-report-expand-format-specifiers (report-cmd)
   "Expand format specifiers in REPORT-CMD with thing under point."
   (save-match-data
-    (let ((expanded-cmd report-cmd))
-      (set-match-data (list 0 0))
-      (while (string-match "%(\\([^)]*\\))" expanded-cmd
-                           (if (> (length expanded-cmd) (match-end 0))
-                               (match-end 0)
-                             (1- (length expanded-cmd))))
-        (let* ((specifier (match-string 1 expanded-cmd))
-               (f (cdr (assoc specifier ledger-report-format-specifiers))))
-          (if f
-              (let* ((arg (save-match-data
-                            (with-current-buffer ledger-report-ledger-buf
-                              (funcall f))))
-                     (quoted (if (listp arg)
-                                 (mapconcat #'identity arg " ")
-                               (save-match-data
-                                 (shell-quote-argument arg)))))
-                (setq expanded-cmd (replace-match quoted t t expanded-cmd))))))
-      expanded-cmd)))
+    (let ((ledger-buf ledger-report-ledger-buf))
+      (with-temp-buffer
+        (save-excursion (insert report-cmd))
+        (while (re-search-forward "%(\\([^)]*\\))" nil t)
+          (let* ((specifier (match-string 1))
+                 (f (cdr (assoc specifier ledger-report-format-specifiers))))
+            (if f
+                (let* ((arg (save-match-data
+                              (with-current-buffer ledger-buf
+                                (funcall f))))
+                       (quoted (if (listp arg)
+                                   (mapconcat #'identity arg " ")
+                                 (save-match-data
+                                   (shell-quote-argument arg)))))
+                  (replace-match quoted t t)))))
+        (buffer-string)))))
 
 (defun ledger-report--cmd-needs-links-p (cmd)
   "Check links should be added to the report produced by CMD."

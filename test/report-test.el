@@ -48,6 +48,38 @@
   (should (equal (ledger-report--shift-month '(2018 . 1) -1) '(2017 . 12)))
   (should (equal (ledger-report--shift-month '(2018 . 1) -13) '(2016 . 12))))
 
+(defvar report-test--account-format-specifier-called-p)
+
+(defun report-test--dummy-format-specifier ()
+  "Helper function for `ledger-report/test-001'."
+  (setq report-test--account-format-specifier-called-p t)
+  "")
+
+(ert-deftest ledger-report/test-001 ()
+  "Regression test for #424.
+https://github.com/ledger/ledger-mode/issues/424"
+  :tags '(report regress)
+
+  (let ((ledger-reports
+         (cons '("dummy-report-name"
+                 "%(binary) -f %(ledger-file) reg --strict --period %(month) %(account)")
+               ledger-reports))
+        (ledger-report-format-specifiers
+         (cl-list* '("account" . report-test--dummy-format-specifier)
+                   ledger-report-format-specifiers))
+        (report-test--account-format-specifier-called-p nil))
+    (ledger-tests-with-temp-file demo-ledger
+      (ledger-report "dummy-report-name" nil)
+      (should report-test--account-format-specifier-called-p)
+      (should (equal (buffer-local-value
+                     'ledger-report-cmd
+                     (get-buffer ledger-report-buffer-name))
+                     (concat "ledger [[ledger-mode-flags]] -f "
+                             buffer-file-name
+                             " reg --strict --period "
+                             (ledger-report-month-format-specifier)
+                             " ''"))))))
+
 (provide 'report-test)
 
 ;;; report-test.el ends here
