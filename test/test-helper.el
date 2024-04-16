@@ -102,6 +102,10 @@ The two arguments START and END are character positions."
       (ledger-mode)
       (insert str)
       (font-lock-ensure)
+      ;; This second call appears to prevent `ledger-fontify/test-017' from
+      ;; nondeterministically failing on Emacs 25.1.  When ledger-mode no longer
+      ;; supports that Emacs version, this second call can likely be removed.
+      (font-lock-ensure)
       (buffer-string))))
 
 
