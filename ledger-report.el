@@ -78,7 +78,8 @@ The function is called with no parameters and expected to return
 a string, or a list of strings, that should replace the format specifier.
 Single strings are quoted with `shell-quote-argument'; lists of strings are
 simply concatenated (no quoting)."
-  :type 'alist
+  :type '(alist :key-type string
+                :value-type function)
   :group 'ledger-report)
 
 (defcustom ledger-report-auto-refresh t

@@ -71,7 +71,7 @@
   "List of weekday abbreviations.
 There must be exactly seven entries each with a two character
 abbreviation for a day and the number of that day in the week."
-  :type '(alist :value-type (group integer))
+  :type '(alist :key-type string :value-type (group integer))
   :group 'ledger-schedule)
 
 (defsubst ledger-between (val low high)
