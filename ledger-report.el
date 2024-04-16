@@ -419,23 +419,21 @@ MONTH is of the form (YEAR . INDEX) where INDEX ranges from
 Format specifiers are defined in the
 `ledger-report-format-specifiers' alist.  The functions are
 called in the ledger buffer for which the report is being run."
-  (save-match-data
-    (let ((ledger-buf ledger-report-ledger-buf))
-      (with-temp-buffer
-        (save-excursion (insert report-cmd))
-        (while (re-search-forward "%(\\([^)]*\\))" nil t)
-          (let* ((specifier (match-string 1))
-                 (f (cdr (assoc specifier ledger-report-format-specifiers))))
-            (if f
-                (let* ((arg (save-match-data
-                              (with-current-buffer ledger-buf
-                                (funcall f))))
-                       (quoted (if (listp arg)
-                                   (mapconcat #'identity arg " ")
-                                 (save-match-data
-                                   (shell-quote-argument arg)))))
-                  (replace-match quoted t t)))))
-        (buffer-string)))))
+  (let ((ledger-buf ledger-report-ledger-buf))
+    (with-temp-buffer
+      (save-excursion (insert report-cmd))
+      (while (re-search-forward "%(\\([^)]*\\))" nil t)
+        (when-let ((specifier (match-string 1))
+                   (f (cdr (assoc specifier ledger-report-format-specifiers))))
+          (let* ((arg (save-match-data
+                        (with-current-buffer ledger-buf
+                          (funcall f))))
+                 (quoted (save-match-data
+                           (if (listp arg)
+                               (string-join arg " ")
+                             (shell-quote-argument arg)))))
+            (replace-match quoted 'fixedcase 'literal))))
+       (buffer-string))))
 
 (defun ledger-report--cmd-needs-links-p (cmd)
   "Check links should be added to the report produced by CMD."
