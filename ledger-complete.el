@@ -317,8 +317,7 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                                (when delete-suffix
                                  (delete-char delete-suffix))
                                (when (and realign-after ledger-post-auto-align)
-                                 (ledger-post-align-postings (line-beginning-position) (line-end-position))))
-              'ignore)))))
+                                 (ledger-post-align-postings (line-beginning-position) (line-end-position)))))))))
 
 (defun ledger-trim-trailing-whitespace (str)
   (replace-regexp-in-string "[ \t]*$" "" str))
