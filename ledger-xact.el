@@ -140,7 +140,7 @@ MOMENT is an encoded date"
 
 (defun ledger-copy-transaction-at-point (date)
   "Ask for a new DATE and copy the transaction under point to that date.
-Leave point on the first amount."
+Leave point on the first amount, if any, otherwise the first account."
   (interactive (list (ledger-read-date "Copy to date: ")))
   (let* ((extents (ledger-navigate-find-xact-extents (point)))
          (transaction (buffer-substring-no-properties (car extents) (cadr extents)))
@@ -153,11 +153,14 @@ Leave point on the first amount."
               "\n"))
     (beginning-of-line -1)
     (ledger-navigate-beginning-of-xact)
-    (re-search-forward ledger-iso-date-regexp)
-    (replace-match date)
-    (ledger-next-amount)
-    (if (re-search-forward "[-0-9]")
-        (goto-char (match-beginning 0)))))
+    (let ((end (save-excursion (ledger-navigate-end-of-xact) (point))))
+      (re-search-forward ledger-iso-date-regexp)
+      (replace-match date)
+      (if (ledger-next-amount end)
+          (progn
+            (re-search-forward "[-0-9]")
+            (goto-char (match-beginning 0)))
+        (ledger-next-account end)))))
 
 (defun ledger-delete-current-transaction (pos)
   "Delete the transaction surrounding POS."
