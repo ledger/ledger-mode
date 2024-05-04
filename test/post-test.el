@@ -454,6 +454,64 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
 " ))))
 
 
+(ert-deftest ledger-post/test-post-xact-total-001 ()
+  "Basic functionality test for `ledger-post-xact-total'."
+  :tags '(post)
+
+  ;; one amount missing
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar
+"
+
+    (should
+     (equal (ledger-post-xact-total)
+            '((10 "$") . 1))))
+
+  ;; all amounts missing
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo
+    Assets:Bar
+"
+
+    (should
+     (equal (ledger-post-xact-total)
+            '((0 nil) . 2))))
+
+  ;; no amounts missing
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo     $10
+    Assets:Bar      $-10
+"
+
+    (should
+     (equal (ledger-post-xact-total)
+            '((0 "$") . 0)))))
+
+
+(ert-deftest ledger-post/test-post-xact-total-002 ()
+  "`ledger-post-xact-total' error cases."
+  :tags '(post)
+
+  ;; mismatched commodities
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Expenses:Baz                                  10 €
+    Assets:Bar
+"
+    (should (string-prefix-p
+             "Can’t add different commodities"
+             (cadr (should-error (ledger-post-xact-total)))))))
+
+
 (ert-deftest ledger-post/test-post-fill-001 ()
   "Basic functionality test for `ledger-post-fill'."
   :tags '(post)
