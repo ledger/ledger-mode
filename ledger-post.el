@@ -226,11 +226,12 @@ might want to insert it anyway."
   (pcase-let* ((`(,begin ,end) (ledger-navigate-find-xact-extents (point)))
                (`(,total . ,missing-count) (ledger-post-xact-total))
                (missing-amount (ledger-negate-commodity total))
-               (missing-non-zero (> (abs (car missing-amount)) 0.0001)))
+               (amounts-balance (< (abs (car missing-amount)) 0.0001)))
     (pcase missing-count
-      (0 (when missing-non-zero
+      (0 (unless amounts-balance
            (user-error "Postings do not balance, but no posting to fill")))
-      (1 (when missing-non-zero
+      (1 (if amounts-balance
+             (user-error "Missing amount but amounts balance already")
            (goto-char begin)
            (cl-loop
             while (re-search-forward ledger-post-line-regexp end t)

@@ -619,6 +619,18 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
              (cadr (should-error (ledger-post-fill)))
              "Postings do not balance, but no posting to fill")))
 
+  ;; missing amount but amounts balance already
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $-10
+    Expenses:Baz                                  $5
+    Expenses:Bar                                  $5
+    Expenses:Bla
+"
+    (should (string-equal
+             (cadr (should-error (ledger-post-fill)))
+             "Missing amount but amounts balance already"))))
 
 (provide 'post-test)
 
