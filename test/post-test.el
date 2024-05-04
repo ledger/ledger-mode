@@ -592,7 +592,9 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
     Expenses:Baz                                  10 €
     Assets:Bar
 "
-    (should-error (ledger-post-fill)))
+    (should (string-prefix-p
+             "Can’t add different commodities"
+             (cadr (should-error (ledger-post-fill))))))
 
   ;; more than one missing amount
   (ledger-tests-with-temp-file
@@ -602,7 +604,9 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
     Expenses:Baz
     Assets:Bar
 "
-    (should-error (ledger-post-fill)))
+    (should (string-equal
+             (cadr (should-error (ledger-post-fill)))
+             "More than one posting with missing amount")))
 
   ;; no missing amount, and amounts don't balance
   (ledger-tests-with-temp-file
@@ -611,7 +615,9 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
     Expenses:Foo                                 $10
     Expenses:Baz                                  $5
 "
-    (should-error (ledger-post-fill))))
+    (should (string-equal
+             (cadr (should-error (ledger-post-fill)))
+             "Postings do not balance, but no posting to fill")))
 
 
 (provide 'post-test)
