@@ -468,7 +468,18 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
 
     (should
      (equal (ledger-post-xact-total)
-            '((10 "$") . 1))))
+            '((10 "$") . (83)))))
+
+  ;; one amount missing with trailing spaces
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar       \n"
+
+    (should
+     (equal (ledger-post-xact-total)
+            '((10 "$") . (83)))))
 
   ;; all amounts missing
   (ledger-tests-with-temp-file
@@ -480,7 +491,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
 
     (should
      (equal (ledger-post-xact-total)
-            '((0 nil) . 2))))
+            '((0 nil) . (32 47)))))
 
   ;; no amounts missing
   (ledger-tests-with-temp-file
@@ -492,7 +503,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
 
     (should
      (equal (ledger-post-xact-total)
-            '((0 "$") . 0)))))
+            '((0 "$") . nil)))))
 
 
 (ert-deftest ledger-post/test-post-xact-total-002 ()
@@ -522,6 +533,21 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
     Expenses:Foo                                 $10
     Assets:Bar
 "
+    (ledger-post-fill)
+    (should
+     (equal (buffer-string)
+            "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar                                 $ -10
+")))
+
+  ;; trailing spaces
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar    \n"
     (ledger-post-fill)
     (should
      (equal (buffer-string)
