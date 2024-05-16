@@ -21,6 +21,7 @@ jobs:
           - emacs_version: snapshot
             ledger_version: github:ledger/ledger#ledger
             experimental: true
+            os: ubuntu-latest
 
     steps:
     - uses: cachix/install-nix-action@V27
