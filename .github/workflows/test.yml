@@ -11,13 +11,16 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-11]
         emacs_version: [25.1, 25.2, 25.3, 26.1, 26.2, 26.3, 27.1, 27.2, 28.1, 28.2, 29.1, 29.3, snapshot]
+        experimental: [false]
         include:
           - emacs_version: snapshot
             ledger_version: github:ledger/ledger#ledger
+            experimental: true
 
     steps:
     - uses: cachix/install-nix-action@V27
