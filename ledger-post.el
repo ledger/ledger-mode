@@ -209,11 +209,12 @@ Error if the commodities do not match."
       (goto-char begin)
       (cl-loop
        while (re-search-forward ledger-post-line-regexp end t)
+       for account-end = (match-end ledger-regex-post-line-group-account)
        for amount-string = (when-let ((amount-string (match-string ledger-regex-post-line-group-amount)))
                              (unless (string-empty-p (string-trim amount-string))
                                amount-string))
        if (not amount-string)
-       collect (match-end ledger-regex-post-line-group-account) into missing-positions
+       collect account-end into missing-positions
        else
        collect (ledger-split-commodity-string amount-string) into amounts
        finally return (cons (if amounts
