@@ -200,7 +200,8 @@ the postings in the transaction.
 
 MISSING-POSITIONS is a list of positions in the buffer where the
 transaction do not have an amount specified (such postings do not
-contribute to TOTAL).
+contribute to TOTAL).  Specifically, the positions are at the end
+of the account name on such posting lines.
 
 Error if the commodities do not match."
   (save-excursion
