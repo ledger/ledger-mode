@@ -229,17 +229,18 @@ might want to insert it anyway."
   (pcase-let* ((`(,total . ,missing-positions) (ledger-post-xact-total))
                (missing-amount (ledger-negate-commodity total))
                (amounts-balance (< (abs (car missing-amount)) 0.0001)))
-    (pcase (length missing-positions)
-      (0 (unless amounts-balance
-           (user-error "Postings do not balance, but no posting to fill")))
-      (1 (if amounts-balance
-             (user-error "Missing amount but amounts balance already")
-           (goto-char (car missing-positions))
-           (insert "  " (ledger-commodity-to-string missing-amount))
-           (just-one-space 0)
-           (unless (equal (point) (line-end-position))
-             (just-one-space 2))
-           (ledger-post-align-xact (point))))
+    (pcase missing-positions
+      ('() (unless amounts-balance
+             (user-error "Postings do not balance, but no posting to fill")))
+      (`(,missing-pos)
+       (if amounts-balance
+           (user-error "Missing amount but amounts balance already")
+         (goto-char missing-pos)
+         (insert "  " (ledger-commodity-to-string missing-amount))
+         (just-one-space 0)
+         (unless (equal (point) (line-end-position))
+           (just-one-space 2))
+         (ledger-post-align-xact (point))))
       (_ (user-error "More than one posting with missing amount")))))
 
 (provide 'ledger-post)
