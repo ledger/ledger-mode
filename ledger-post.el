@@ -239,12 +239,6 @@ might want to insert it anyway."
            (user-error "Missing amount but amounts balance already")
          (goto-char missing-pos)
          (insert "  " (ledger-commodity-to-string missing-amount))
-         (just-one-space 0)
-         ;; if point is not at the end of the line after the amount, it means
-         ;; there is a trailing comment that should be separated from the
-         ;; amount with a long space:
-         (unless (equal (point) (line-end-position))
-           (just-one-space 2))
          (ledger-post-align-xact (point))))
       (_ (user-error "More than one posting with missing amount")))))
 

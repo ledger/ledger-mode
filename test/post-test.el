@@ -554,8 +554,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
             "\
 2013-05-01 foo
     Expenses:Foo                                 $10
-    Assets:Bar                                 $ -10
-")))
+    Assets:Bar                                 $ -10    \n")))
 
   ;; no commodity
   (ledger-tests-with-temp-file
