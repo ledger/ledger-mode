@@ -362,7 +362,7 @@ TOPLEVEL-ONLY has the same meaning."
   (ledger-init-load-init-file)
   (setq-local comment-start ";")
   (setq-local indent-line-function #'ledger-indent-line)
-  (setq-local indent-region-function 'ledger-post-align-postings)
+  (setq-local indent-region-function #'ledger-indent-region)
   (setq-local beginning-of-defun-function #'ledger-navigate-beginning-of-xact)
   (setq-local end-of-defun-function #'ledger-navigate-end-of-xact))
 
