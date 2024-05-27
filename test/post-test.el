@@ -454,6 +454,209 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
 " ))))
 
 
+(ert-deftest ledger-post/test-post-xact-total-001 ()
+  "Basic functionality test for `ledger-post-xact-total'."
+  :tags '(post)
+
+  ;; one amount missing
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar
+"
+
+    (should
+     (equal (ledger-post-xact-total)
+            '((10 "$") . (83)))))
+
+  ;; one amount missing with trailing spaces
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar       \n"
+
+    (should
+     (equal (ledger-post-xact-total)
+            '((10 "$") . (83)))))
+
+  ;; all amounts missing
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo
+    Assets:Bar
+"
+
+    (should
+     (equal (ledger-post-xact-total)
+            '((0 nil) . (32 47)))))
+
+  ;; no amounts missing
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo     $10
+    Assets:Bar      $-10
+"
+
+    (should
+     (equal (ledger-post-xact-total)
+            '((0 "$") . nil)))))
+
+
+(ert-deftest ledger-post/test-post-xact-total-002 ()
+  "`ledger-post-xact-total' error cases."
+  :tags '(post)
+
+  ;; mismatched commodities
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Expenses:Baz                                  10 €
+    Assets:Bar
+"
+    (should (string-prefix-p
+             "Can’t add different commodities"
+             (cadr (should-error (ledger-post-xact-total)))))))
+
+
+(ert-deftest ledger-post/test-post-fill-001 ()
+  "Basic functionality test for `ledger-post-fill'."
+  :tags '(post)
+
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar
+"
+    (ledger-post-fill)
+    (should
+     (equal (buffer-string)
+            "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar                                 $ -10
+")))
+
+  ;; trailing spaces
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar    \n"
+    (ledger-post-fill)
+    (should
+     (equal (buffer-string)
+            "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar                                 $ -10    \n")))
+
+  ;; no commodity
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                  10
+    Assets:Bar
+"
+    (ledger-post-fill)
+    (should
+     (equal (buffer-string)
+            "\
+2013-05-01 foo
+    Expenses:Foo                                  10
+    Assets:Bar                                   -10
+")))
+
+  ;; does not interfere with comments on posting line
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                  10
+    Assets:Bar  ; Payee: bar
+"
+    (ledger-post-fill)
+    (should
+     (equal (buffer-string)
+            "\
+2013-05-01 foo
+    Expenses:Foo                                  10
+    Assets:Bar                                   -10  ; Payee: bar
+")))
+
+  ;; no posting with missing amounts, but they balance
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar                                  $-10
+"
+    (ledger-post-fill)
+    (should
+     (equal (buffer-string)
+            "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Assets:Bar                                  $-10
+"))))
+
+
+(ert-deftest ledger-post/test-post-fill-002 ()
+  "`ledger-post-fill' error cases."
+  :tags '(post)
+
+  ;; mismatched commodities
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Expenses:Baz                                  10 €
+    Assets:Bar
+"
+    (should (string-prefix-p
+             "Can’t add different commodities"
+             (cadr (should-error (ledger-post-fill))))))
+
+  ;; more than one missing amount
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Expenses:Baz
+    Assets:Bar
+"
+    (should (string-equal
+             (cadr (should-error (ledger-post-fill)))
+             "More than one posting with missing amount")))
+
+  ;; no missing amount, and amounts don't balance
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $10
+    Expenses:Baz                                  $5
+"
+    (should (string-equal
+             (cadr (should-error (ledger-post-fill)))
+             "Postings do not balance, but no posting to fill")))
+
+  ;; missing amount but amounts balance already
+  (ledger-tests-with-temp-file
+      "\
+2013-05-01 foo
+    Expenses:Foo                                 $-10
+    Expenses:Baz                                  $5
+    Expenses:Bar                                  $5
+    Expenses:Bla
+"
+    (should (string-equal
+             (cadr (should-error (ledger-post-fill)))
+             "Missing amount but amounts balance already"))))
+
 (provide 'post-test)
 
 ;;; post-test.el ends here
