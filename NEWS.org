@@ -10,6 +10,11 @@ the date and another time for the xact text. If you find this annoying, set
 In reconcile buffers, =ledger-reconcile-display-balance-in-header-mode= (bound
 to =B= by default) causes the most recent balance and target diff to be
 persistently displayed in the header line.
+** New command ledger-rename-account
+This command renames all occurrences of an account name in the buffer.
+** New command ledger-post-fill
+This command finds a posting with a missing amount and inserts the correct
+amount that would balance the transaction.
 * Release v4.0.0
 ** The completion system now respects whatever completion system the user prefers
 Some users prefer different completion systems such as ivy or helm. To get the
