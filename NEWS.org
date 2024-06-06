@@ -18,6 +18,10 @@ This command renames all occurrences of an account name in the buffer.
 ** New command ledger-post-fill
 This command finds a posting with a missing amount and inserts the correct
 amount that would balance the transaction.
+** New option ledger-report-links-beginning-of-xact
+This option defaults to t.  When nil, links in the report buffer visit the
+specific posting at point, rather than the beginning of the transaction
+containing that posting.
 * Release v4.0.0
 ** The completion system now respects whatever completion system the user prefers
 Some users prefer different completion systems such as ivy or helm. To get the

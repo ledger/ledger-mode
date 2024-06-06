@@ -97,6 +97,13 @@ simply concatenated (no quoting)."
   :type 'boolean
   :group 'ledger-report)
 
+(defcustom ledger-report-links-beginning-of-xact t
+  "If nil, links in \"register\" reports visit the posting they correspond to.
+
+If non-nil, visit the beginning of the transaction instead."
+  :type 'boolean
+  :group 'ledger-report)
+
 (defcustom ledger-report-use-native-highlighting t
   "When non-nil, use ledger's native highlighting in reports."
   :type 'boolean
@@ -538,7 +545,10 @@ arguments returned by `ledger-report--compute-extra-args'."
           (ledger-report--add-links))))))
 
 (defun ledger-report-visit-source ()
-  "Visit the transaction under point in the report window."
+  "Visit the transaction under point in the report window.
+
+If `ledger-report-links-beginning-of-xact' is nil, visit the
+specific posting at point instead."
   (interactive)
   (let* ((prop (get-text-property (point) 'ledger-source))
          (file (car prop))
@@ -548,7 +558,8 @@ arguments returned by `ledger-report--compute-extra-args'."
       (widen)
       (goto-char (point-min))
       (forward-line (1- line))
-      (ledger-navigate-beginning-of-xact))))
+      (when ledger-report-links-beginning-of-xact
+        (ledger-navigate-beginning-of-xact)))))
 
 (defun ledger-report-goto ()
   "Goto the ledger report buffer."
