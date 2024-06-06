@@ -221,51 +221,61 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                   (cdr root))
           'string-lessp))))
 
-(defun ledger-complete-date (month-string day-string)
+(defvar ledger-complete--current-time-for-testing nil
+  "Internal, used for testing only.")
+
+(defun ledger-complete-date (month-string day-string date-at-eol-p)
   "Complete a date."
-  (let*
-      ((now (current-time))
-       (decoded (decode-time now))
-       (this-month (nth 4 decoded))
-       (this-year (nth 5 decoded))
-       (last-month (if (> this-month 1) (1- this-month) 12))
-       (last-year (1- this-year))
-       (last-month-year (if (> this-month 1) this-year last-year))
-       (month (and month-string
-                   (string-to-number month-string)))
-       (day (string-to-number day-string))
-       (dates (list (encode-time 0 0 0 day (or month this-month) this-year)
-                    (if month
-                        (encode-time 0 0 0 day month last-year)
-                      (encode-time 0 0 0 day last-month last-month-year)))))
-    (lambda (_string _predicate _all)
-      (concat (ledger-format-date
-               (cl-find-if (lambda (date) (not (time-less-p now date))) dates))
-              (and (= (point) (line-end-position)) " ")))))
+  (let* ((now (or ledger-complete--current-time-for-testing (current-time)))
+         (decoded (decode-time now))
+         (this-month (nth 4 decoded))
+         (this-year (nth 5 decoded))
+         (last-month (if (> this-month 1) (1- this-month) 12))
+         (last-year (1- this-year))
+         (last-month-year (if (> this-month 1) this-year last-year))
+         (month (and month-string
+                     (string-to-number month-string)))
+         (day (string-to-number day-string))
+         (dates (list (encode-time 0 0 0 day (or month this-month) this-year)
+                      (if month
+                          (encode-time 0 0 0 day month last-year)
+                        (encode-time 0 0 0 day last-month last-month-year)))))
+    (let ((collection
+           (list (concat (ledger-format-date
+                          (cl-find-if (lambda (date) (not (time-less-p now date))) dates))
+                         (when date-at-eol-p " ")))))
+      (lambda (string predicate action)
+        (if (eq action 'metadata)
+            '(metadata (category . ledger-date))
+          (complete-with-action action collection string predicate))))))
 
 (defun ledger-complete-effective-date
     (tx-year-string tx-month-string tx-day-string
-                    month-string day-string)
+                    month-string day-string
+                    date-at-eol-p)
   "Complete an effective date."
-  (let*
-      ((tx-year (string-to-number tx-year-string))
-       (tx-month (string-to-number tx-month-string))
-       (tx-day (string-to-number tx-day-string))
-       (tx-date (encode-time 0 0 0 tx-day tx-month tx-year))
-       (next-month (if (< tx-month 12) (1+ tx-month) 1))
-       (next-year (1+ tx-year))
-       (next-month-year (if (< tx-month 12) tx-year next-year))
-       (month (and month-string
-                   (string-to-number month-string)))
-       (day (string-to-number day-string))
-       (dates (list (encode-time 0 0 0 day (or month tx-month) tx-year)
-                    (if month
-                        (encode-time 0 0 0 day month next-year)
-                      (encode-time 0 0 0 day next-month next-month-year)))))
-    (lambda (_string _predicate _all)
-      (concat (ledger-format-date
-               (cl-find-if (lambda (date) (not (time-less-p date tx-date))) dates))
-              (and (= (point) (line-end-position)) " ")))))
+  (let* ((tx-year (string-to-number tx-year-string))
+         (tx-month (string-to-number tx-month-string))
+         (tx-day (string-to-number tx-day-string))
+         (tx-date (encode-time 0 0 0 tx-day tx-month tx-year))
+         (next-month (if (< tx-month 12) (1+ tx-month) 1))
+         (next-year (1+ tx-year))
+         (next-month-year (if (< tx-month 12) tx-year next-year))
+         (month (and month-string
+                     (string-to-number month-string)))
+         (day (string-to-number day-string))
+         (dates (list (encode-time 0 0 0 day (or month tx-month) tx-year)
+                      (if month
+                          (encode-time 0 0 0 day month next-year)
+                        (encode-time 0 0 0 day next-month next-month-year)))))
+    (let ((collection
+           (list (concat (ledger-format-date
+                          (cl-find-if (lambda (date) (not (time-less-p date tx-date))) dates))
+                         (when date-at-eol-p " ")))))
+      (lambda (string predicate action)
+        (if (eq action 'metadata)
+            '(metadata (category . ledger-date))
+          (complete-with-action action collection string predicate))))))
 
 (defun ledger-complete-at-point ()
   "Do appropriate completion for the thing at point."
@@ -274,25 +284,32 @@ an alist (ACCOUNT-ELEMENT . NODE)."
         realign-after
         delete-suffix)
     (cond (;; Date
-           (looking-back (concat "^" ledger-incomplete-date-regexp) (line-beginning-position))
-           (setq collection (ledger-complete-date (match-string 1) (match-string 2))
+           (save-excursion
+             (skip-chars-forward "0-9/-")
+             (looking-back (concat "^" ledger-incomplete-date-regexp) (line-beginning-position)))
+           (setq collection (ledger-complete-date (match-string 1)
+                                                  (match-string 2)
+                                                  (= (line-end-position) (match-end 0)))
                  start (match-beginning 0)
                  delete-suffix (save-match-data
                                  (when (looking-at (rx (one-or-more (or digit (any ?/ ?-)))))
                                    (length (match-string 0))))))
           (;; Effective dates
-           (looking-back (concat "^" ledger-iso-date-regexp "=" ledger-incomplete-date-regexp)
-                         (line-beginning-position))
+           (save-excursion
+             (skip-chars-forward "0-9/-")
+             (looking-back (concat "^" ledger-iso-date-regexp "=" ledger-incomplete-date-regexp)
+                           (line-beginning-position)))
            (setq start (line-beginning-position))
            (setq collection (ledger-complete-effective-date
                              (match-string 2) (match-string 3) (match-string 4)
-                             (match-string 5) (match-string 6))))
+                             (match-string 5) (match-string 6)
+                             (= (line-end-position) (match-end 0)))))
           (;; Payees
            (eq 'transaction
                (save-excursion
                  (prog1 (ledger-thing-at-point)
                    (setq start (point)))))
-           (setq collection #'ledger-payees-list))
+           (setq collection (cons 'nullary #'ledger-payees-list)))
           (;; Accounts
            (save-excursion
              (back-to-indentation)
@@ -302,17 +319,27 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                                  (when (search-forward-regexp (rx (or eol (or ?\t (repeat 2 space)))) (line-end-position) t)
                                    (- (match-beginning 0) end)))
                  realign-after t
-                 collection (if ledger-complete-in-steps
-                                #'ledger-complete-account-next-steps
-                              #'ledger-accounts-list))))
+                 collection (cons 'nullary
+                                  (if ledger-complete-in-steps
+                                      #'ledger-complete-account-next-steps
+                                    #'ledger-accounts-list)))))
     (when collection
       (let ((prefix (buffer-substring-no-properties start end)))
         (list start end
-              (if (functionp collection)
-                  (completion-table-with-cache
-                   (lambda (_)
-                     (cl-remove-if (apply-partially 'string= prefix) (funcall collection))))
-                collection)
+              (pcase collection
+                ;; `func-arity' isn't available until Emacs 26, so we have to
+                ;; manually track the arity of the functions.
+                (`(nullary . ,f)
+                 ;; a nullary function that returns a completion collection
+                 (completion-table-with-cache
+                  (lambda (_)
+                    (cl-remove-if (apply-partially 'string= prefix) (funcall f)))))
+                ((pred functionp)
+                 ;; a completion table
+                 collection)
+                (_
+                 ;; a static completion collection
+                 collection))
               :exit-function (lambda (&rest _)
                                (when delete-suffix
                                  (delete-char delete-suffix))
@@ -361,6 +388,8 @@ payee."
     ;; Move to amount on first posting line
     (when (re-search-backward "\t\\| [ \t]" nil t)
       (goto-char (match-end 0)))))
+
+(add-to-list 'completion-category-defaults '(ledger-date (styles . (substring))))
 
 (provide 'ledger-complete)
 
