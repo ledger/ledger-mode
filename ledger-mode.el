@@ -268,6 +268,81 @@ TOPLEVEL-ONLY has the same meaning."
     table)
   "Syntax table in use in `ledger-mode' buffers.")
 
+(defun ledger--in-regexp (regexp)
+  (catch :exit
+    (let ((pos (point))
+          (eol (line-end-position)))
+      (save-excursion
+        (beginning-of-line)
+        (while (and (re-search-forward regexp eol t)
+                    (<= (match-beginning 0) pos))
+          (let ((end (match-end 0)))
+            (when (or (> end pos) (= end pos))
+              (throw :exit (cons (match-beginning 0) (match-end 0))))))))))
+
+(defsubst ledger--pos-in-match-range (pos n)
+  (and (match-beginning n)
+       (<= (match-beginning n) pos)
+       (>= (match-end n) pos)))
+
+(defun ledger--at-date-p ()
+  (let ((pos (point))
+        (boundaries (ledger--in-regexp ledger-date-string))
+        )
+    (save-match-data
+      (cond ((null boundaries) nil)
+            ((ledger--pos-in-match-range pos 2) 'year)
+            ((ledger--pos-in-match-range pos 3) 'month)
+            ((ledger--pos-in-match-range pos 4) 'day)
+            ))))
+
+(defun ledger--parse-date-string (s)
+  (unless (string-match ledger-date-string s)
+    (error "Not a ledger date: %s"))
+  (list (string-to-number (match-string 4 s)) ; day
+        (string-to-number (match-string 3 s)) ; month
+        (string-to-number (match-string 2 s)) ; year
+        )
+  )
+
+(defun ledger--date-change (n)
+  "Change N for the date field at point."
+  (let ((date-cat (ledger--at-date-p))
+        (origin-pos (point))
+        date-separator
+        date-str time-old time-new)
+    (unless date-cat (user-error "Not at a date"))
+    (setq date-str (match-string 0))
+    (setq date-separator
+          (string (aref date-str 4)))
+    (replace-match "")
+    (setq time-old (ledger--parse-date-string date-str))
+    (setq time-new
+          (encode-time
+           (apply #'list
+                  0         ; second
+                  0         ; minute
+                  0         ; hour
+                  (+ (if (eq date-cat 'day) n 0)    (nth 0 time-old))
+                  (+ (if (eq date-cat 'month) n 0)  (nth 1 time-old))
+                  (+ (if (eq date-cat 'year) n 0)   (nth 2 time-old))
+                  (nthcdr 6 time-old))))
+    (insert-before-markers-and-inherit
+     (format-time-string
+      (concat "%Y" date-separator "%m" date-separator "%d")
+      time-new)
+     )
+    (goto-char origin-pos)
+    ))
+
+(defun ledger-date-up ()
+  (interactive)
+  (ledger--date-change 1))
+
+(defun ledger-date-down ()
+  (interactive)
+  (ledger--date-change -1))
+
 (defvar ledger-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-c C-a") #'ledger-add-transaction)
@@ -299,6 +374,9 @@ TOPLEVEL-ONLY has the same meaning."
     (define-key map (kbd "M-p") #'ledger-navigate-prev-xact-or-directive)
     (define-key map (kbd "M-n") #'ledger-navigate-next-xact-or-directive)
     (define-key map (kbd "M-q") #'ledger-post-align-dwim)
+
+    (define-key map (kbd "S-<up>") #'ledger-date-up)
+    (define-key map (kbd "S-<down>") #'ledger-date-down)
 
     ;; Reset the `text-mode' override of this standard binding
     (define-key map (kbd "C-M-i") 'completion-at-point)
