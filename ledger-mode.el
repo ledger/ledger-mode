@@ -272,6 +272,9 @@ TOPLEVEL-ONLY has the same meaning."
 ;; These functions are adapted from the implementation of `org-timestamp-change'.
 
 (defun ledger--in-regexp (regexp)
+  "Return (BEG . END) if point is inside a match of REGEXP, or nil.
+
+Only check the current line for occurrences of REGEXP."
   (catch :exit
     (let ((pos (point))
           (eol (line-end-position)))
@@ -284,11 +287,16 @@ TOPLEVEL-ONLY has the same meaning."
               (throw :exit (cons (match-beginning 0) (match-end 0))))))))))
 
 (defsubst ledger--pos-in-match-range (pos n)
+  "Return non-nil if POS is inside the range of group N in the match data."
   (and (match-beginning n)
        (<= (match-beginning n) pos)
        (>= (match-end n) pos)))
 
 (defun ledger--at-date-p ()
+  "Return non-nil if point is inside a date.
+
+Specifically, return `year', `month', or `day', depending on
+which part of the date string point is in."
   (let ((pos (point))
         (boundaries (ledger--in-regexp ledger-iso-date-regexp)))
     (cond ((null boundaries) nil)
@@ -304,7 +312,7 @@ TOPLEVEL-ONLY has the same meaning."
         (string-to-number (match-string 2 s)))) ; year
 
 (defun ledger--date-change (n)
-  "Change N for the date field at point."
+  "Change the date field at point by N (can be negative)."
   (let ((date-cat (ledger--at-date-p))
         (origin-pos (point))
         date-separator
@@ -331,10 +339,14 @@ TOPLEVEL-ONLY has the same meaning."
     (goto-char origin-pos)))
 
 (defun ledger-date-up (&optional arg)
+  "Increment the date field at point by 1.
+With prefix ARG, increment by that many instead."
   (interactive "p")
   (ledger--date-change arg))
 
 (defun ledger-date-down (&optional arg)
+  "Decrement the date field at point by 1.
+With prefix ARG, decrement by that many instead."
   (interactive "p")
   (ledger--date-change (- arg)))
 
