@@ -113,6 +113,53 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
     Assets:Cash
 "))))
 
+(ert-deftest ledger-mode/test-005 ()
+  "Baseline test for `ledger-date-up' and `ledger-date-down'."
+  :tags '(mode baseline)
+  (ledger-tests-with-temp-file
+      "2024-12-31 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"
+    (save-buffer)
+
+    ;; Verify that month & year change accordingly when day changes.
+    (goto-char 10)
+    (ledger-date-up)
+    (should
+     (equal (buffer-string)
+            "2025-01-01 Grocery Store
+    Expenses:Grocery                             $30
+    Expenses:Grocery:Snacks                      $10
+    Assets:Cash
+"))
+
+    ;; Verify that month & year change accordingly when day changes.
+    (ledger-date-down)
+    (should
+     (equal (buffer-string)
+            "2024-12-31 Grocery Store
+    Expenses:Grocery                             $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"))
+
+    ;; Verify that the field at point (not always day) is changed
+    (goto-char 2)
+    (ledger-date-down)
+
+    (should
+     (equal (buffer-string)
+            "2023-12-31 Grocery Store
+    Expenses:Grocery                             $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"))
+
+
+    ))
+
 (provide 'mode-test)
 
 ;;; mode-test.el ends here
