@@ -321,21 +321,21 @@ which part of the date string point is in."
     (setq date-str (match-string 0))
     (setq date-separator
           (string (aref date-str 4)))
-    (replace-match "")
-    (setq time-old (ledger--parse-date-string date-str))
-    (setq time-new
-          (apply #'encode-time
-                 0         ; second
-                 0         ; minute
-                 0         ; hour
-                 (+ (if (eq date-cat 'day)   n 0) (nth 0 time-old))
-                 (+ (if (eq date-cat 'month) n 0) (nth 1 time-old))
-                 (+ (if (eq date-cat 'year)  n 0) (nth 2 time-old))
-                 (nthcdr 6 time-old)))
-    (insert-before-markers-and-inherit
-     (format-time-string
-      (concat "%Y" date-separator "%m" date-separator "%d")
-      time-new))
+    (save-match-data
+      (setq time-old (ledger--parse-date-string date-str))
+      (setq time-new
+            (apply #'encode-time
+                   0                      ; second
+                   0                      ; minute
+                   0                      ; hour
+                   (+ (if (eq date-cat 'day)   n 0) (nth 0 time-old))
+                   (+ (if (eq date-cat 'month) n 0) (nth 1 time-old))
+                   (+ (if (eq date-cat 'year)  n 0) (nth 2 time-old))
+                   (nthcdr 6 time-old))))
+    (replace-match (format-time-string (concat "%Y" date-separator "%m" date-separator "%d")
+                                       time-new)
+                   'fixedcase
+                   'literal)
     (goto-char origin-pos)))
 
 (defun ledger-date-up (&optional arg)
