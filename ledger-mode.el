@@ -318,15 +318,14 @@ TOPLEVEL-ONLY has the same meaning."
     (replace-match "")
     (setq time-old (ledger--parse-date-string date-str))
     (setq time-new
-          (encode-time
-           (apply #'list
-                  0         ; second
-                  0         ; minute
-                  0         ; hour
-                  (+ (if (eq date-cat 'day) n 0)    (nth 0 time-old))
-                  (+ (if (eq date-cat 'month) n 0)  (nth 1 time-old))
-                  (+ (if (eq date-cat 'year) n 0)   (nth 2 time-old))
-                  (nthcdr 6 time-old))))
+          (apply #'encode-time
+                 0         ; second
+                 0         ; minute
+                 0         ; hour
+                 (+ (if (eq date-cat 'day) n 0)    (nth 0 time-old))
+                 (+ (if (eq date-cat 'month) n 0)  (nth 1 time-old))
+                 (+ (if (eq date-cat 'year) n 0)   (nth 2 time-old))
+                 (nthcdr 6 time-old)))
     (insert-before-markers-and-inherit
      (format-time-string
       (concat "%Y" date-separator "%m" date-separator "%d")
