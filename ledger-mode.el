@@ -283,7 +283,7 @@ Only check the current line for occurrences of REGEXP."
         (while (and (re-search-forward regexp eol t)
                     (<= (match-beginning 0) pos))
           (let ((end (match-end 0)))
-            (when (or (> end pos) (= end pos))
+            (when (>= end pos)
               (throw :exit (cons (match-beginning 0) (match-end 0))))))))))
 
 (defsubst ledger--pos-in-match-range (pos n)
