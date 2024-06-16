@@ -287,7 +287,7 @@ TOPLEVEL-ONLY has the same meaning."
 
 (defun ledger--at-date-p ()
   (let ((pos (point))
-        (boundaries (ledger--in-regexp ledger-date-string))
+        (boundaries (ledger--in-regexp ledger-iso-date-regexp))
         )
     (save-match-data
       (cond ((null boundaries) nil)
@@ -297,7 +297,7 @@ TOPLEVEL-ONLY has the same meaning."
             ))))
 
 (defun ledger--parse-date-string (s)
-  (unless (string-match ledger-date-string s)
+  (unless (string-match ledger-iso-date-regexp s)
     (error "Not a ledger date: [%s]" s))
   (list (string-to-number (match-string 4 s)) ; day
         (string-to-number (match-string 3 s)) ; month
