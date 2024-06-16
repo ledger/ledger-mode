@@ -287,23 +287,19 @@ TOPLEVEL-ONLY has the same meaning."
 
 (defun ledger--at-date-p ()
   (let ((pos (point))
-        (boundaries (ledger--in-regexp ledger-iso-date-regexp))
-        )
+        (boundaries (ledger--in-regexp ledger-iso-date-regexp)))
     (save-match-data
       (cond ((null boundaries) nil)
             ((ledger--pos-in-match-range pos 2) 'year)
             ((ledger--pos-in-match-range pos 3) 'month)
-            ((ledger--pos-in-match-range pos 4) 'day)
-            ))))
+            ((ledger--pos-in-match-range pos 4) 'day)))))
 
 (defun ledger--parse-date-string (s)
   (unless (string-match ledger-iso-date-regexp s)
     (error "Not a ledger date: [%s]" s))
-  (list (string-to-number (match-string 4 s)) ; day
-        (string-to-number (match-string 3 s)) ; month
-        (string-to-number (match-string 2 s)) ; year
-        )
-  )
+  (list (string-to-number (match-string 4 s))   ; day
+        (string-to-number (match-string 3 s))   ; month
+        (string-to-number (match-string 2 s)))) ; year
 
 (defun ledger--date-change (n)
   "Change N for the date field at point."
@@ -329,10 +325,8 @@ TOPLEVEL-ONLY has the same meaning."
     (insert-before-markers-and-inherit
      (format-time-string
       (concat "%Y" date-separator "%m" date-separator "%d")
-      time-new)
-     )
-    (goto-char origin-pos)
-    ))
+      time-new))
+    (goto-char origin-pos)))
 
 (defun ledger-date-up ()
   (interactive)
