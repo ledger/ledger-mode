@@ -130,8 +130,8 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
     (should
      (equal (buffer-string)
             "2025-01-01 Grocery Store
-    Expenses:Grocery                             $30
-    Expenses:Grocery:Snacks                      $10
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
     Assets:Cash
 "))
 
@@ -140,7 +140,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
     (should
      (equal (buffer-string)
             "2024-12-31 Grocery Store
-    Expenses:Grocery                             $30
+    Expenses:Groceries                           $30
     Expenses:Groceries:Snacks                    $10
     Assets:Cash
 "))
@@ -152,7 +152,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
     (should
      (equal (buffer-string)
             "2023-12-31 Grocery Store
-    Expenses:Grocery                             $30
+    Expenses:Groceries                           $30
     Expenses:Groceries:Snacks                    $10
     Assets:Cash
 "))
