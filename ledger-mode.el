@@ -304,13 +304,6 @@ which part of the date string point is in."
           ((ledger--pos-in-match-range pos 3) 'month)
           ((ledger--pos-in-match-range pos 4) 'day))))
 
-(defun ledger--parse-date-string (s)
-  (unless (string-match ledger-iso-date-regexp s)
-    (error "Not a ledger date: [%s]" s))
-  (list (string-to-number (match-string 4 s))   ; day
-        (string-to-number (match-string 3 s))   ; month
-        (string-to-number (match-string 2 s)))) ; year
-
 (defun ledger--date-change (n)
   "Change the date field at point by N (can be negative)."
   (let ((date-cat (ledger--at-date-p))
@@ -322,16 +315,18 @@ which part of the date string point is in."
     (setq date-separator
           (string (aref date-str 4)))
     (save-match-data
-      (setq time-old (ledger--parse-date-string date-str))
+      (setq time-old (decode-time (ledger-parse-iso-date date-str)))
       (setq time-new
-            (apply #'encode-time
-                   0                      ; second
-                   0                      ; minute
-                   0                      ; hour
-                   (+ (if (eq date-cat 'day)   n 0) (nth 0 time-old))
-                   (+ (if (eq date-cat 'month) n 0) (nth 1 time-old))
-                   (+ (if (eq date-cat 'year)  n 0) (nth 2 time-old))
-                   (nthcdr 6 time-old))))
+            ;; Do not pass DST or ZONE arguments here; it should be
+            ;; automatically inferred from the other arguments, since the
+            ;; appropriate DST value may differ from `time-old'.
+            (encode-time
+             0                          ; second
+             0                          ; minute
+             0                          ; hour
+             (+ (if (eq date-cat 'day)   n 0) (nth 3 time-old))
+             (+ (if (eq date-cat 'month) n 0) (nth 4 time-old))
+             (+ (if (eq date-cat 'year)  n 0) (nth 5 time-old)))))
     (replace-match (format-time-string (concat "%Y" date-separator "%m" date-separator "%d")
                                        time-new)
                    'fixedcase
