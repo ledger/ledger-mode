@@ -288,11 +288,10 @@ TOPLEVEL-ONLY has the same meaning."
 (defun ledger--at-date-p ()
   (let ((pos (point))
         (boundaries (ledger--in-regexp ledger-iso-date-regexp)))
-    (save-match-data
-      (cond ((null boundaries) nil)
-            ((ledger--pos-in-match-range pos 2) 'year)
-            ((ledger--pos-in-match-range pos 3) 'month)
-            ((ledger--pos-in-match-range pos 4) 'day)))))
+    (cond ((null boundaries) nil)
+          ((ledger--pos-in-match-range pos 2) 'year)
+          ((ledger--pos-in-match-range pos 3) 'month)
+          ((ledger--pos-in-match-range pos 4) 'day))))
 
 (defun ledger--parse-date-string (s)
   (unless (string-match ledger-iso-date-regexp s)
