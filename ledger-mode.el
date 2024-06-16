@@ -261,13 +261,6 @@ TOPLEVEL-ONLY has the same meaning."
   (when ledger-post-auto-align
     (ledger-post-align-postings (point-min) (point-max))))
 
-(defvar ledger-mode-syntax-table
-  (let ((table (make-syntax-table text-mode-syntax-table)))
-    (modify-syntax-entry ?\; "<" table)
-    (modify-syntax-entry ?\n ">" table)
-    table)
-  "Syntax table in use in `ledger-mode' buffers.")
-
 (defun ledger--in-regexp (regexp)
   (catch :exit
     (let ((pos (point))
@@ -334,6 +327,13 @@ TOPLEVEL-ONLY has the same meaning."
 (defun ledger-date-down ()
   (interactive)
   (ledger--date-change -1))
+
+(defvar ledger-mode-syntax-table
+  (let ((table (make-syntax-table text-mode-syntax-table)))
+    (modify-syntax-entry ?\; "<" table)
+    (modify-syntax-entry ?\n ">" table)
+    table)
+  "Syntax table in use in `ledger-mode' buffers.")
 
 (defvar ledger-mode-map
   (let ((map (make-sparse-keymap)))
