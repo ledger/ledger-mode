@@ -155,10 +155,37 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
     Expenses:Groceries                           $30
     Expenses:Groceries:Snacks                    $10
     Assets:Cash
+"))))
+
+(ert-deftest ledger-mode/test-006 ()
+  "Test for `ledger-date-up' and `ledger-date-down' with effective dates."
+  :tags '(mode baseline)
+  (ledger-tests-with-temp-file
+      "2024-12-31=2025-01-01 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"
+
+    (goto-char 10)
+    (ledger-date-up)
+    (should
+     (equal (buffer-string)
+            "2025-01-01=2025-01-01 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
 "))
 
-
-    ))
+    (goto-char 21)
+    (ledger-date-down)
+    (should
+     (equal (buffer-string)
+            "2025-01-01=2024-12-31 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"))))
 
 (provide 'mode-test)
 
