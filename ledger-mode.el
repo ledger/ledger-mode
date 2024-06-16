@@ -330,13 +330,13 @@ TOPLEVEL-ONLY has the same meaning."
       time-new))
     (goto-char origin-pos)))
 
-(defun ledger-date-up ()
-  (interactive)
-  (ledger--date-change 1))
+(defun ledger-date-up (&optional arg)
+  (interactive "p")
+  (ledger--date-change arg))
 
-(defun ledger-date-down ()
-  (interactive)
-  (ledger--date-change -1))
+(defun ledger-date-down (&optional arg)
+  (interactive "p")
+  (ledger--date-change (- arg)))
 
 
 

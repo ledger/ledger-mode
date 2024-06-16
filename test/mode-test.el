@@ -125,7 +125,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
 
     ;; Verify that month & year change accordingly when day changes.
     (goto-char 10)
-    (ledger-date-up)
+    (call-interactively #'ledger-date-up)
     (should
      (equal (buffer-string)
             "2025-01-01 Grocery Store
@@ -135,7 +135,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
 "))
 
     ;; Verify that month & year change accordingly when day changes.
-    (ledger-date-down)
+    (ledger-date-down 1)
     (should
      (equal (buffer-string)
             "2024-12-31 Grocery Store
@@ -146,11 +146,11 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
 
     ;; Verify that the field at point (not always day) is changed
     (goto-char 2)
-    (ledger-date-down)
+    (ledger-date-down 2)
 
     (should
      (equal (buffer-string)
-            "2023-12-31 Grocery Store
+            "2022-12-31 Grocery Store
     Expenses:Groceries                           $30
     Expenses:Groceries:Snacks                    $10
     Assets:Cash
@@ -167,20 +167,20 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
 "
 
     (goto-char 10)
-    (ledger-date-up)
+    (ledger-date-up 2)
     (should
      (equal (buffer-string)
-            "2025-01-01=2025-01-01 Grocery Store
+            "2025-01-02=2025-01-01 Grocery Store
     Expenses:Groceries                           $30
     Expenses:Groceries:Snacks                    $10
     Assets:Cash
 "))
 
     (goto-char 21)
-    (ledger-date-down)
+    (ledger-date-down 3)
     (should
      (equal (buffer-string)
-            "2025-01-01=2024-12-31 Grocery Store
+            "2025-01-02=2024-12-29 Grocery Store
     Expenses:Groceries                           $30
     Expenses:Groceries:Snacks                    $10
     Assets:Cash
