@@ -122,7 +122,6 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
     Expenses:Groceries:Snacks                    $10
     Assets:Cash
 "
-    (save-buffer)
 
     ;; Verify that month & year change accordingly when day changes.
     (goto-char 10)
