@@ -186,6 +186,27 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
     Assets:Cash
 "))))
 
+(ert-deftest ledger-mode/test-007 ()
+  "Test for `ledger-date-up' and `ledger-date-down' across DST boundaries."
+  :tags '(mode baseline)
+  (ledger-tests-with-time-zone "America/New_York"
+    (ledger-tests-with-temp-file
+        "2024-03-11 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"
+
+      (goto-char 6)
+      (ledger-date-down 1)
+      (should
+       (equal (buffer-string)
+              "2024-02-11 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+")))))
+
 (provide 'mode-test)
 
 ;;; mode-test.el ends here
