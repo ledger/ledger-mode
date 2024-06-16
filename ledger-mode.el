@@ -298,7 +298,7 @@ TOPLEVEL-ONLY has the same meaning."
 
 (defun ledger--parse-date-string (s)
   (unless (string-match ledger-date-string s)
-    (error "Not a ledger date: %s"))
+    (error "Not a ledger date: [%s]" s))
   (list (string-to-number (match-string 4 s)) ; day
         (string-to-number (match-string 3 s)) ; month
         (string-to-number (match-string 2 s)) ; year
