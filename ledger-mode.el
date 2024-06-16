@@ -160,6 +160,10 @@ the balance into that."
 
 (defvar ledger-date-string-today (ledger-format-date))
 
+
+
+;;; Editing commands
+
 (defun ledger-remove-effective-date ()
   "Remove the effective date from a transaction or posting."
   (interactive)
@@ -261,6 +265,10 @@ TOPLEVEL-ONLY has the same meaning."
   (when ledger-post-auto-align
     (ledger-post-align-postings (point-min) (point-max))))
 
+
+
+;;; Commands for changing dates
+
 (defun ledger--in-regexp (regexp)
   (catch :exit
     (let ((pos (point))
@@ -327,6 +335,10 @@ TOPLEVEL-ONLY has the same meaning."
 (defun ledger-date-down ()
   (interactive)
   (ledger--date-change -1))
+
+
+
+;;; Major mode definition
 
 (defvar ledger-mode-syntax-table
   (let ((table (make-syntax-table text-mode-syntax-table)))
