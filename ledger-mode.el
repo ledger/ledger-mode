@@ -269,6 +269,8 @@ TOPLEVEL-ONLY has the same meaning."
 
 ;;; Commands for changing dates
 
+;; These functions are adapted from the implementation of `org-timestamp-change'.
+
 (defun ledger--in-regexp (regexp)
   (catch :exit
     (let ((pos (point))
