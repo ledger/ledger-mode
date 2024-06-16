@@ -328,9 +328,9 @@ which part of the date string point is in."
                  0         ; second
                  0         ; minute
                  0         ; hour
-                 (+ (if (eq date-cat 'day) n 0)    (nth 0 time-old))
-                 (+ (if (eq date-cat 'month) n 0)  (nth 1 time-old))
-                 (+ (if (eq date-cat 'year) n 0)   (nth 2 time-old))
+                 (+ (if (eq date-cat 'day)   n 0) (nth 0 time-old))
+                 (+ (if (eq date-cat 'month) n 0) (nth 1 time-old))
+                 (+ (if (eq date-cat 'year)  n 0) (nth 2 time-old))
                  (nthcdr 6 time-old)))
     (insert-before-markers-and-inherit
      (format-time-string
