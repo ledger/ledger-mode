@@ -53,7 +53,7 @@ don't provide support for ledger-mode explicitly.
 See the "Expansion Formats" section of the ledger mode manual to see examples on
 how to use this.
 ** New hook ledger-report-after-report-hook runs after the report has been created
-** In report buffers, $ toggles converting to the default commodity 
+** In report buffers, $ toggles converting to the default commodity
 ** Two new commands move between uncleared transactions
 New commands ledger-navigate-next-uncleared and
 ledger-navigate-previous-uncleared move to the next and previous uncleared
