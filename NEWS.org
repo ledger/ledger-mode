@@ -10,6 +10,9 @@ the date and another time for the xact text. If you find this annoying, set
 In reconcile buffers, =ledger-reconcile-display-balance-in-header-mode= (bound
 to =B= by default) causes the most recent balance and target diff to be
 persistently displayed in the header line.
+** New commands ledger-date-up and ledger-date-down
+These two commands are bound to Shift-<up>/<down> respectively and change the
+date field at point in the same way as org-timestamp-change does.
 ** New command ledger-rename-account
 This command renames all occurrences of an account name in the buffer.
 ** New command ledger-post-fill
@@ -53,7 +56,7 @@ don't provide support for ledger-mode explicitly.
 See the "Expansion Formats" section of the ledger mode manual to see examples on
 how to use this.
 ** New hook ledger-report-after-report-hook runs after the report has been created
-** In report buffers, $ toggles converting to the default commodity 
+** In report buffers, $ toggles converting to the default commodity
 ** Two new commands move between uncleared transactions
 New commands ledger-navigate-next-uncleared and
 ledger-navigate-previous-uncleared move to the next and previous uncleared

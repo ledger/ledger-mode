@@ -73,6 +73,16 @@ always located at the beginning of buffer."
        (ledger-tests-reset-custom-values 'ledger)
        (delete-file temp-file))))
 
+(defmacro ledger-tests-with-time-zone (tz &rest body)
+  "Temporarily set local time zone to TZ while executing BODY."
+  (declare (indent 1) (debug t))
+  (let ((old-tz (make-symbol "old-tz")))
+    `(let ((,old-tz (getenv "TZ")))
+       (setenv "TZ" ,tz)
+       (unwind-protect
+           (progn ,@body)
+         (setenv "TZ" ,old-tz)))))
+
 
 (defun ledger-test-visible-buffer-string ()
   "Same as `buffer-string', but excludes invisible text."

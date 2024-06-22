@@ -113,6 +113,100 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
     Assets:Cash
 "))))
 
+(ert-deftest ledger-mode/test-005 ()
+  "Baseline test for `ledger-date-up' and `ledger-date-down'."
+  :tags '(mode baseline)
+  (ledger-tests-with-temp-file
+      "2024-12-31 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"
+
+    ;; Verify that month & year change accordingly when day changes.
+    (goto-char 10)
+    (call-interactively #'ledger-date-up)
+    (should
+     (equal (buffer-string)
+            "2025-01-01 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"))
+
+    ;; Verify that month & year change accordingly when day changes.
+    (ledger-date-down 1)
+    (should
+     (equal (buffer-string)
+            "2024-12-31 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"))
+
+    ;; Verify that the field at point (not always day) is changed
+    (goto-char 2)
+    (ledger-date-down 2)
+
+    (should
+     (equal (buffer-string)
+            "2022-12-31 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"))))
+
+(ert-deftest ledger-mode/test-006 ()
+  "Test for `ledger-date-up' and `ledger-date-down' with effective dates."
+  :tags '(mode baseline)
+  (ledger-tests-with-temp-file
+      "2024-12-31=2025-01-01 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"
+
+    (goto-char 10)
+    (ledger-date-up 2)
+    (should
+     (equal (buffer-string)
+            "2025-01-02=2025-01-01 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"))
+
+    (goto-char 21)
+    (ledger-date-down 3)
+    (should
+     (equal (buffer-string)
+            "2025-01-02=2024-12-29 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"))))
+
+(ert-deftest ledger-mode/test-007 ()
+  "Test for `ledger-date-up' and `ledger-date-down' across DST boundaries."
+  :tags '(mode baseline)
+  (ledger-tests-with-time-zone "America/New_York"
+    (ledger-tests-with-temp-file
+        "2024-03-11 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+"
+
+      (goto-char 6)
+      (ledger-date-down 1)
+      (should
+       (equal (buffer-string)
+              "2024-02-11 Grocery Store
+    Expenses:Groceries                           $30
+    Expenses:Groceries:Snacks                    $10
+    Assets:Cash
+")))))
+
 (provide 'mode-test)
 
 ;;; mode-test.el ends here
