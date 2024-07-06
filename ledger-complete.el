@@ -23,8 +23,7 @@
 ;; Functions providing payee and account auto complete.
 
 (require 'cl-lib)
-(eval-when-compile
-  (require 'subr-x))
+(eval-when-compile (require 'subr-x))
 
 ;; In-place completion support
 

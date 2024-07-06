@@ -58,7 +58,7 @@ jobs:
     - name: Byte compilation
       run: emacs --eval "(setq byte-compile-error-on-warn (>= emacs-major-version 26))" -L . --batch -f batch-byte-compile ./*.el
     - name: Tests
-      run: nix shell ${{ matrix.ledger_version || 'nixpkgs#ledger' }} --print-build-logs -c ./makem.sh test -vv --compile-batch
+      run: nix shell ${{ matrix.ledger_version || 'nixpkgs#ledger' }} --print-build-logs -c ./makem.sh test -vv
     # This is currently for information only, since a lot of docstrings need fixing up
     - name: Checkdoc
       run: make lint-checkdoc || true

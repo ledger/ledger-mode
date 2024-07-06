@@ -30,6 +30,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'subr-x))
 (require 'ledger-regex)
 (require 'org)
 (require 'ledger-commodities)
