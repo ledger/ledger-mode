@@ -31,7 +31,7 @@
 
 (ert-deftest ledger-mode/test-001 ()
   "Test ledger-read-account-with-prompt (used in ledger-reconcile)"
-  :tags '(mode baseline interactive)
+  :tags '(mode baseline)
 
   (ledger-tests-with-temp-file
       demo-ledger
