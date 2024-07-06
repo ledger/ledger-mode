@@ -131,8 +131,15 @@ if string is longer, it is not truncated unless
   "Key for sorting reconcile buffer.
 
 Possible values are \"(date)\", \"(amount)\", \"(payee)\" or \"(0)\" for
-no sorting, i.e. using ledger file order."
-  :type 'string
+no sorting, i.e. using ledger file order.
+
+It can also be any value accepted by ledger's --sort option."
+  :type '(choice
+          (const :tag "Date" "(date)")
+          (const :tag "Amount" "(amount)")
+          (const :tag "Payee" "(payee)")
+          (const :tag "No sorting (Ledger file order)" "(0)")
+          (string :tag "Custom --sort expression"))
   :group 'ledger-reconcile)
 
 (defcustom ledger-reconcile-insert-effective-date nil
