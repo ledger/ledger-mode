@@ -49,6 +49,48 @@
             ((eq (cadr member) 'custom-variable)
              (custom-reevaluate-setting (car member)))))))
 
+(defun ledger-tests-with-simulated-input-1 (keys f)
+  "Call F with no arguments, providing KEYS as simulated keyboard input."
+  (let* ((overriding-terminal-local-map
+          (if (keymapp overriding-terminal-local-map)
+              (copy-keymap overriding-terminal-local-map)
+            (make-sparse-keymap)))
+         ;; Pick an arbitrary key that is likely to be unbound, and should
+         ;; definitely be by default
+         (next-action-key (kbd "C-M-S-<f19>"))
+         (return-tag (make-symbol "return"))
+         (error-tag (make-symbol "error"))
+         (actions (list
+                   (lambda () (throw return-tag (funcall f)))
+                   (lambda () (execute-kbd-macro (kbd keys)))
+                   (lambda ()
+                     (error "Did not return from function after providing input %S" keys)))))
+
+    (cl-assert (null (key-binding next-action-key)))
+
+    (define-key overriding-terminal-local-map next-action-key
+                (lambda ()
+                  (interactive)
+                  (condition-case e
+                      (funcall (pop actions))
+                    (error (throw error-tag e)))))
+
+    (catch return-tag
+      (let ((error
+             (catch error-tag
+               (execute-kbd-macro (cl-loop repeat (length actions)
+                                           vconcat next-action-key)))))
+        (signal (car error) (cdr error))))))
+
+(defmacro ledger-tests-with-simulated-input (keys &rest body)
+  ;; implementation inspired by
+  ;; https://github.com/DarwinAwardWinner/with-simulated-input/
+  "Execute BODY, providing KEYS as simulated keyboard input.
+
+Error if BODY does not return after the input has been
+provided (e.g., if BODY is still inside a minibuffer prompt)."
+  (declare (indent 1) (debug t))
+  `(ledger-tests-with-simulated-input-1 ,keys (lambda () ,@body)))
 
 (defmacro ledger-tests-with-temp-file (contents &rest body)
   ;; from python-tests-with-temp-file
