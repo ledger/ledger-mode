@@ -7,8 +7,6 @@ EL  := $(wildcard *.el)
 ELC := $(patsubst %.el,%.elc,$(EL))
 ERT := $(filter-out test-helper.el,$(EL))
 
-CHECKDOC_BATCH_EL := ../tools/checkdoc-batch.el
-
 .PHONY: all
 all: compile test
 
@@ -28,14 +26,10 @@ clean:
 
 .PHONY: distclean
 distclean: clean
-	rm -f $(CHECKDOC_BATCH_EL)
-
-$(CHECKDOC_BATCH_EL):
-	wget --no-verbose https://download.tuxfamily.org/user42/checkdoc-batch.el --output-document=$(CHECKDOC_BATCH_EL)
 
 .PHONY: checkdoc
-checkdoc: $(CHECKDOC_BATCH_EL)
-	$(EMACS_BATCH) --load $(CHECKDOC_BATCH_EL) --funcall checkdoc-batch-commandline ../*.el | grep -E "el:[0-9]+:[0-9]+:" && exit 1 || exit 0
+checkdoc:
+	make -C ../ lint-checkdoc
 
 # Enables `make ledger-fontify/test-003`
 define ERTDEFTEST
