@@ -16,15 +16,8 @@ all: compile test
 	$(EMACS_BATCH) --eval "(progn (setq byte-compile-error-on-warn t) (batch-byte-compile))" $<
 
 .PHONY: test
-test: test-interactive test-batch
-
-.PHONY: test-interactive
-test-interactive: compile
-	$(EMACS_INTERACTIVE) $(addprefix --load ,$(ERT)) --eval "(ert-run-tests-interactively (quote (tag interactive)))"
-
-.PHONY: test-batch
-test-batch: compile
-	$(EMACS_BATCH) $(addprefix --load ,$(ERT)) --eval "(ert-run-tests-batch-and-exit (quote (not (tag interactive))))"
+test: compile
+	$(EMACS_BATCH) $(addprefix --load ,$(ERT)) -f ert-run-tests-batch-and-exit
 
 .PHONY: compile
 compile: $(ELC)
