@@ -205,6 +205,85 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
     Assets:Cash
 ")))))
 
+(ert-deftest ledger-mode/test-008 ()
+  "Baseline test for `ledger-insert-effective-date'."
+  :tags '(mode baseline)
+
+  (let ((orig-file-contents
+         "\
+2024-01-01 Grocery Store
+    Expenses:Groceries                           $30
+    Liabilities:Credit Card
+
+2024-01-02 Grocery Store
+    Expenses:Groceries                           $10
+    Expenses:Tax                                  $1.50
+    Liabilities:Credit Card                     -$11.50
+"))
+    (ledger-tests-with-temp-file
+        orig-file-contents
+
+      ;; insert effective date for xact
+      (ledger-insert-effective-date "2024-01-02")
+      (should (equal
+               (buffer-string)
+               "\
+2024-01-01=2024-01-02 Grocery Store
+    Expenses:Groceries                           $30
+    Liabilities:Credit Card
+
+2024-01-02 Grocery Store
+    Expenses:Groceries                           $10
+    Expenses:Tax                                  $1.50
+    Liabilities:Credit Card                     -$11.50
+"))
+
+      ;; With prefix arg, remove the effective date
+      (let ((current-prefix-arg '(4)))
+        (call-interactively 'ledger-insert-effective-date))
+      (should (equal (buffer-string) orig-file-contents))
+
+      ;; insert effective date after posting with no amount
+      (forward-line 2)
+      (ledger-insert-effective-date "2024-01-02")
+      (should (equal
+               (buffer-string)
+               "\
+2024-01-01 Grocery Store
+    Expenses:Groceries                           $30
+    Liabilities:Credit Card  ; [=2024-01-02]
+
+2024-01-02 Grocery Store
+    Expenses:Groceries                           $10
+    Expenses:Tax                                  $1.50
+    Liabilities:Credit Card                     -$11.50
+"))
+      (should (eolp))
+      (beginning-of-line)
+      (let ((current-prefix-arg '(4)))
+        (call-interactively 'ledger-insert-effective-date))
+      (should (equal (buffer-string) orig-file-contents))
+
+      ;; insert effective date after posting with amount
+      (forward-line 5)
+      (ledger-insert-effective-date "2024-01-03")
+      (should (equal
+               (buffer-string)
+               "\
+2024-01-01 Grocery Store
+    Expenses:Groceries                           $30
+    Liabilities:Credit Card
+
+2024-01-02 Grocery Store
+    Expenses:Groceries                           $10
+    Expenses:Tax                                  $1.50
+    Liabilities:Credit Card                     -$11.50  ; [=2024-01-03]
+"))
+      (should (eolp))
+      (let ((current-prefix-arg '(4)))
+        (call-interactively 'ledger-insert-effective-date))
+      (should (equal (buffer-string) orig-file-contents)))))
+
 (provide 'mode-test)
 
 ;;; mode-test.el ends here
