@@ -152,6 +152,20 @@ The current region is used, or, if no region, the current line."
   (when ledger-post-auto-align
     (ledger-post-align-postings (line-beginning-position) (line-end-position))))
 
+(defun ledger-indent-region (beg end)
+  "Indent the region from BEG to END.
+This works by calling `ledger-indent-line' for each line."
+  (save-excursion
+    (goto-char beg)
+    (beginning-of-line)
+    (ledger-indent-line)
+    (while (< (point) end)
+      (forward-line)
+      (ledger-indent-line))
+    (when (progn (beginning-of-line)
+                 (looking-at-p "^[[:space:]]*$"))
+      (delete-region (point) (line-end-position)))))
+
 (defun ledger-post-align-dwim ()
   "Align all the posting of the current xact or the current region.
 

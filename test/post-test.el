@@ -258,7 +258,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=924"
 "
     (indent-region (point-min) (point-max))
     (should
-     (equal (buffer-string)
+     (equal (buffer-substring-no-properties (point-min) (point-max))
             "1994/01/10 * Mother
     Actif:Courant:BnpCc                       500,00 F  ; Étrennes
     Revenu:Autre:CadeauReçu
@@ -452,6 +452,22 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
     Expenses:Foo                              -10.00 €
     Assets:Bar
 " ))))
+
+(ert-deftest ledger-post/test-197 ()
+  "Regress test for Bug #197"
+  :tags '(post regress)
+  (ledger-tests-with-temp-file
+      "2019/08/13 Test
+this  8000 GBP
+out"
+    (let ((ledger-post-auto-align nil))
+      (set-mark-command nil)
+    (goto-char (point-max))
+    (call-interactively #'indent-region)
+    (should (string= (buffer-substring-no-properties (point-min) (point-max))
+                           "2019/08/13 Test
+    this  8000 GBP
+    out")))))
 
 
 (ert-deftest ledger-post/test-post-xact-total-001 ()
