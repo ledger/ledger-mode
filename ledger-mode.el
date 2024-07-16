@@ -187,7 +187,7 @@ the balance into that."
                       nil 'noerr)
                  (replace-match ""))))))))
 
-(defun ledger-insert-effective-date (&optional start end date)
+(defun ledger-insert-effective-date (&optional date start end)
   "Insert effective date `DATE' to the transaction or posting.
 
 If `DATE' is nil, prompt the user for a date.
@@ -201,8 +201,8 @@ With an active region (`START' and `END' non-nil), insert or
 remove for all transactions starting within the region."
   (interactive
    (if (use-region-p)
-       (list (region-beginning) (region-end))
-     (list nil nil)))
+       (list nil (region-beginning) (region-end))
+     (list nil nil nil)))
 
   (if (and start end) (ledger-insert-effective-date-region start end date)
     (if (and (listp current-prefix-arg)
