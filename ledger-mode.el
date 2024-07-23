@@ -245,16 +245,8 @@ With a prefix argument, remove any effective dates."
       (goto-char start)
       (while (< (point) end)
         (let ((context (car (ledger-context-at-point))))
-          (save-restriction
-            (narrow-to-region (line-beginning-position) (line-end-position))
-            (when (eq 'xact context)
-              (if should-remove
-                  (ledger-remove-effective-date)
-                (beginning-of-line)
-                (re-search-forward ledger-iso-date-regexp)
-                (when (= (char-after) ?=)
-                  (ledger-remove-effective-date))
-                (insert "=" date-string)))))
+          (when (eq 'xact context)
+            (ledger-insert-effective-date date-string)))
         (forward-line 1)))))
 
 (defun ledger-mode-remove-extra-lines ()
