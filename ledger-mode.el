@@ -249,7 +249,12 @@ By default, child accounts of OLD are also renamed to
 corresponding child accounts of NEW.  With \\[universal-argument]
 prefix, child accounts are not renamed.  When called from Lisp,
 TOPLEVEL-ONLY has the same meaning."
-  (interactive "sOld name: \nsNew name: \nP")
+  (interactive
+   (let* ((old-name
+           (ledger-read-account-with-prompt "Old name: "))
+          (new-name
+           (ledger-read-string-with-default "New name: " old-name)))
+     (list old-name new-name current-prefix-arg)))
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward ledger-account-name-or-directive-regex nil t)
