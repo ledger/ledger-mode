@@ -166,16 +166,16 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
   "https://github.com/ledger/ledger-mode/issues/181"
   :tags '(complete regress)
   (ledger-tests-with-temp-file
-   "2019/06/28 Foobar
+      "2019/06/28 Foobar
     Expenses:Baz                               11.99 CAD
     Assets:Cash
 
 2019/06/20 Foo"
-   (goto-char (point-max))
-   (call-interactively 'completion-at-point)
-   (should
-    (equal (buffer-string)
-           "2019/06/28 Foobar
+    (goto-char (point-max))
+    (call-interactively 'completion-at-point)
+    (should
+     (equal (buffer-string)
+            "2019/06/28 Foobar
     Expenses:Baz                               11.99 CAD
     Assets:Cash
 
@@ -185,13 +185,13 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
   "https://github.com/ledger/ledger-mode/issues/181"
   :tags '(complete)
   (ledger-tests-with-temp-file
-   "payee Foobar
+      "payee Foobar
 2019/06/28 F"
-   (goto-char (point-max))
-   (call-interactively 'completion-at-point)
-   (should
-    (equal (buffer-string)
-           "payee Foobar
+    (goto-char (point-max))
+    (call-interactively 'completion-at-point)
+    (should
+     (equal (buffer-string)
+            "payee Foobar
 2019/06/28 Foobar"))))
 
 (eval-when-compile
@@ -203,16 +203,16 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
 https://github.com/ledger/ledger-mode/issues/420"
   :tags '(complete regress)
   (ledger-tests-with-temp-file
-   "payee Foo Bar
+      "payee Foo Bar
 payee Bar Baz
 
 2019/06/28 Foo B"
-   (goto-char (point-max))
-   (let ((inhibit-interaction t))       ;require a unique match
-     (completion-at-point))
-   (should
-    (equal (buffer-string)
-           "payee Foo Bar
+    (goto-char (point-max))
+    (let ((inhibit-interaction t))       ;require a unique match
+      (completion-at-point))
+    (should
+     (equal (buffer-string)
+            "payee Foo Bar
 payee Bar Baz
 
 2019/06/28 Foo Bar"))))
