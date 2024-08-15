@@ -142,7 +142,6 @@ Then one of the elements this function returns will be
         (ledger-xact-iterate-transactions
          (lambda (_pos _date _state _payee)
            (let ((end (save-excursion (ledger-navigate-end-of-xact))))
-             (forward-line)
              (while (re-search-forward ledger-account-any-status-regex end t)
                (let ((account (match-string-no-properties 1)))
                  (unless (gethash account seen)

@@ -235,6 +235,7 @@ tag ofxid
     [Expenses:Accommodation]  8.33 EUR
     [Dimensions:Equity]  -38.33 EUR
     (Something)  43.00 EUR
+2019/01/01 Company
 "))
     (with-temp-buffer
       (insert ledger)
