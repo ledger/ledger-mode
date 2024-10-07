@@ -394,11 +394,6 @@
   "Face for Ledger dates"
   :group 'ledger-faces)
 
-(defface ledger-occur-narrowed-face
-  `((t :inherit font-lock-comment-face :invisible t))
-  "Default face for Ledger occur mode hidden transactions"
-  :group 'ledger-faces)
-
 (defface ledger-occur-xact-face
   `((t :inherit highlight))
   "Default face for Ledger occur mode shown transactions"
