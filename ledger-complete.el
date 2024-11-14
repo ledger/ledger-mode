@@ -290,6 +290,15 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                                                   (match-string 2)
                                                   (= (line-end-position) (match-end 0)))
                  start (match-beginning 0)
+                 ;; FIXME: This delete-suffix-post-completion behavior is weird
+                 ;; and doesn't integrate well with different completion styles.
+                 ;; For example, it breaks partial-completion's behavior when in
+                 ;; the middle of the identifier.
+                 ;;
+                 ;; Instead, it should be implemented as an alternative
+                 ;; completion style which is like emacs22 but discards the
+                 ;; suffix.  Or perhaps ledger-mode might rebind TAB to some key
+                 ;; that deletes the account at point and then calls completion.
                  delete-suffix (save-match-data
                                  (when (looking-at (rx (one-or-more (or digit (any ?/ ?-)))))
                                    (length (match-string 0))))))
