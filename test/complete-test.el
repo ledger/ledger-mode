@@ -141,6 +141,26 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=252"
 2010/04/09 payee
     (bloop"))))
 
+(ert-deftest ledger-complete/test-complete-virtual-account-both-parens ()
+  :tags '(complete regress)
+  (ledger-tests-with-temp-file
+      "2010/04/08 payee
+    blah                1 €
+    bloop
+
+2010/04/09 payee
+    (blo)"
+    (goto-char (1- (point-max)))
+    (call-interactively 'completion-at-point)
+    (should
+     (equal (buffer-string)
+            "2010/04/08 payee
+    blah                1 €
+    bloop
+
+2010/04/09 payee
+    (bloop)"))))
+
 (ert-deftest ledger-complete/test-complete-account-without-amount ()
   "https://github.com/ledger/ledger-mode/issues/141"
   :tags '(complete regress)
