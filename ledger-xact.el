@@ -85,12 +85,12 @@ When nil, `ledger-add-transaction' will not prompt twice."
 
 (defun ledger-xact-payee ()
   "Return the payee of the transaction containing point or nil."
-  (when-let ((xact-context (ledger-xact-context)))
+  (when-let* ((xact-context (ledger-xact-context)))
     (ledger-context-field-value xact-context 'payee)))
 
 (defun ledger-xact-date ()
   "Return the date of the transaction containing point or nil."
-  (when-let ((xact-context (ledger-xact-context)))
+  (when-let* ((xact-context (ledger-xact-context)))
     (ledger-context-field-value xact-context 'date)))
 
 (defun ledger-xact-find-slot (moment)
@@ -117,7 +117,7 @@ MOMENT is an encoded date"
          (current-year (nth 5 (decode-time now))))
     (while (not (eobp))
       (when (looking-at ledger-iterate-regexp)
-        (if-let ((year (match-string 1)))
+        (if-let* ((year (match-string 1)))
             (setq current-year (string-to-number year)) ;a Y directive was found
           (let ((start (match-beginning 0))
                 (year (match-string (+ ledger-regex-iterate-group-actual-date 1)))
