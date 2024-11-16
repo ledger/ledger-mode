@@ -59,11 +59,13 @@ Returns the current date if DATE is nil or not supplied.
 
 If FORMAT is provided, use that as the date format.  Otherwise,
 use the --input-date-format specified in `ledger-init-file-name',
-or if none, use `ledger-default-date-format'."
+or if none, use `ledger-default-date-format'. If none of
+the previous values exist, use ledger-iso-date-format."
   (format-time-string
    (or format
        (cdr (assoc "input-date-format" ledger-environment-alist))
-       ledger-default-date-format)
+       ledger-default-date-format
+       ledger-iso-date-format)
    date))
 
 
