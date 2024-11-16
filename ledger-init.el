@@ -49,7 +49,7 @@ This variable is automatically populated by
   "The date format that ledger uses throughout.
 Set this to the value of `ledger-iso-date-format' if you prefer
 ISO 8601 dates."
-  :type '(choice string (const nil)
+  :type '(choice string (const nil))
   :package-version '(ledger-mode . "4.0.0")
   :group 'ledger)
 
