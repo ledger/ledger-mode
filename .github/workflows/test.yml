@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
+    continue-on-error: ${{ matrix.experimental || matrix.emacs_version == 'snapshot' }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
