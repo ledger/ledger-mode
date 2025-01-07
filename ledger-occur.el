@@ -202,13 +202,11 @@ temporarily opened when doing incremental search."
         (when (and (> (- e b) 1)            ; not an empty line
                    (<= p e) (>= p b)        ; point is within the boundaries
                    (not (region-active-p))) ; no active region
-          (goto-char b)
           (save-excursion
+            (goto-char b)
             (goto-char (line-end-position))
             (if (hs-overlay-at (point))  ;; if transaction is hidden show it
-                (progn
-                  (save-excursion (hs-show-block))
-                  (goto-char b))
+                (hs-show-block)
               (goto-char b)
               (hs-discard-overlays (line-end-position) e)
               (hs-make-overlay (line-end-position) e 'code)
