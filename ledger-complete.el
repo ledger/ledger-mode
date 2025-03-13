@@ -189,36 +189,37 @@ an alist (ACCOUNT-ELEMENT . NODE)."
   ;; FIXME: This function is called from `ledger-complete-at-point' which
   ;; already knows the bounds of the account name to complete.  Computing it
   ;; again here is wasteful.
-  (let* ((current (buffer-substring
-                   (save-excursion
-                     (unless (eq 'posting (ledger-thing-at-point))
-                       (error "Not on a posting line"))
-                     (point))
-                   (point)))
-         (elements (and current (split-string current ":")))
-         (root (ledger-accounts-tree))
-         (prefix nil))
-    (while (cdr elements)
-      (let ((xact (assoc (car elements) root)))
-        (if xact
-            (setq prefix (concat prefix (and prefix ":")
-                                 (car elements))
-                  root (cdr xact))
-          (setq root nil elements nil)))
-      (setq elements (cdr elements)))
-    (setq root (delete (list (car elements) t) root))
-    (and root
-         (sort
-          (mapcar (function
-                   (lambda (x)
-                     (let ((term (if prefix
-                                     (concat prefix ":" (car x))
-                                   (car x))))
-                       (if (> (length (cdr x)) 1)
-                           (concat term ":")
-                         term))))
-                  (cdr root))
-          'string-lessp))))
+  (with-demoted-errors "Cannot complete account name: %S"
+    (let* ((current (buffer-substring
+                     (save-excursion
+                       (unless (eq 'posting (ledger-thing-at-point))
+                         (error "Not on a posting line"))
+                       (point))
+                     (point)))
+           (elements (and current (split-string current ":")))
+           (root (ledger-accounts-tree))
+           (prefix nil))
+      (while (cdr elements)
+        (let ((xact (assoc (car elements) root)))
+          (if xact
+              (setq prefix (concat prefix (and prefix ":")
+                                   (car elements))
+                    root (cdr xact))
+            (setq root nil elements nil)))
+        (setq elements (cdr elements)))
+      (setq root (delete (list (car elements) t) root))
+      (and root
+           (sort
+            (mapcar (function
+                     (lambda (x)
+                       (let ((term (if prefix
+                                       (concat prefix ":" (car x))
+                                     (car x))))
+                         (if (> (length (cdr x)) 1)
+                             (concat term ":")
+                           term))))
+                    (cdr root))
+            'string-lessp)))))
 
 (defvar ledger-complete--current-time-for-testing nil
   "Internal, used for testing only.")
