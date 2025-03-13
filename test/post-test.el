@@ -519,7 +519,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
     Assets:Bar
 "
     (should (string-prefix-p
-             "Can’t add different commodities"
+             (format-message "Can't add different commodities")
              (cadr (should-error (ledger-post-xact-total)))))))
 
 
@@ -618,7 +618,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
     Assets:Bar
 "
     (should (string-prefix-p
-             "Can’t add different commodities"
+             (format-message "Can't add different commodities")
              (cadr (should-error (ledger-post-fill))))))
 
   ;; more than one missing amount
