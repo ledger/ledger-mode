@@ -284,6 +284,79 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=256"
         (call-interactively 'ledger-insert-effective-date))
       (should (equal (buffer-string) orig-file-contents)))))
 
+(ert-deftest ledger-mode/test-009 ()
+  "Baseline test for `ledger-insert-effective-date-region'."
+  :tags '(mode baseline)
+
+  (cl-flet ((file-with-dates (date-1 date-2)
+              ;; A file with two optional effective dates.
+              (format
+                "\
+2024-01-01%s Grocery Store
+    Expenses:Groceries                           $30
+    Liabilities:Credit Card
+
+2024-01-02%s Grocery Store
+    Expenses:Groceries                           $10
+    Expenses:Tax                                  $1.50
+    Liabilities:Credit Card                     -$11.50
+"
+                (if date-1 (concat "=" date-1) "")
+                (if date-2 (concat "=" date-2) ""))))
+    (ledger-tests-with-temp-file
+      (file-with-dates nil nil)
+
+      ;; With no prefix arg, insert or replace effective date for xacts that
+      ;; start on a line that overlaps the range. With one, remove the
+      ;; effective date.
+
+      ;; Range fully contained in start line.
+      (save-excursion
+        (let ((min (progn (forward-char 1) (point)))
+              (max (progn (forward-char 1) (point))))
+          (ledger-insert-effective-date-region min max "2024-03-01")
+          (should (equal (buffer-string) (file-with-dates "2024-03-01" nil)))))
+
+      ;; Range doesn't overlap the start of an xact: don't do anything.
+      (save-excursion
+        (let ((min (progn (forward-line 1) (point)))
+              (max (progn (forward-line 3) (point))))
+          (ledger-insert-effective-date-region min max "2024-03-02")
+          (should (equal (buffer-string) (file-with-dates "2024-03-01" nil)))))
+
+      ;; Range overlaps multiple xacts: update them all.
+      (save-excursion
+        (let ((min (point))
+              (max (progn (forward-line 4) (forward-char 1) (point))))
+          (ledger-insert-effective-date-region min max "2024-03-03")
+          (should (equal (buffer-string)
+                         (file-with-dates "2024-03-03" "2024-03-03")))))
+
+      ;; Remove effective date from multiple.
+      (save-excursion
+        (let ((min (point))
+              (max (progn (forward-line 4) (forward-char 1) (point)))
+              (current-prefix-arg '(4)))
+          (ledger-insert-effective-date-region min max nil)
+          (should (equal (buffer-string) (file-with-dates nil nil)))))
+
+      ;; Add it back to both.
+      (save-excursion
+        (let ((min (point))
+              (max (progn (forward-line 4) (forward-char 1) (point))))
+          (ledger-insert-effective-date-region min max "2024-03-04")
+          (should (equal (buffer-string)
+                         (file-with-dates "2024-03-04" "2024-03-04")))))
+
+      ;; Remove from just the first.
+      (save-excursion
+        (let ((min (progn (forward-char 1) (point)))
+              (max (progn (forward-char 1) (point)))
+              (current-prefix-arg '(4)))
+          (ledger-insert-effective-date-region min max nil)
+          (should (equal (buffer-string)
+                         (file-with-dates nil "2024-03-04"))))))))
+
 (provide 'mode-test)
 
 ;;; mode-test.el ends here
