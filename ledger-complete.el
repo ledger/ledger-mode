@@ -184,42 +184,33 @@ an alist (ACCOUNT-ELEMENT . NODE)."
               (nconc root (list node)))
             (setq root (cdr node))))))))
 
-(defun ledger-complete-account-next-steps ()
-  "Return a list of next steps for the account prefix at point."
-  ;; FIXME: This function is called from `ledger-complete-at-point' which
-  ;; already knows the bounds of the account name to complete.  Computing it
-  ;; again here is wasteful.
-  (with-demoted-errors "Cannot complete account name: %S"
-    (let* ((current (buffer-substring
-                     (save-excursion
-                       (unless (eq 'posting (ledger-thing-at-point))
-                         (error "Not on a posting line"))
-                       (point))
-                     (point)))
-           (elements (and current (split-string current ":")))
-           (root (ledger-accounts-tree))
-           (prefix nil))
-      (while (cdr elements)
-        (let ((entry (assoc (car elements) root)))
-          (if entry
-              (setq prefix (concat prefix (and prefix ":")
-                                   (car elements))
-                    root (cdr entry))
-            (setq root nil elements nil)))
-        (setq elements (cdr elements)))
-      (setq root (delete (list (car elements) t) root))
-      (and root
-           (sort
-            (mapcar (function
-                     (lambda (x)
-                       (let ((term (if prefix
-                                       (concat prefix ":" (car x))
-                                     (car x))))
-                         (if (> (length (cdr x)) 1)
-                             (concat term ":")
-                           term))))
-                    (cdr root))
-            'string-lessp)))))
+(defun ledger-complete-account-next-steps (start end)
+  "Return a list of next steps for the account prefix between START and END."
+  (let* ((current (buffer-substring start end))
+         (elements (and current (split-string current ":")))
+         (root (ledger-accounts-tree))
+         (prefix nil))
+    (while (cdr elements)
+      (let ((entry (assoc (car elements) root)))
+        (if entry
+            (setq prefix (concat prefix (and prefix ":")
+                                 (car elements))
+                  root (cdr entry))
+          (setq root nil elements nil)))
+      (setq elements (cdr elements)))
+    (setq root (delete (list (car elements) t) root))
+    (and root
+         (sort
+          (mapcar (function
+                   (lambda (x)
+                     (let ((term (if prefix
+                                     (concat prefix ":" (car x))
+                                   (car x))))
+                       (if (> (length (cdr x)) 1)
+                           (concat term ":")
+                         term))))
+                  (cdr root))
+          'string-lessp))))
 
 (defvar ledger-complete--current-time-for-testing nil
   "Internal, used for testing only.")
@@ -315,9 +306,9 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                              (= (line-end-position) (match-end 0)))))
           (;; Payees
            (eq 'transaction
-               (save-excursion
-                 (prog1 (ledger-thing-at-point)
-                   (setq start (point)))))
+                (save-excursion
+                  (prog1 (ledger-thing-at-point)
+                    (setq start (point)))))
            (setq collection (cons 'nullary #'ledger-payees-list)))
           (;; Accounts
            (save-excursion
@@ -331,9 +322,10 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                                    (- (match-beginning 0) end)))
                  realign-after t
                  collection (cons 'nullary
-                                  (if ledger-complete-in-steps
-                                      #'ledger-complete-account-next-steps
-                                    #'ledger-accounts-list)))))
+                                   (if ledger-complete-in-steps
+                                       (lambda ()
+                                         (ledger-complete-account-next-steps start end))
+                                     #'ledger-accounts-list)))))
     (when collection
       (let ((prefix (buffer-substring-no-properties start end)))
         (list start end
