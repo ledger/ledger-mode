@@ -160,7 +160,7 @@ described above."
 (defvar-local ledger-reconcile-last-balance-equals-target nil)
 
 (defface ledger-reconcile-last-balance-equals-target-face
-  '((t :inherit header-line :foreground "green3"))
+  '((t :inherit (header-line success)))
   "Face used for header line when cleared-or-pending balance equals the target."
   :group 'ledger-reconcile)
 
