@@ -79,10 +79,10 @@
     ;; Add symbols in reverse so they are sorted in the correct order as we
     ;; prepend them.
     (dolist (symbol (reverse regex-test--all-ledger-regex-symbols))
-      (when-let (name (seq-find (lambda (name)
-                                  (string-prefix-p (concat "ledger-regex-" name "-")
-                                                   (symbol-name symbol)))
-                                reverse-names))
+      (when-let* ((name (seq-find (lambda (name)
+                                    (string-prefix-p (concat "ledger-regex-" name "-")
+                                                     (symbol-name symbol)))
+                                  reverse-names)))
         (puthash name
                  (cons symbol (gethash name hash-table)) hash-table)))
     hash-table)
