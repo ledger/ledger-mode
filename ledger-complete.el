@@ -200,11 +200,11 @@ an alist (ACCOUNT-ELEMENT . NODE)."
            (root (ledger-accounts-tree))
            (prefix nil))
       (while (cdr elements)
-        (let ((xact (assoc (car elements) root)))
-          (if xact
+        (let ((entry (assoc (car elements) root)))
+          (if entry
               (setq prefix (concat prefix (and prefix ":")
                                    (car elements))
-                    root (cdr xact))
+                    root (cdr entry))
             (setq root nil elements nil)))
         (setq elements (cdr elements)))
       (setq root (delete (list (car elements) t) root))
