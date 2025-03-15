@@ -441,6 +441,25 @@ https://github.com/ledger/ledger-mode/issues/419"
        (equal (buffer-string)
               "2023-12-23 ")))))
 
+(ert-deftest ledger-complete/account-complete-error ()
+  "Regression test for https://github.com/ledger/ledger-mode/issues/443."
+  :tags '(complete regress)
+  (let ((ledger-complete-in-steps t))
+    (ledger-tests-with-temp-file
+        "\
+;
+2025/01/06 * Cinema
+    Expenses:Cinema                           €18.00
+    Cash"
+      (goto-char (point-min))
+      (end-of-line)
+      (insert " ")
+      (let ((completion-in-region-function
+             (lambda (start end collection predicate)
+               (should (null (all-completions (buffer-substring start end)
+                                              collection predicate))))))
+        (call-interactively 'completion-at-point)))))
+
 (provide 'complete-test)
 
 ;;; complete-test.el ends here
