@@ -193,7 +193,7 @@ A transaction block is identified as in ledger-highlight-xact-under-point.
 Overlay of type `code' is used so that hidden blocks are
 temporarily opened when doing incremental search."
   (interactive)
-  (if (not (and (boundp 'hs-minor-mode) hs-minor-mode))
+  (if (not (bound-and-true-p hs-minor-mode))
       (message "Enable hs-minor-mode to use this functionality.")
     (let ((exts (ledger-navigate-find-element-extents (point))))
       (let ((b (car exts))
