@@ -136,8 +136,7 @@ Requires empty line separating xacts."
       (ledger-navigate-skip-lines-forwards comment-re)
       (setq end (point)))
      ((looking-at-p "\\(?:comment\\|test\\)\\>")
-      (setq end (or (save-match-data
-                      (re-search-forward "^end[[:blank:]]+\\(?:comment\\|test\\)\\_>" nil t))
+      (setq end (or (re-search-forward "^end[[:blank:]]+\\(?:comment\\|test\\)\\_>" nil t)
                     (point-max)))))
     (list begin end)))
 
