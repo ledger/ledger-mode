@@ -35,18 +35,18 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=441"
   :tags '(navigate regress)
 
   (ledger-tests-with-temp-file
-   demo-ledger
-   (goto-char (point-min))              ; beginning-of-buffer
-   (ledger-navigate-next-xact-or-directive)
-   (ledger-navigate-next-xact-or-directive)
-   (should (eq 556 (point)))
-   (ledger-navigate-prev-xact-or-directive)
-   (should (eq 104 (point)))))
+      demo-ledger
+    (goto-char (point-min))              ; beginning-of-buffer
+    (ledger-navigate-next-xact-or-directive)
+    (ledger-navigate-next-xact-or-directive)
+    (should (eq 556 (point)))
+    (ledger-navigate-prev-xact-or-directive)
+    (should (eq 104 (point)))))
 
 (ert-deftest ledger-navigate-uncleared ()
   :tags '(navigate)
   (ledger-tests-with-temp-file
-   "2011/01/27 Book Store
+      "2011/01/27 Book Store
     Expenses:Books                       $20.00
     Liabilities:MasterCard
 
@@ -61,11 +61,11 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=441"
 2011/12/01 * Sale
     Assets:Checking                     $ 30.00
     Income:Sales"
-   (ledger-navigate-next-uncleared)
-   (should (looking-at-p (regexp-quote "2011/04/27 Bookstore")))
-   (should-error (ledger-navigate-next-uncleared))
-   (ledger-navigate-previous-uncleared)
-   (should (bobp))))
+    (ledger-navigate-next-uncleared)
+    (should (looking-at-p (regexp-quote "2011/04/27 Bookstore")))
+    (should-error (ledger-navigate-next-uncleared))
+    (ledger-navigate-previous-uncleared)
+    (should (bobp))))
 
 
 (provide 'navigate-test)
