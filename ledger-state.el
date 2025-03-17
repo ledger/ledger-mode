@@ -35,12 +35,12 @@
 (defun ledger-transaction-state ()
   "Return the state of the transaction at point."
   (save-excursion
-    (when (or (looking-at "^[0-9]")
+    (when (or (looking-at-p "^[0-9]")
               (re-search-backward "^[0-9]" nil t))
       (skip-chars-forward "0-9./=\\-")
       (skip-syntax-forward " ")
-      (cond ((looking-at "!\\s-*") 'pending)
-            ((looking-at "\\*\\s-*") 'cleared)
+      (cond ((looking-at-p "!\\s-*") 'pending)
+            ((looking-at-p "\\*\\s-*") 'cleared)
             (t nil)))))
 
 (defun ledger-posting-state ()
@@ -48,8 +48,8 @@
   (save-excursion
     (goto-char (line-beginning-position))
     (skip-syntax-forward " ")
-    (cond ((looking-at "!\\s-*") 'pending)
-          ((looking-at "\\*\\s-*") 'cleared)
+    (cond ((looking-at-p "!\\s-*") 'pending)
+          ((looking-at-p "\\*\\s-*") 'cleared)
           (t (ledger-transaction-state)))))
 
 (defun ledger-char-from-state (state)
@@ -111,12 +111,12 @@ dropped."
                   (insert (make-string width ? ))))))
         (forward-line)
         ;; Shift the cleared/pending status to the postings
-        (while (looking-at "[ \t]")
+        (while (looking-at-p "[ \t]")
           (skip-chars-forward " \t")
           (when (not (eq (ledger-state-from-char (char-after)) 'comment))
             (insert (ledger-char-from-state cur-status) " ")
             (if (and (search-forward "  " (line-end-position) t)
-                     (looking-at "  "))
+                     (looking-at-p "  "))
                 (delete-char 2)))
           (forward-line))
         (setq new-status nil)))
@@ -126,7 +126,7 @@ dropped."
       (setq inhibit-modification-hooks t)
 
       (goto-char (line-beginning-position))
-      (when (looking-at "[ \t]")
+      (when (looking-at-p "[ \t]")
         (skip-chars-forward " \t")
         (let ((here (point))
               (cur-status (ledger-state-from-char (char-after))))
@@ -154,11 +154,11 @@ dropped."
                      (re-search-forward "\\(\t\\| [ \t]\\)"
                                         (line-end-position) t))
                 (cond
-                 ((looking-at "\t")
+                 ((looking-at-p "\t")
                   (delete-char 1))
-                 ((looking-at " [ \t]")
+                 ((looking-at-p " [ \t]")
                   (delete-char 2))
-                 ((looking-at " ")
+                 ((looking-at-p " ")
                   (delete-char 1))))
             (setq new-status inserted))))
       (setq inhibit-modification-hooks nil))
@@ -172,7 +172,7 @@ dropped."
       (let ((first t)
             (state nil)
             (hetero nil))
-        (while (and (not hetero) (looking-at "[ \t]"))
+        (while (and (not hetero) (looking-at-p "[ \t]"))
           (skip-chars-forward " \t")
           (let ((cur-status (ledger-state-from-char (char-after))))
             (if (not (eq cur-status 'comment))
@@ -185,7 +185,7 @@ dropped."
         (when (and (not hetero) (not (eq state nil)))
           (goto-char (car bounds))
           (forward-line)
-          (while (looking-at "[ \t]")
+          (while (looking-at-p "[ \t]")
             (skip-chars-forward " \t")
             (let ((here (point)))
               (skip-chars-forward "*! ")
@@ -204,11 +204,11 @@ dropped."
           (if (re-search-forward "\\(\t\\| [ \t]\\)"
                                  (line-end-position) t)
               (cond
-               ((looking-at "\t")
+               ((looking-at-p "\t")
                 (delete-char 1))
-               ((looking-at " [ \t]")
+               ((looking-at-p " [ \t]")
                 (delete-char 2))
-               ((looking-at " ")
+               ((looking-at-p " ")
                 (delete-char 1)))))))
     new-status))
 
@@ -224,7 +224,7 @@ dropped."
             (forward-line)
             (beginning-of-line)
             (while (< (point) end)
-              (when (looking-at "\\s-+[*!]")
+              (when (looking-at-p "\\s-+[*!]")
                 (ledger-toggle-current-posting style))
               (forward-line)))
           (set-marker end nil)
@@ -235,7 +235,7 @@ dropped."
   "Toggle the transaction at point using optional STYLE."
   (interactive)
   (save-excursion
-    (when (or (looking-at "^[0-9]")
+    (when (or (looking-at-p "^[0-9]")
               (re-search-backward "^[0-9]" nil t))
       (skip-chars-forward "0-9./=\\-")
       (delete-horizontal-space)

@@ -140,7 +140,7 @@
             (data-file ledger-texi-sample-doc-path))
         (goto-char (match-end 0))
         (forward-line)
-        (when (looking-at "@\\(\\(?:small\\)?example\\)")
+        (when (looking-at-p "@\\(\\(?:small\\)?example\\)")
           (let ((beg (point)))
             (re-search-forward "^@end \\(\\(?:small\\)?example\\)")
             (delete-region beg (1+ (point)))))

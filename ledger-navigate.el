@@ -32,8 +32,8 @@
   "Move point to beginning of next xact."
   ;; make sure we actually move to the next xact, even if we are the
   ;; beginning of one now.
-  (if (looking-at ledger-payee-any-status-regex)
-      (forward-line))
+  (when (looking-at-p ledger-payee-any-status-regex)
+    (forward-line))
   (if (re-search-forward  ledger-payee-any-status-regex nil t)
       (goto-char (match-beginning 0))
     (goto-char (point-max))))
@@ -42,7 +42,7 @@
   "Return t if at the beginning line of an xact or directive.
 
 Assumes point is at the beginning of a line."
-  (not (looking-at "[ \t]\\|\\(^$\\)")))
+  (not (looking-at-p "[ \t]\\|\\(^$\\)")))
 
 (defun ledger-navigate-next-xact-or-directive ()
   "Move to the beginning of the next xact or directive."
@@ -72,7 +72,7 @@ Assumes point is at the beginning of a line."
   ;; need to start at the beginning of a line in case we are in the first line of an xact already.
   (beginning-of-line)
   (let ((sreg (concat "^[=~[:digit:]]")))
-    (unless (looking-at sreg)
+    (unless (looking-at-p sreg)
       (re-search-backward sreg nil t)
       (beginning-of-line)))
   (point))
@@ -123,19 +123,19 @@ Requires empty line separating xacts."
     ;; handle block comments here
     (goto-char begin)
     (cond
-     ((looking-at comment-re)
+     ((looking-at-p comment-re)
       (ledger-navigate-skip-lines-backwards comment-re)
       ;; We are either at the beginning of the buffer, or we found
       ;; a line outside the comment, or both.  If we are outside
       ;; the comment then we need to move forward a line.
-      (unless (looking-at comment-re)
+      (unless (looking-at-p comment-re)
         (forward-line 1)
         (beginning-of-line))
       (setq begin (point))
       (goto-char pos)
       (ledger-navigate-skip-lines-forwards comment-re)
       (setq end (point)))
-     ((looking-at "\\(?:comment\\|test\\)\\>")
+     ((looking-at-p "\\(?:comment\\|test\\)\\>")
       (setq end (or (save-match-data
                       (re-search-forward "^end[[:blank:]]+\\(?:comment\\|test\\)\\_>"))
                     (point-max)))))
@@ -152,7 +152,7 @@ Requires empty line separating xacts."
         (comment-re " *;"))
     ;; handle block comments here
     (beginning-of-line)
-    (when (looking-at comment-re)
+    (when (looking-at-p comment-re)
       (ledger-navigate-skip-lines-backwards comment-re)
       (setq begin (point))
       (goto-char pos)
@@ -169,14 +169,14 @@ Requires empty line separating xacts."
     (goto-char pos)
     (beginning-of-line)
     (ledger-navigate-skip-lines-backwards "[ \t]\\|end[[:blank:]]+\\(?:comment\\|test\\)\\_>")
-    (if (looking-at "[=~0-9\\[]")
+    (if (looking-at-p "[=~0-9\\[]")
         (ledger-navigate-find-xact-extents pos)
       (ledger-navigate-find-directive-extents pos))))
 
 (defun ledger-navigate-next-uncleared ()
   "Move point to the next uncleared transaction."
   (interactive)
-  (when (looking-at ledger-payee-uncleared-regex)
+  (when (looking-at-p ledger-payee-uncleared-regex)
     (forward-line))
   (if (re-search-forward ledger-payee-uncleared-regex nil t)
       (progn (beginning-of-line)

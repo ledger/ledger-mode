@@ -81,7 +81,7 @@
         ;; make sure beg of region is at the beginning of a line
         (beginning-of-line)
         ;; make sure point is at the beginning of a xact
-        (unless (looking-at ledger-payee-any-status-regex)
+        (unless (looking-at-p ledger-payee-any-status-regex)
           (ledger-navigate-next-xact))
         (setq beg (point))
         (goto-char end)

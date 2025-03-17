@@ -509,7 +509,7 @@ Return a count of the uncleared transactions."
             (ledger-exec-ledger buf (current-buffer)
                                 "--uncleared" "--real" "emacs" "--sort" sort-by account)
             (goto-char (point-min))
-            (when (and (not (eobp)) (looking-at "("))
+            (when (and (not (eobp)) (looking-at-p "("))
               (read (current-buffer)))))
          (fmt (ledger-reconcile-compile-format-string ledger-reconcile-buffer-line-format)))
     (if (null xacts)

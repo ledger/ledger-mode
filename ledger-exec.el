@@ -65,7 +65,7 @@
   (and (zerop exit-code)
        (with-current-buffer ledger-output-buffer
          (goto-char (point-min))
-         (not (and (> (buffer-size) 1) (looking-at (regexp-quote "While")))))))
+         (not (and (> (buffer-size) 1) (looking-at-p (regexp-quote "While")))))))
 
 (defun ledger-exec-ledger (input-buffer &optional output-buffer &rest args)
   "Run Ledger using INPUT-BUFFER.

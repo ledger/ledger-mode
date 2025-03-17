@@ -208,7 +208,7 @@ the \\[universal-argument] enables INSERT-AT-POINT."
         (push-mark)
         ;; TODO: what about when it can't be parsed?
         (ledger-xact-find-slot (or parsed-date date))
-        (when (looking-at "\n*\\'")
+        (when (looking-at-p "\n*\\'")
           (setq separator ""))))
     (if (cdr args)
         (save-excursion
