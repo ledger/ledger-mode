@@ -67,6 +67,21 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=441"
     (ledger-navigate-previous-uncleared)
     (should (bobp))))
 
+(ert-deftest ledger-navigate/test-incomplete-comment-block ()
+  "Incomplete comment and test blocks.
+Regression test for https://github.com/ledger/ledger-mode/issues/448.
+"
+  :tags '(navigate regress)
+  (ledger-tests-with-temp-file
+      "\
+2025-01-01 Payee
+    Assets:Checking  $1.00
+    Assets:Checking  -$1.00
+
+"
+    (goto-char (point-max))
+    (insert "comment")
+    (ledger-navigate-find-element-extents (point))))
 
 (provide 'navigate-test)
 
