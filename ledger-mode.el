@@ -460,7 +460,9 @@ With prefix ARG, decrement by that many instead."
   (setq-local indent-line-function #'ledger-indent-line)
   (setq-local indent-region-function 'ledger-post-align-postings)
   (setq-local beginning-of-defun-function #'ledger-navigate-beginning-of-xact)
-  (setq-local end-of-defun-function #'ledger-navigate-end-of-xact))
+  (setq-local end-of-defun-function #'ledger-navigate-end-of-xact)
+
+  (setq-local outline-regexp "[^[:space:]]"))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.ledger\\'" . ledger-mode))

@@ -25,6 +25,14 @@ containing that posting.
 ** Removed unused ledger-occur-narrowed-face
 This face was not actually used to mark up narrowed text, which is instead
 hidden by using overlays.
+** ledger-mode now sets default outline-regexp
+For =outline-minor-mode= users, ledger-mode now configures a default regexp that
+causes multiline, entries, comments, directives, etc. to be folded by the
+outline commands.
+
+This will not conflict with existing configurations for using
+=outline-minor-mode= to organize large sections of the ledger file, if such
+configurations set =outline-regexp= in =ledger-mode-hook= or local variables.
 * Release v4.0.0
 ** The completion system now respects whatever completion system the user prefers
 Some users prefer different completion systems such as ivy or helm. To get the
