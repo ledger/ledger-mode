@@ -455,6 +455,8 @@ With prefix ARG, decrement by that many instead."
   (add-hook 'before-revert-hook 'ledger-highlight--before-revert nil t)
   (add-hook 'after-revert-hook 'ledger-highlight-xact-under-point nil t)
 
+  (add-to-invisibility-spec 'ledger-occur-hidden)
+
   (ledger-init-load-init-file)
   (setq-local comment-start ";")
   (setq-local indent-line-function #'ledger-indent-line)
