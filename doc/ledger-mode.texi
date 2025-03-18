@@ -1151,7 +1151,7 @@ The column Ledger-mode attempts to align accounts to.
 @item ledger-post-amount-alignment-at
 Position at which the amount is aligned.
 
-Can be @code{:end} to align on the last number of the amount (can be followed 
+Can be @code{:end} to align on the last number of the amount (can be followed
 by unaligned commodity) or @code{:decimal} to align at the decimal separator.
 
 @item ledger-post-amount-alignment-column
@@ -1236,12 +1236,11 @@ configuration:
 @cindex org
 @cindex folding
 @lisp
-(eval-after-load 'ledger-mode
-  (progn
-    ;; org-cycle allows completion to work whereas outline-toggle-children does not
-    (define-key ledger-mode-map (kbd "TAB") #'org-cycle)
-    (add-hook 'ledger-mode-hook #'outline-minor-mode)
-    (font-lock-add-keywords 'ledger-mode outline-font-lock-keywords)))
+(with-eval-after-load 'ledger-mode
+  ;; org-cycle allows completion to work whereas outline-toggle-children does not
+  (define-key ledger-mode-map (kbd "TAB") #'org-cycle)
+  (add-hook 'ledger-mode-hook #'outline-minor-mode)
+  (font-lock-add-keywords 'ledger-mode outline-font-lock-keywords))
 @end lisp
 
 @node Concept Index, Command & Variable Index, Hacking Ledger-mode, Top
