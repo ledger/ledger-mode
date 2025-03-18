@@ -99,7 +99,7 @@
 (defun ledger-read-payee-with-prompt (prompt)
   "Read a payee from the minibuffer with PROMPT."
   (ledger-completing-read-with-default prompt
-                                       (when-let ((payee (ledger-xact-payee)))
+                                       (when-let* ((payee (ledger-xact-payee)))
                                          (regexp-quote payee))
                                        (ledger-payees-list)))
 

@@ -221,9 +221,9 @@ described above."
   "Display the cleared-or-pending balance.
 And calculate the target-delta of the account being reconciled."
   (interactive)
-  (when-let (pending (ledger-reconcile-get-cleared-or-pending-balance ledger-reconcile-ledger-buf ledger-reconcile-account))
+  (when-let* ((pending (ledger-reconcile-get-cleared-or-pending-balance ledger-reconcile-ledger-buf ledger-reconcile-account)))
     (let ((message
-           (if-let (diff (and ledger-reconcile-target (ledger-subtract-commodity ledger-reconcile-target pending)))
+           (if-let* ((diff (and ledger-reconcile-target (ledger-subtract-commodity ledger-reconcile-target pending))))
                (progn
                  (setq ledger-reconcile-last-balance-equals-target (zerop (car diff)))
                  (format-message "Cleared and Pending balance: %s,   Difference from target: %s"

@@ -432,8 +432,8 @@ called in the ledger buffer for which the report is being run."
     (with-temp-buffer
       (save-excursion (insert report-cmd))
       (while (re-search-forward "%(\\([^)]*\\))" nil t)
-        (when-let ((specifier (match-string 1))
-                   (f (cdr (assoc specifier ledger-report-format-specifiers))))
+        (when-let* ((specifier (match-string 1))
+                    (f (cdr (assoc specifier ledger-report-format-specifiers))))
           (let* ((arg (save-match-data
                         (with-current-buffer ledger-buf
                           (funcall f))))
@@ -442,7 +442,7 @@ called in the ledger buffer for which the report is being run."
                                (string-join arg " ")
                              (shell-quote-argument arg)))))
             (replace-match quoted 'fixedcase 'literal))))
-       (buffer-string))))
+      (buffer-string))))
 
 (defun ledger-report--cmd-needs-links-p (cmd)
   "Check links should be added to the report produced by CMD."
@@ -632,7 +632,7 @@ IGNORE-AUTO and NOCONFIRM are for compatibility with
   (when (string-empty-p ledger-report-name)
     (setq ledger-report-name (ledger-report-read-new-name)))
 
-  (when-let ((existing-name (ledger-report-name-exists ledger-report-name)))
+  (when-let* ((existing-name (ledger-report-name-exists ledger-report-name)))
     (cond ((y-or-n-p (format "Overwrite existing report named '%s'? "
                              ledger-report-name))
            (if (string-equal
