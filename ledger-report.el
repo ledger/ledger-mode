@@ -553,12 +553,14 @@ specific posting at point instead."
   (interactive)
   (let* ((prop (get-text-property (point) 'ledger-source))
          (file (car prop))
-         (line (cdr prop)))
-    (when (and file line)
+         (xact-position (cdr prop)))
+    (when (and file xact-position)
       (find-file-other-window file)
       (widen)
-      (goto-char (point-min))
-      (forward-line (1- line))
+      (if (markerp xact-position) 
+	  (goto-char xact-marker)
+ 	(progn (goto-char (point-min))
+	 (forward-line (1- xact-position))))
       (when ledger-report-links-beginning-of-xact
         (ledger-navigate-beginning-of-xact)))))
 
