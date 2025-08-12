@@ -46,7 +46,7 @@ jobs:
       with:
         version: ${{ matrix.emacs_version }}
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Byte compilation
       run: emacs --eval "(setq byte-compile-error-on-warn t)" -L . --batch -f batch-byte-compile ./*.el
     - name: Tests
