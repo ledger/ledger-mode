@@ -150,8 +150,8 @@ Argument OVL-BOUNDS contains bounds for the transactions to be left visible."
       ;; Search loop
       (while (not (eobp))
         ;; if something found
-        (when-let ((endpoint (re-search-forward regex nil 'end))
-                   (bounds (ledger-navigate-find-element-extents endpoint)))
+        (when-let* ((endpoint (re-search-forward regex nil 'end))
+                    (bounds (ledger-navigate-find-element-extents endpoint)))
           (push bounds lines)
           ;; move to the end of the xact, no need to search inside it more
           (goto-char (cadr bounds))))
