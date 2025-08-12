@@ -210,7 +210,7 @@ Error if the commodities do not match."
       (cl-loop
        while (re-search-forward ledger-post-line-regexp end t)
        for account-end = (match-end ledger-regex-post-line-group-account)
-       for amount-string = (when-let ((amount-string (match-string ledger-regex-post-line-group-amount)))
+       for amount-string = (when-let* ((amount-string (match-string ledger-regex-post-line-group-amount)))
                              (unless (string-empty-p (string-trim amount-string))
                                amount-string))
        if (not amount-string)

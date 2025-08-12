@@ -4,7 +4,7 @@
 
 ;; This file is not part of GNU Emacs.
 
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "26.1"))
 
 ;; This is free software; you can redistribute it and/or modify it under
 ;; the terms of the GNU General Public License as published by the Free
@@ -99,7 +99,7 @@
 (defun ledger-read-payee-with-prompt (prompt)
   "Read a payee from the minibuffer with PROMPT."
   (ledger-completing-read-with-default prompt
-                                       (when-let ((payee (ledger-xact-payee)))
+                                       (when-let* ((payee (ledger-xact-payee)))
                                          (regexp-quote payee))
                                        (ledger-payees-list)))
 
