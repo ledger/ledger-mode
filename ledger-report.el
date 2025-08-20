@@ -291,10 +291,13 @@ used to generate the buffer, navigating the buffer, etc."
            (edit (not (null current-prefix-arg))))
        (list rname edit))))
   (let* ((file (ledger-master-file))
-         (buf (find-file-noselect file)))
+         (buf (find-file-noselect file))
+         (local-ledger-reports (when (local-variable-p 'ledger-reports) ledger-reports)))
     (with-current-buffer
         (pop-to-buffer (get-buffer-create ledger-report-buffer-name))
       (ledger-report-mode)
+      (when local-ledger-reports
+          (set (make-local-variable 'ledger-reports) local-ledger-reports))
       (setq ledger-report-saved nil)
       (setq ledger-report-ledger-buf buf)
       (setq ledger-report-name report-name)
