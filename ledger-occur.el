@@ -119,7 +119,7 @@ long, otherwise it is the word at point."
   "Make an overlay for an invisible portion of the buffer, from BEG to END."
   (let ((ovl (make-overlay beg end)))
     (overlay-put ovl ledger-occur-overlay-property-name t)
-    (overlay-put ovl 'invisible t)))
+    (overlay-put ovl 'invisible 'ledger-occur-hidden)))
 
 (defun ledger-occur-create-overlays (ovl-bounds)
   "Create the overlays for the visible transactions.
