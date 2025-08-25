@@ -223,6 +223,90 @@ the \\[universal-argument] enables INSERT-AT-POINT."
       (insert (car args) " ")
       (save-excursion (insert "\n" separator)))))
 
+(defvar ledger--source-buffer)
+
+(defun ledger--get-transaction (transaction-text)
+  "Generate a transaction from TRANSACTION-TEXT and insert it at
+the current buffer position."
+  (let* ((args (with-temp-buffer
+                 (insert transaction-text)
+                 (eshell-parse-arguments (point-min) (point-max)))))
+    (if args
+        (if (> (length args) 1)
+            (save-excursion
+              (let ((input
+                     (with-current-buffer
+                         (generate-new-buffer " *Ledger xact input*")
+                       (insert-buffer ledger--source-buffer)
+                       (goto-char (point-max))
+                       (insert ?\n)
+                       (insert transaction-text)
+                       (current-buffer)))
+                    (output (generate-new-buffer " *Ledger xact output*")))
+                (unwind-protect
+                    (progn
+                      (apply #'ledger-exec-ledger input output "xact"
+                             (mapcar 'eval args))
+                      (insert
+                       (with-current-buffer output
+                         (goto-char (point-min))
+                         (if (looking-at "Error: ")
+                             (error (concat "Error in ledger-add-transaction: "
+                                            (buffer-string)))
+                           (goto-char (point-max))
+                           (backward-paragraph)
+                           (ledger-post-align-postings (point) (point-max))
+                           (buffer-substring (point) (point-max))))
+                       "\n"))
+                  (kill-buffer input)
+                  (kill-buffer output))))
+          (insert (car args) " \n\n")
+          (end-of-line -1))
+      "")))
+
+(defun ledger--display-pending-transaction ()
+  (ignore-errors
+    (let ((transaction-text (buffer-substring-no-properties
+                             (minibuffer-prompt-end)
+                             (line-end-position))))
+      (with-current-buffer (get-buffer-create "*Transaction*")
+        (ledger-mode)
+        (let ((text
+               (with-temp-buffer
+                 (ledger--get-transaction transaction-text)
+                 (buffer-string))))
+
+          (let ((inhibit-redisplay t))
+            (delete-region (point-min) (point-max))
+            (insert text))
+
+          (unless (get-buffer-window-list (current-buffer))
+            (display-buffer (current-buffer)))
+
+          (fit-window-to-buffer (get-buffer-window (current-buffer))))))))
+
+(defun ledger--minibuffer-setup (prompt)
+  (let ((ledger-mode-should-check-version nil))
+    (save-window-excursion
+      (unwind-protect
+          (minibuffer-with-setup-hook
+              #'(lambda ()
+                  (add-hook 'post-command-hook
+                            #'ledger--display-pending-transaction nil t))
+            (read-from-minibuffer prompt))
+        (remove-hook 'post-command-hook #'ledger--display-pending-transaction)))))
+
+(defun ledger-add-transaction-live (&optional transaction-text)
+  "Use ledger xact TRANSACTION-TEXT to add a transaction to the buffer."
+  (interactive)
+  (let ((ledger--source-buffer (current-buffer)))
+    (if transaction-text
+        (insert (ledger--get-transaction transaction-text))
+      (ledger--minibuffer-setup "Transaction: ")
+      (insert-buffer (get-buffer "*Transaction*"))
+      (goto-char (point-max))
+      (kill-buffer (get-buffer "*Transaction*")))))
+
 (provide 'ledger-xact)
 
 ;;; ledger-xact.el ends here
