@@ -25,6 +25,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'subr-x))
 (require 'eshell)
 (require 'ledger-regex)
 (require 'ledger-navigate)

@@ -23,6 +23,7 @@
 ;;; Commentary:
 ;; Utility functions for dealing with postings.
 
+(eval-when-compile (require 'subr-x))
 (require 'ledger-regex)
 (require 'ledger-navigate)
 
