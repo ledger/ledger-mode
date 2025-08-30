@@ -89,7 +89,7 @@ reconcile-finish will mark all pending posting cleared."
 (defcustom ledger-reconcile-default-date-format ledger-default-date-format
   "Date format for the reconcile buffer.
 Default is `ledger-default-date-format'."
-  :type 'string
+  :type '(custom string (const nil))
   :group 'ledger-reconcile)
 
 (defcustom ledger-reconcile-target-prompt-string "Target amount for reconciliation "
