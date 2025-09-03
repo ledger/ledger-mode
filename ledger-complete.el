@@ -304,6 +304,14 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                              (match-string 2) (match-string 3) (match-string 4)
                              (match-string 5) (match-string 6)
                              (= (line-end-position) (match-end 0)))))
+          (;; Transaction comments
+           (eq 'comment (car (cdr (ledger-context-at-point))))
+           (save-excursion
+             (back-to-indentation)
+             (search-forward ";")
+             (skip-chars-forward " \t")
+             (setq start (point)))
+           (setq collection (cons 'nullary #'ledger-comments-list)))
           (;; Payees
            (eq 'transaction
                (save-excursion
@@ -351,6 +359,18 @@ an alist (ACCOUNT-ELEMENT . NODE)."
 
 (defun ledger-trim-trailing-whitespace (str)
   (replace-regexp-in-string "[ \t]*$" "" str))
+
+(defun ledger-comments-list ()
+  "Collect comments from the buffer."
+  (let ((comments '()))
+    (save-excursion
+      (goto-char (point-min))
+      ;; FIXME: This only catches comments at beginning of lines and
+      ;; starting with some spaces (so "transaction comments"). There
+      ;; can also be comments after payees or prices too
+      (while (re-search-forward "^[ \t]+;[ \t]*\\(?1:.+\\)$" nil t)
+        (push (match-string-no-properties 1) comments)))
+    (sort (delete-dups comments) #'string-lessp)))
 
 (defun ledger-fully-complete-xact ()
   "Completes a transaction if there is another matching payee in the buffer.
