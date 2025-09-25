@@ -169,6 +169,12 @@ Leave point on the first amount, if any, otherwise the first account."
     (delete-region (car bounds) (cadr bounds)))
   (delete-blank-lines))
 
+(defun ledger-comment-or-uncomment-current-transaction (pos)
+  "Comment or uncomment the transaction surrounging POS."
+  (interactive "d")
+  (let ((bounds (ledger-navigate-find-element-extents pos)))
+    (comment-or-uncomment-region (car bounds) (cadr bounds))))
+
 (defvar ledger-add-transaction-last-date nil
   "Last date entered using `ledger-read-transaction'.")
 
