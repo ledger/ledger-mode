@@ -522,7 +522,6 @@ Return a count of the uncleared transactions."
       (delete-char -1)) ;gets rid of the extra line feed at the bottom of the list
     (goto-char (point-min))
     (set-buffer-modified-p nil)
-    (setq buffer-read-only t)
 
     (length xacts)))
 
@@ -617,8 +616,6 @@ reconciliation, otherwise prompt for TARGET."
             (ledger-reconcile-change-target target)
           (ledger-display-balance))))))
 
-(defvar ledger-reconcile-mode-abbrev-table)
-
 (defun ledger-reconcile-change-target (&optional target)
   "Change the TARGET amount for the reconciliation process."
   (interactive)
@@ -672,7 +669,7 @@ The command will re-sort the reconcile buffer by EXPR."
   "Keymap for `ledger-reconcile-mode'.")
 
 (easy-menu-define ledger-reconcile-mode-menu ledger-reconcile-mode-map
-  "Ledger reconcile menu"
+  "Ledger reconcile menu."
   '("Reconcile"
     ["Save" ledger-reconcile-save]
     ["Refresh" ledger-reconcile-refresh]
@@ -696,10 +693,9 @@ The command will re-sort the reconcile buffer by EXPR."
     ["Visit Source" ledger-reconcile-visit]
     ["Previous Entry" previous-line]
     "---"
-    ["Quit" ledger-reconcile-quit]
-    ))
+    ["Quit" ledger-reconcile-quit]))
 
-(define-derived-mode ledger-reconcile-mode text-mode "Reconcile"
+(define-derived-mode ledger-reconcile-mode special-mode "Reconcile"
   "A mode for reconciling ledger entries.")
 
 (define-minor-mode ledger-reconcile-display-balance-in-header-mode
