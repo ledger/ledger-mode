@@ -625,13 +625,25 @@ reconciliation, otherwise prompt for TARGET."
   (setq ledger-reconcile-target (or target (ledger-read-commodity-string ledger-reconcile-target-prompt-string)))
   (ledger-display-balance))
 
-(defmacro ledger-reconcile-change-sort-key-and-refresh (sort-by)
-  "Set the sort-key to SORT-BY."
-  `(lambda ()
-     (interactive)
+(defun ledger-reconcile--change-sort-key-and-refresh (sort-key)
+  "Set the sort-key to SORT-KEY and refresh the buffer."
+  (setq ledger-reconcile-sort-key sort-key)
+  (ledger-reconcile-refresh))
 
-     (setq ledger-reconcile-sort-key ,sort-by)
-     (ledger-reconcile-refresh)))
+(defmacro ledger-reconcile--define-sort-command (name expr)
+  "Define a sorting command named ledger-reconcile-sort-by-NAME.
+
+The command will re-sort the reconcile buffer by EXPR."
+  (let ((command (intern (concat "ledger-reconcile-sort-by-" (symbol-name name)))))
+    `(defun ,command ()
+       ,(concat "Sort reconcile buffer by " (symbol-name name) " and refresh.")
+       (interactive)
+       (ledger-reconcile--change-sort-key-and-refresh ,expr))))
+
+(ledger-reconcile--define-sort-command file-order "(0)")
+(ledger-reconcile--define-sort-command amount "(amount)")
+(ledger-reconcile--define-sort-command date "(date)")
+(ledger-reconcile--define-sort-command payee "(payee)")
 
 (defvar ledger-reconcile-mode-map
   (let ((map (make-sparse-keymap)))
@@ -652,19 +664,16 @@ reconciliation, otherwise prompt for TARGET."
     (define-key map (kbd "b") #'ledger-display-balance)
     (define-key map (kbd "B") #'ledger-reconcile-display-balance-in-header-mode)
 
-    (define-key map (kbd "C-c C-o") (ledger-reconcile-change-sort-key-and-refresh "(0)"))
-
-    (define-key map (kbd "C-c C-a") (ledger-reconcile-change-sort-key-and-refresh "(amount)"))
-
-    (define-key map (kbd "C-c C-d") (ledger-reconcile-change-sort-key-and-refresh "(date)"))
-
-    (define-key map (kbd "C-c C-p") (ledger-reconcile-change-sort-key-and-refresh "(payee)"))
+    (define-key map (kbd "C-c C-o") #'ledger-reconcile-sort-by-file-order)
+    (define-key map (kbd "C-c C-a") #'ledger-reconcile-sort-by-amount)
+    (define-key map (kbd "C-c C-d") #'ledger-reconcile-sort-by-date)
+    (define-key map (kbd "C-c C-p") #'ledger-reconcile-sort-by-payee)
     map)
   "Keymap for `ledger-reconcile-mode'.")
 
 (easy-menu-define ledger-reconcile-mode-menu ledger-reconcile-mode-map
   "Ledger reconcile menu"
-  `("Reconcile"
+  '("Reconcile"
     ["Save" ledger-reconcile-save]
     ["Refresh" ledger-reconcile-refresh]
     ["Finish" ledger-reconcile-finish]
@@ -674,10 +683,10 @@ reconciliation, otherwise prompt for TARGET."
     ["Change Target Balance" ledger-reconcile-change-target]
     ["Show Cleared Balance" ledger-display-balance]
     "---"
-    ["Sort by payee" ,(ledger-reconcile-change-sort-key-and-refresh "(payee)")]
-    ["Sort by date" ,(ledger-reconcile-change-sort-key-and-refresh "(date)")]
-    ["Sort by amount" ,(ledger-reconcile-change-sort-key-and-refresh "(amount)")]
-    ["Sort by file order" ,(ledger-reconcile-change-sort-key-and-refresh "(0)")]
+    ["Sort by payee" ledger-reconcile-sort-by-payee]
+    ["Sort by date" ledger-reconcile-sort-by-date]
+    ["Sort by amount" ledger-reconcile-sort-by-amount]
+    ["Sort by file order" ledger-reconcile-sort-by-file-order]
     "---"
     ["Toggle Entry" ledger-reconcile-toggle]
     ["Add Entry" ledger-reconcile-add]
