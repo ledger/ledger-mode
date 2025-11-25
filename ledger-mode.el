@@ -187,34 +187,67 @@ the balance into that."
                       nil 'noerr)
                  (replace-match ""))))))))
 
-(defun ledger-insert-effective-date (&optional date)
+(defun ledger-insert-effective-date (&optional date start end)
   "Insert effective date `DATE' to the transaction or posting.
 
-If `DATE' is nil, prompt the user a date.
+If `DATE' is nil, prompt the user for a date.
 
 Replace the current effective date if there's one in the same
 line.
 
-With a prefix argument, remove the effective date."
-  (interactive)
-  (if (and (listp current-prefix-arg)
-           (= 4 (prefix-numeric-value current-prefix-arg)))
-      (ledger-remove-effective-date)
-    (let* ((context (car (ledger-context-at-point)))
-           (date-string (or date (ledger-read-date "Effective date: "))))
-      (save-restriction
-        (narrow-to-region (line-beginning-position) (line-end-position))
-        (cond
-         ((eq 'xact context)
-          (beginning-of-line)
-          (re-search-forward ledger-iso-date-regexp)
-          (when (= (char-after) ?=)
-            (ledger-remove-effective-date))
-          (insert "=" date-string))
-         ((eq 'acct-transaction context)
-          (end-of-line)
-          (ledger-remove-effective-date)
-          (insert "  ; [=" date-string "]")))))))
+With a prefix argument, remove the effective date.
+
+With an active region (`START' and `END' non-nil), insert or
+remove for all transactions starting within the region."
+  (interactive
+   (if (use-region-p)
+       (list nil (region-beginning) (region-end))
+     (list nil nil nil)))
+
+  (if (and start end) (ledger-insert-effective-date-region start end date)
+    (if (and (listp current-prefix-arg)
+             (= 4 (prefix-numeric-value current-prefix-arg)))
+        (ledger-remove-effective-date)
+      (let* ((context (car (ledger-context-at-point)))
+             (date-string (or date (ledger-read-date "Effective date: "))))
+        (save-restriction
+          (narrow-to-region (line-beginning-position) (line-end-position))
+          (cond
+           ((eq 'xact context)
+            (beginning-of-line)
+            (re-search-forward ledger-iso-date-regexp)
+            (when (= (char-after) ?=)
+              (ledger-remove-effective-date))
+            (insert "=" date-string))
+           ((eq 'acct-transaction context)
+            (end-of-line)
+            (ledger-remove-effective-date)
+            (insert "  ; [=" date-string "]"))))))))
+
+(defun ledger-insert-effective-date-region (start end &optional date)
+  "Insert effective date `DATE' to all transactions starting within
+the region.
+
+If `DATE' is nil, prompt the user for a date.
+
+Replace the current effective date if there is one.
+
+With a prefix argument, remove any effective dates."
+  (interactive "r")
+  (let* ((should-remove
+          (and (listp current-prefix-arg)
+               (= 4 (prefix-numeric-value current-prefix-arg))))
+         (date-string
+          (unless should-remove
+            (or date (ledger-read-date "Effective date: ")))))
+    (save-excursion
+      (setq end (copy-marker end))
+      (goto-char start)
+      (while (< (point) end)
+        (let ((context (car (ledger-context-at-point))))
+          (when (eq 'xact context)
+            (ledger-insert-effective-date date-string)))
+        (forward-line 1)))))
 
 (defun ledger-mode-remove-extra-lines ()
   "Get rid of multiple empty lines."
