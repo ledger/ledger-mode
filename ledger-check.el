@@ -93,8 +93,8 @@
   "Goto the ledger check buffer."
   (interactive)
   (let ((rbuf (get-buffer ledger-check-buffer-name)))
-    (if (not rbuf)
-        (error "There is no ledger check buffer"))
+    (unless rbuf
+      (user-error "There is no ledger check buffer"))
     (pop-to-buffer rbuf)
     (shrink-window-if-larger-than-buffer)))
 
@@ -103,7 +103,7 @@
   (interactive)
   (ledger-check-goto)
   (set-window-configuration ledger-check--original-window-configuration)
-  (kill-buffer (get-buffer ledger-check-buffer-name)))
+  (kill-buffer ledger-check-buffer-name))
 
 (defun ledger-check-buffer (&optional interactive)
   "Check the current buffer for errors.
@@ -121,8 +121,7 @@ prompt to save if the current buffer is modified."
              (buffer-modified-p)
              (y-or-n-p "Buffer modified, save it? "))
     (save-buffer))
-  (let ((_buf (find-file-noselect (ledger-master-file)))
-        (cbuf (get-buffer ledger-check-buffer-name))
+  (let ((cbuf (get-buffer ledger-check-buffer-name))
         (wcfg (current-window-configuration)))
     (if cbuf
         (kill-buffer cbuf))
