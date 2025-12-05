@@ -28,7 +28,7 @@
 
 (require 'easymenu)
 (require 'ledger-navigate)
-(require 'ledger-report) ; for ledger-master-file
+(require 'ledger-report)
 
 
 (defvar ledger-check-buffer-name "*Ledger Check*")
@@ -76,9 +76,8 @@
     ;; format check report to make it navigate the file
 
     (goto-char (point-min))
-    (while (re-search-forward "^.*: \"\\(.*\\)\", line \\([0-9]+\\)" nil t)
-      (let* ((file (match-string 1))
-             (line (string-to-number (match-string 2)))
+    (while (re-search-forward "^.*: \".*\", line \\([0-9]+\\)" nil t)
+      (let* ((line (string-to-number (match-string 1)))
              (source-marker
               (with-current-buffer ledger-check--source-buffer
                 (save-excursion
@@ -86,11 +85,10 @@
                     (widen)
                     (ledger-navigate-to-line line)
                     (point-marker))))))
-        (when file
-          (set-text-properties (line-beginning-position) (line-end-position)
-                               (list 'ledger-source source-marker
-                                     'face 'ledger-font-report-clickable-face))
-          (end-of-line))))
+        (set-text-properties (line-beginning-position) (line-end-position)
+                             (list 'ledger-source source-marker
+                                   'face 'ledger-font-report-clickable-face))
+        (end-of-line)))
     (when (= (buffer-size) 0)
       (insert "No errors or warnings reported.\n"))))
 
