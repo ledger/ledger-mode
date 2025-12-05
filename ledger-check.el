@@ -55,45 +55,44 @@
     ["Quit" ledger-check-quit]
     ))
 
-(define-derived-mode ledger-check-mode text-mode "Ledger-Check"
+(define-derived-mode ledger-check-mode special-mode "Ledger-Check"
   "A mode for viewing ledger errors and warnings.")
-
 
 (defun ledger-do-check ()
   "Run a check command and put the output in the current buffer."
-  (let ((cbuf (current-buffer)))
-    (with-current-buffer ledger-check--source-buffer
-      ;;  ledger balance command will just return empty if you give it
-      ;;  an account name that doesn't exist.  I will assume that no
-      ;;  one will ever have an account named "e342asd2131".  If
-      ;;  someones does, this will probably still work for them.
-      ;;  I should only highlight error and warning lines.
-      (call-process-region (point-min) (point-max)
-                           "ledger"
-                           nil cbuf t
-                           "bal" "e342asd2131" "--strict" "--explicit" "--file=-")))
+  (with-silent-modifications
+    (let ((cbuf (current-buffer)))
+      (with-current-buffer ledger-check--source-buffer
+        ;;  ledger balance command will just return empty if you give it
+        ;;  an account name that doesn't exist.  I will assume that no
+        ;;  one will ever have an account named "e342asd2131".  If
+        ;;  someones does, this will probably still work for them.
+        ;;  I should only highlight error and warning lines.
+        (call-process-region (point-min) (point-max)
+                             "ledger"
+                             nil cbuf t
+                             "bal" "e342asd2131" "--strict" "--explicit" "--file=-")))
 
-  ;; format check report to make it navigate the file
+    ;; format check report to make it navigate the file
 
-  (goto-char (point-min))
-  (while (re-search-forward "^.*: \"\\(.*\\)\", line \\([0-9]+\\)" nil t)
-    (let* ((file (match-string 1))
-           (line (string-to-number (match-string 2)))
-           (source-marker
-            (with-current-buffer ledger-check--source-buffer
-              (save-excursion
-                (save-restriction
-                  (widen)
-                  (ledger-navigate-to-line line)
-                  (point-marker))))))
-      (when file
-        (set-text-properties (line-beginning-position) (line-end-position)
-                             (list 'ledger-source source-marker))
-        (add-text-properties (line-beginning-position) (line-end-position)
-                             (list 'font-lock-face 'ledger-font-report-clickable-face))
-        (end-of-line))))
-  (when (= (buffer-size) 0)
-    (insert "No errors or warnings reported.\n")))
+    (goto-char (point-min))
+    (while (re-search-forward "^.*: \"\\(.*\\)\", line \\([0-9]+\\)" nil t)
+      (let* ((file (match-string 1))
+             (line (string-to-number (match-string 2)))
+             (source-marker
+              (with-current-buffer ledger-check--source-buffer
+                (save-excursion
+                  (save-restriction
+                    (widen)
+                    (ledger-navigate-to-line line)
+                    (point-marker))))))
+        (when file
+          (set-text-properties (line-beginning-position) (line-end-position)
+                               (list 'ledger-source source-marker
+                                     'face 'ledger-font-report-clickable-face))
+          (end-of-line))))
+    (when (= (buffer-size) 0)
+      (insert "No errors or warnings reported.\n"))))
 
 (defun ledger-check-goto ()
   "Goto the ledger check buffer."
@@ -138,9 +137,8 @@ prompt to save if the current buffer is modified."
       (setq ledger-check--source-buffer source-buffer
             ledger-check--original-window-configuration wcfg)
       (ledger-do-check)
+      (goto-char (point-min))
       (shrink-window-if-larger-than-buffer)
-      (set-buffer-modified-p nil)
-      (setq buffer-read-only t)
       (message "q to quit; r to redo; k to kill"))))
 
 
