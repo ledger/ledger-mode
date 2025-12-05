@@ -306,9 +306,9 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                              (= (line-end-position) (match-end 0)))))
           (;; Payees
            (eq 'transaction
-                (save-excursion
-                  (prog1 (ledger-thing-at-point)
-                    (setq start (point)))))
+               (save-excursion
+                 (prog1 (ledger-thing-at-point)
+                   (setq start (point)))))
            (setq collection (cons 'nullary #'ledger-payees-list)))
           (;; Accounts
            (save-excursion
@@ -322,10 +322,10 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                                    (- (match-beginning 0) end)))
                  realign-after t
                  collection (cons 'nullary
-                                   (if ledger-complete-in-steps
-                                       (lambda ()
-                                         (ledger-complete-account-next-steps start end))
-                                     #'ledger-accounts-list)))))
+                                  (if ledger-complete-in-steps
+                                      (lambda ()
+                                        (ledger-complete-account-next-steps start end))
+                                    #'ledger-accounts-list)))))
     (when collection
       (let ((prefix (buffer-substring-no-properties start end)))
         (list start end

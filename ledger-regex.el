@@ -98,15 +98,15 @@
   (let* ((regex (eval regex))
          (group-count (regexp-opt-depth regex))
          (defs
-           (list
-            `(defconst
-               ,(intern (concat "ledger-" (symbol-name name) "-regexp"))
-               ,regex
-               ,docs)
-            `(defconst
-               ,(intern (concat "ledger-regex-" (symbol-name name)
-                                "-group--count"))
-               ,group-count)))
+          (list
+           `(defconst
+              ,(intern (concat "ledger-" (symbol-name name) "-regexp"))
+              ,regex
+              ,docs)
+           `(defconst
+              ,(intern (concat "ledger-regex-" (symbol-name name)
+                               "-group--count"))
+              ,group-count)))
          (addend 0) last-group)
     (if (null args)
         (progn

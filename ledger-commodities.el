@@ -163,7 +163,7 @@ longer ones are after the value."
               (concat prompt " (" ledger-reconcile-default-commodity "): ")))
         comm)
     (when (and (> (length str) 0)
-             (ledger-split-commodity-string str))
+               (ledger-split-commodity-string str))
       (setq comm (ledger-split-commodity-string str))
       (if (cadr comm)
           comm

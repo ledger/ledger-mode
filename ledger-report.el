@@ -557,10 +557,10 @@ specific posting at point instead."
     (when (and file xact-position)
       (find-file-other-window file)
       (widen)
-      (if (markerp xact-position) 
-	  (goto-char xact-position)
- 	(progn (goto-char (point-min))
-	 (forward-line (1- xact-position))))
+      (if (markerp xact-position)
+          (goto-char xact-position)
+        (progn (goto-char (point-min))
+               (forward-line (1- xact-position))))
       (when ledger-report-links-beginning-of-xact
         (ledger-navigate-beginning-of-xact)))))
 
