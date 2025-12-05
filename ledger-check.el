@@ -61,35 +61,33 @@
 (defun ledger-do-check ()
   "Run a check command ."
   (goto-char (point-min))
-  (let ((data-pos (point)))
-    (shell-command
-     ;;  ledger balance command will just return empty if you give it
-     ;;  an account name that doesn't exist.  I will assume that no
-     ;;  one will ever have an account named "e342asd2131".  If
-     ;;  someones does, this will probably still work for them.
-     ;;  I should only highlight error and warning lines.
-     "ledger bal e342asd2131 --strict --explicit "
-     t nil)
-    (goto-char data-pos)
+  (shell-command
+   ;;  ledger balance command will just return empty if you give it
+   ;;  an account name that doesn't exist.  I will assume that no
+   ;;  one will ever have an account named "e342asd2131".  If
+   ;;  someones does, this will probably still work for them.
+   ;;  I should only highlight error and warning lines.
+   "ledger bal e342asd2131 --strict --explicit "
+   t nil)
 
-    ;; format check report to make it navigate the file
+  ;; format check report to make it navigate the file
 
-    (while (re-search-forward "^.*: \"\\(.*\\)\", line \\([0-9]+\\)" nil t)
-      (let ((file (match-string 1))
-            (line (string-to-number (match-string 2))))
-        (when file
-          (set-text-properties (line-beginning-position) (line-end-position)
-                               (list 'ledger-source (cons file (save-window-excursion
-                                                                 (save-excursion
-                                                                   (find-file file)
-                                                                   (widen)
-                                                                   (ledger-navigate-to-line line)
-                                                                   (point-marker))))))
-          (add-text-properties (line-beginning-position) (line-end-position)
-                               (list 'font-lock-face 'ledger-font-report-clickable-face))
-          (end-of-line))))
-    (when (= (buffer-size) 0)
-      (insert "No errors or warnings reported.\n"))))
+  (while (re-search-forward "^.*: \"\\(.*\\)\", line \\([0-9]+\\)" nil t)
+    (let ((file (match-string 1))
+          (line (string-to-number (match-string 2))))
+      (when file
+        (set-text-properties (line-beginning-position) (line-end-position)
+                             (list 'ledger-source (cons file (save-window-excursion
+                                                               (save-excursion
+                                                                 (find-file file)
+                                                                 (widen)
+                                                                 (ledger-navigate-to-line line)
+                                                                 (point-marker))))))
+        (add-text-properties (line-beginning-position) (line-end-position)
+                             (list 'font-lock-face 'ledger-font-report-clickable-face))
+        (end-of-line))))
+  (when (= (buffer-size) 0)
+    (insert "No errors or warnings reported.\n")))
 
 (defun ledger-check-goto ()
   "Goto the ledger check buffer."
