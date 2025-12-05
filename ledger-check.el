@@ -41,6 +41,7 @@
 (defvar ledger-check-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "RET") #'ledger-report-visit-source)
+    (define-key map (kbd "r") #'ledger-check-redo)
     (define-key map (kbd "q") #'ledger-check-quit)
     map)
   "Keymap for `ledger-check-mode'.")
@@ -48,7 +49,7 @@
 (easy-menu-define ledger-check-mode-menu ledger-check-mode-map
   "Ledger check menu."
   '("Check"
-    ;; ["Re-run Check" ledger-check-redo]
+    ["Re-run Check" ledger-check-redo]
     "---"
     ["Visit Source" ledger-report-visit-source]
     "---"
@@ -61,6 +62,8 @@
 (defun ledger-do-check ()
   "Run a check command and put the output in the current buffer."
   (with-silent-modifications
+    (erase-buffer)
+
     (let ((cbuf (current-buffer)))
       (with-current-buffer ledger-check--source-buffer
         ;;  ledger balance command will just return empty if you give it
@@ -102,6 +105,13 @@
                    '(display-buffer-below-selected
                      (window-height . shrink-window-if-larger-than-buffer)))))
 
+(defun ledger-check-redo ()
+  "Re-run the check command for the current output buffer."
+  (interactive)
+  (ledger-do-check)
+  (goto-char (point-min))
+  (message (substitute-command-keys "\\[ledger-check-quit] to quit; \\[ledger-check-redo] to redo")))
+
 (defun ledger-check-quit ()
   "Quit the ledger check buffer."
   (interactive)
@@ -134,12 +144,10 @@ prompt to save if the current buffer is modified."
       (ledger-check-mode)
       (setq ledger-check--source-buffer source-buffer
             ledger-check--original-window-configuration wcfg)
-      (ledger-do-check)
-      (goto-char (point-min))
       (pop-to-buffer (current-buffer)
                      '(display-buffer-below-selected
                        (window-height . shrink-window-if-larger-than-buffer)))
-      (message "q to quit; r to redo; k to kill"))))
+      (ledger-check-redo))))
 
 
 (provide 'ledger-check)
