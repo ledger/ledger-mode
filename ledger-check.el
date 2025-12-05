@@ -33,6 +33,7 @@
 
 (defvar ledger-check-buffer-name "*Ledger Check*")
 (defvar-local ledger-check--original-window-configuration nil)
+(defvar-local ledger-check--source-buffer nil)
 
 
 
@@ -59,30 +60,35 @@
 
 
 (defun ledger-do-check ()
-  "Run a check command ."
-  (goto-char (point-min))
-  (shell-command
-   ;;  ledger balance command will just return empty if you give it
-   ;;  an account name that doesn't exist.  I will assume that no
-   ;;  one will ever have an account named "e342asd2131".  If
-   ;;  someones does, this will probably still work for them.
-   ;;  I should only highlight error and warning lines.
-   "ledger bal e342asd2131 --strict --explicit "
-   t nil)
+  "Run a check command and put the output in the current buffer."
+  (let ((cbuf (current-buffer)))
+    (with-current-buffer ledger-check--source-buffer
+      ;;  ledger balance command will just return empty if you give it
+      ;;  an account name that doesn't exist.  I will assume that no
+      ;;  one will ever have an account named "e342asd2131".  If
+      ;;  someones does, this will probably still work for them.
+      ;;  I should only highlight error and warning lines.
+      (call-process-region (point-min) (point-max)
+                           "ledger"
+                           nil cbuf t
+                           "bal" "e342asd2131" "--strict" "--explicit" "--file=-")))
 
   ;; format check report to make it navigate the file
 
+  (goto-char (point-min))
   (while (re-search-forward "^.*: \"\\(.*\\)\", line \\([0-9]+\\)" nil t)
-    (let ((file (match-string 1))
-          (line (string-to-number (match-string 2))))
+    (let* ((file (match-string 1))
+           (line (string-to-number (match-string 2)))
+           (source-marker
+            (with-current-buffer ledger-check--source-buffer
+              (save-excursion
+                (save-restriction
+                  (widen)
+                  (ledger-navigate-to-line line)
+                  (point-marker))))))
       (when file
         (set-text-properties (line-beginning-position) (line-end-position)
-                             (list 'ledger-source (cons file (save-window-excursion
-                                                               (save-excursion
-                                                                 (find-file file)
-                                                                 (widen)
-                                                                 (ledger-navigate-to-line line)
-                                                                 (point-marker))))))
+                             (list 'ledger-source source-marker))
         (add-text-properties (line-beginning-position) (line-end-position)
                              (list 'font-lock-face 'ledger-font-report-clickable-face))
         (end-of-line))))
@@ -121,14 +127,16 @@ prompt to save if the current buffer is modified."
              (buffer-modified-p)
              (y-or-n-p "Buffer modified, save it? "))
     (save-buffer))
-  (let ((cbuf (get-buffer ledger-check-buffer-name))
+  (let ((source-buffer (current-buffer))
+        (cbuf (get-buffer ledger-check-buffer-name))
         (wcfg (current-window-configuration)))
     (if cbuf
         (kill-buffer cbuf))
     (with-current-buffer
         (pop-to-buffer (get-buffer-create ledger-check-buffer-name))
       (ledger-check-mode)
-      (setq ledger-check--original-window-configuration wcfg)
+      (setq ledger-check--source-buffer source-buffer
+            ledger-check--original-window-configuration wcfg)
       (ledger-do-check)
       (shrink-window-if-larger-than-buffer)
       (set-buffer-modified-p nil)
