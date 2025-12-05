@@ -92,7 +92,7 @@ Default is `ledger-default-date-format'."
   :type 'string
   :group 'ledger-reconcile)
 
-(defcustom ledger-reconcile-target-prompt-string "Target amount for reconciliation "
+(defcustom ledger-reconcile-target-prompt-string "Target amount for reconciliation"
   "Prompt for reconcile target."
   :type 'string
   :group 'ledger-reconcile)
@@ -616,10 +616,16 @@ reconciliation, otherwise prompt for TARGET."
             (ledger-reconcile-change-target target)
           (ledger-display-balance))))))
 
+(defvar ledger-reconcile-target-history nil
+  "Minibuffer history for `ledger-reconcile-change-target'")
+
 (defun ledger-reconcile-change-target (&optional target)
   "Change the TARGET amount for the reconciliation process."
   (interactive)
-  (setq ledger-reconcile-target (or target (ledger-read-commodity-string ledger-reconcile-target-prompt-string)))
+  (setq ledger-reconcile-target
+        (or target (ledger-read-commodity-string
+                    ledger-reconcile-target-prompt-string
+                    'ledger-reconcile-target-history)))
   (ledger-display-balance))
 
 (defun ledger-reconcile--change-sort-key-and-refresh (sort-key)

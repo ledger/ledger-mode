@@ -157,14 +157,22 @@ longer ones are after the value."
         (concat str " " commodity)
       (concat commodity " " str))))
 
-(defun ledger-read-commodity-string (prompt)
-  "Read an amount from mini-buffer using PROMPT."
-  (let ((str (read-from-minibuffer
-              (concat prompt " (" ledger-reconcile-default-commodity "): ")))
-        comm)
-    (when (and (> (length str) 0)
-               (ledger-split-commodity-string str))
-      (setq comm (ledger-split-commodity-string str))
+(defvar ledger-read-commodity-history nil
+  "Default history variable for `ledger-read-commodity-string'.")
+
+(defun ledger-read-commodity-string (prompt &optional history)
+  "Read an amount from mini-buffer using PROMPT.
+
+If not supplied as input, the commodity defaults to
+`ledger-reconcile-default-commodity'.
+
+If HISTORY is non-nil, it should be a minibuffer history variable.
+Otherwise, default to `ledger-read-commodity-history'."
+  (let ((str (read-string
+              (format "%s (%s): " prompt ledger-reconcile-default-commodity)
+              nil (or history 'ledger-read-commodity-history))))
+    (when-let* (((> (length str) 0))
+                (comm (ledger-split-commodity-string str)))
       (if (cadr comm)
           comm
         (list (car comm) ledger-reconcile-default-commodity)))))
