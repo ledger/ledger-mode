@@ -119,6 +119,10 @@
   (set-window-configuration ledger-check--original-window-configuration)
   (kill-buffer ledger-check-buffer-name))
 
+;; FIXME: This is an awful lot of faff, couldn't we just use the report logic
+;; and maybe define a custom "check" report? It would work better in most ways,
+;; just need to add any missing features like window config restore (and maybe
+;; it should use markers).
 (defun ledger-check-buffer (&optional interactive)
   "Check the current buffer for errors.
 
