@@ -28,11 +28,12 @@
 
 (require 'easymenu)
 (require 'ledger-navigate)
-(require 'ledger-report) ; for ledger-master-file
+(require 'ledger-report)
 
 
 (defvar ledger-check-buffer-name "*Ledger Check*")
 (defvar-local ledger-check--original-window-configuration nil)
+(defvar-local ledger-check--source-buffer nil)
 
 
 
@@ -40,6 +41,7 @@
 (defvar ledger-check-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "RET") #'ledger-report-visit-source)
+    (define-key map (kbd "r") #'ledger-check-redo)
     (define-key map (kbd "q") #'ledger-check-quit)
     map)
   "Keymap for `ledger-check-mode'.")
@@ -47,68 +49,80 @@
 (easy-menu-define ledger-check-mode-menu ledger-check-mode-map
   "Ledger check menu."
   '("Check"
-    ;; ["Re-run Check" ledger-check-redo]
+    ["Re-run Check" ledger-check-redo]
     "---"
     ["Visit Source" ledger-report-visit-source]
     "---"
     ["Quit" ledger-check-quit]
     ))
 
-(define-derived-mode ledger-check-mode text-mode "Ledger-Check"
+(define-derived-mode ledger-check-mode special-mode "Ledger-Check"
   "A mode for viewing ledger errors and warnings.")
 
-
 (defun ledger-do-check ()
-  "Run a check command ."
-  (goto-char (point-min))
-  (let ((data-pos (point))
-        (have-warnings nil))
-    (shell-command
-     ;;  ledger balance command will just return empty if you give it
-     ;;  an account name that doesn't exist.  I will assume that no
-     ;;  one will ever have an account named "e342asd2131".  If
-     ;;  someones does, this will probably still work for them.
-     ;;  I should only highlight error and warning lines.
-     "ledger bal e342asd2131 --strict --explicit "
-     t nil)
-    (goto-char data-pos)
+  "Run a check command and put the output in the current buffer."
+  (with-silent-modifications
+    (erase-buffer)
+
+    (let ((cbuf (current-buffer)))
+      (with-current-buffer ledger-check--source-buffer
+        ;;  ledger balance command will just return empty if you give it
+        ;;  an account name that doesn't exist.  I will assume that no
+        ;;  one will ever have an account named "e342asd2131".  If
+        ;;  someones does, this will probably still work for them.
+        ;;  I should only highlight error and warning lines.
+        (call-process-region (point-min) (point-max)
+                             "ledger"
+                             nil cbuf t
+                             "bal" "e342asd2131" "--strict" "--explicit" "--file=-")))
 
     ;; format check report to make it navigate the file
 
-    (while (re-search-forward "^.*: \"\\(.*\\)\", line \\([0-9]+\\)" nil t)
-      (let ((file (match-string 1))
-            (line (string-to-number (match-string 2))))
-        (when file
-          (set-text-properties (line-beginning-position) (line-end-position)
-                               (list 'ledger-source (cons file (save-window-excursion
-                                                                 (save-excursion
-                                                                   (find-file file)
-                                                                   (widen)
-                                                                   (ledger-navigate-to-line line)
-                                                                   (point-marker))))))
-          (add-text-properties (line-beginning-position) (line-end-position)
-                               (list 'font-lock-face 'ledger-font-report-clickable-face))
-          (setq have-warnings 'true)
-          (end-of-line))))
-    (if (not have-warnings)
-        (insert "No errors or warnings reported."))))
+    (goto-char (point-min))
+    (while (re-search-forward "^.*: \".*\", line \\([0-9]+\\)" nil t)
+      (let* ((line (string-to-number (match-string 1)))
+             (source-marker
+              (with-current-buffer ledger-check--source-buffer
+                (save-excursion
+                  (save-restriction
+                    (widen)
+                    (ledger-navigate-to-line line)
+                    (point-marker))))))
+        (set-text-properties (line-beginning-position) (line-end-position)
+                             (list 'ledger-source source-marker
+                                   'face 'ledger-font-report-clickable-face))
+        (end-of-line)))
+    (when (= (buffer-size) 0)
+      (insert "No errors or warnings reported.\n"))))
 
 (defun ledger-check-goto ()
   "Goto the ledger check buffer."
   (interactive)
   (let ((rbuf (get-buffer ledger-check-buffer-name)))
-    (if (not rbuf)
-        (error "There is no ledger check buffer"))
-    (pop-to-buffer rbuf)
-    (shrink-window-if-larger-than-buffer)))
+    (unless rbuf
+      (user-error "There is no ledger check buffer"))
+    (pop-to-buffer rbuf
+                   '(display-buffer-below-selected
+                     (window-height . shrink-window-if-larger-than-buffer)))))
+
+(defun ledger-check-redo ()
+  "Re-run the check command for the current output buffer."
+  (interactive)
+  (ledger-do-check)
+  (goto-char (point-min))
+  (message (substitute-command-keys "\\[ledger-check-quit] to quit; \\[ledger-check-redo] to redo")))
 
 (defun ledger-check-quit ()
   "Quit the ledger check buffer."
   (interactive)
   (ledger-check-goto)
   (set-window-configuration ledger-check--original-window-configuration)
-  (kill-buffer (get-buffer ledger-check-buffer-name)))
+  (kill-buffer ledger-check-buffer-name))
 
+;; FIXME: This is an awful lot of faff, couldn't we just use the report logic
+;; and maybe define a custom "check" report? It would work better in most ways,
+;; just need to add any missing features like window config restore (and maybe
+;; it should use markers).
 (defun ledger-check-buffer (&optional interactive)
   "Check the current buffer for errors.
 
@@ -125,20 +139,19 @@ prompt to save if the current buffer is modified."
              (buffer-modified-p)
              (y-or-n-p "Buffer modified, save it? "))
     (save-buffer))
-  (let ((_buf (find-file-noselect (ledger-master-file)))
+  (let ((source-buffer (current-buffer))
         (cbuf (get-buffer ledger-check-buffer-name))
         (wcfg (current-window-configuration)))
     (if cbuf
         (kill-buffer cbuf))
-    (with-current-buffer
-        (pop-to-buffer (get-buffer-create ledger-check-buffer-name))
+    (with-current-buffer (get-buffer-create ledger-check-buffer-name)
       (ledger-check-mode)
-      (setq ledger-check--original-window-configuration wcfg)
-      (ledger-do-check)
-      (shrink-window-if-larger-than-buffer)
-      (set-buffer-modified-p nil)
-      (setq buffer-read-only t)
-      (message "q to quit; r to redo; k to kill"))))
+      (setq ledger-check--source-buffer source-buffer
+            ledger-check--original-window-configuration wcfg)
+      (pop-to-buffer (current-buffer)
+                     '(display-buffer-below-selected
+                       (window-height . shrink-window-if-larger-than-buffer)))
+      (ledger-check-redo))))
 
 
 (provide 'ledger-check)
