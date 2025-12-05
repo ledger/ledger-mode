@@ -61,8 +61,7 @@
 (defun ledger-do-check ()
   "Run a check command ."
   (goto-char (point-min))
-  (let ((data-pos (point))
-        (have-warnings nil))
+  (let ((data-pos (point)))
     (shell-command
      ;;  ledger balance command will just return empty if you give it
      ;;  an account name that doesn't exist.  I will assume that no
@@ -88,10 +87,9 @@
                                                                    (point-marker))))))
           (add-text-properties (line-beginning-position) (line-end-position)
                                (list 'font-lock-face 'ledger-font-report-clickable-face))
-          (setq have-warnings 'true)
           (end-of-line))))
-    (if (not have-warnings)
-        (insert "No errors or warnings reported."))))
+    (when (= (buffer-size) 0)
+      (insert "No errors or warnings reported.\n"))))
 
 (defun ledger-check-goto ()
   "Goto the ledger check buffer."
