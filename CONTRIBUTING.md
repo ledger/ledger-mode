@@ -2,7 +2,7 @@ Tips for contributors
 ---------------------
 
 * In your local repository, ensure that everything compiles by **running
-  `cmake . && make`** (this will launch byte compilation of lisp files and regression
+  `make`** (this will launch byte compilation of lisp files and regression
   tests).
 * You are then ready to make a **pull request**. Please make pull requests
   **against `master`**.
@@ -30,6 +30,9 @@ description on GitHub.
 
 **./LICENSE.md**: the [GPLv2] license.
 
+**./makem.sh** and **./Makefile**: build scripts for linting and testing this
+project, copied from [makem].
+
 **./*.el**: the [Emacs] ledger-mode lisp code.
 
 **./doc/**: documentation, and tools for generating documents such as the *pdf*
@@ -47,3 +50,4 @@ manual.
 [Emacs]: http://www.gnu.org/software/emacs/
 [GPLv2]: http://www.gnu.org/licenses/gpl-2.0.html
 [github]: https://github.com/ledger/ledger-mode/
+[makem]: https://github.com/alphapapa/makem.sh/

@@ -30,6 +30,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(eval-when-compile (require 'subr-x))
 (require 'ledger-navigate)
 
 (defconst ledger-occur-overlay-property-name 'ledger-occur-custom-buffer-grep)

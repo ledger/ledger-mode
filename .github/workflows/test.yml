@@ -50,7 +50,8 @@ jobs:
     - name: Byte compilation
       run: emacs --eval "(setq byte-compile-error-on-warn t)" -L . --batch -f batch-byte-compile ./*.el
     - name: Tests
-      run: nix shell ${{ matrix.ledger_version || 'nixpkgs#ledger' }} --print-build-logs -c make -C test
+      run: nix shell 'nixpkgs#getopt' ${{ matrix.ledger_version || 'nixpkgs#ledger' }} --print-build-logs -c ./makem.sh test -vv
     # This is currently for information only, since a lot of docstrings need fixing up
     - name: Checkdoc
-      run: make -C test checkdoc || true
+      run: make lint-checkdoc || true
+    # TODO: Run other makem.sh lints
