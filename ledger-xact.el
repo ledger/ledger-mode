@@ -181,11 +181,10 @@ Leave point on the first amount, if any, otherwise the first account."
 
 (defun ledger-parse-iso-date (date)
   "Try to parse DATE using `ledger-iso-date-regexp' and return a time value or nil."
-  (save-match-data
-    (when (string-match ledger-iso-date-regexp date)
-      (encode-time 0 0 0 (string-to-number (match-string 4 date))
-                   (string-to-number (match-string 3 date))
-                   (string-to-number (match-string 2 date))))))
+  (when (string-match ledger-iso-date-regexp date)
+    (encode-time 0 0 0 (string-to-number (match-string 4 date))
+                 (string-to-number (match-string 3 date))
+                 (string-to-number (match-string 2 date)))))
 
 (defun ledger-add-transaction (transaction-text &optional insert-at-point)
   "Use ledger xact TRANSACTION-TEXT to add a transaction to the buffer.
