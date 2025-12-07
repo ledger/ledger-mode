@@ -460,6 +460,26 @@ https://github.com/ledger/ledger-mode/issues/419"
                                               collection predicate))))))
         (call-interactively 'completion-at-point)))))
 
+(ert-deftest ledger-complete/complete-txn-comment ()
+  "Completion over other comments in buffer.
+Regression test for https://github.com/ledger/ledger-mode/pull/455."
+  :tags '(complete regress)
+  (ledger-tests-with-temp-file
+      "\
+; file comment
+
+2025/12/07 Grocery
+    Expenses:Groceries  $10
+    ; transaction comment
+    Liabilities:Credit Card
+
+2025/12/08 Grocery
+    ; tra"
+    (goto-char (point-max))
+    (completion-at-point)
+    (should (equal (buffer-substring (line-beginning-position) (line-end-position))
+                   "    ; transaction comment"))))
+
 (provide 'complete-test)
 
 ;;; complete-test.el ends here
