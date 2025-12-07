@@ -186,40 +186,46 @@ Leave point on the first amount, if any, otherwise the first account."
                  (string-to-number (match-string 3 date))
                  (string-to-number (match-string 2 date)))))
 
+(defun ledger-parse-transaction-text (transaction-text)
+  "Parse TRANSACTION-TEXT as a date and maybe some arguments.
+
+Return (DATE . ARGS), a list of strings."
+  (with-temp-buffer
+    (insert transaction-text)
+    (mapcar #'eval (eshell-parse-arguments (point-min) (point-max)))))
+
 (defun ledger-add-transaction (transaction-text &optional insert-at-point)
   "Use ledger xact TRANSACTION-TEXT to add a transaction to the buffer.
-If INSERT-AT-POINT is non-nil insert the transaction there,
-otherwise call `ledger-xact-find-slot' to insert it at the
-correct chronological place in the buffer.
 
-Interactively, the date is requested via `ledger-read-date' and
-the \\[universal-argument] enables INSERT-AT-POINT."
+If INSERT-AT-POINT is non-nil insert the transaction there, otherwise
+call `ledger-xact-find-slot' to insert it at the correct chronological
+place in the buffer.
+
+Interactively, the date is requested via `ledger-read-date' and the
+\\[universal-argument] enables INSERT-AT-POINT."
   (interactive (list (ledger-read-transaction) current-prefix-arg))
-  (let* ((args (with-temp-buffer
-                 (insert transaction-text)
-                 (eshell-parse-arguments (point-min) (point-max))))
+  (let* ((args (ledger-parse-transaction-text transaction-text))
+         (date (pop args))
          (ledger-buf (current-buffer))
          (separator "\n"))
     (unless insert-at-point
-      (let* ((date (car args))
-             (parsed-date (ledger-parse-iso-date date)))
+      (let* ((parsed-date (ledger-parse-iso-date date)))
         (setq ledger-add-transaction-last-date parsed-date)
         (push-mark)
         ;; TODO: what about when it can't be parsed?
         (ledger-xact-find-slot (or parsed-date date))
         (when (looking-at-p "\n*\\'")
           (setq separator ""))))
-    (if (cdr args)
+    (if args
         (save-excursion
           (insert
            (with-temp-buffer
-             (apply #'ledger-exec-ledger ledger-buf (current-buffer) "xact"
-                    (mapcar 'eval args))
+             (apply #'ledger-exec-ledger ledger-buf (current-buffer) "xact" date args)
              (goto-char (point-min))
              (ledger-post-align-postings (point-min) (point-max))
              (buffer-string))
            separator))
-      (insert (car args) " ")
+      (insert date " ")
       (save-excursion (insert "\n" separator)))))
 
 (provide 'ledger-xact)
