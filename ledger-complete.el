@@ -308,8 +308,6 @@ an alist (ACCOUNT-ELEMENT . NODE)."
            (eq 'comment (car (cdr (ledger-context-at-point))))
            (save-excursion
              (back-to-indentation)
-             (search-forward ";")
-             (skip-chars-forward " \t")
              (setq start (point)))
            (setq collection (cons 'nullary #'ledger-comments-list)))
           (;; Payees
@@ -365,10 +363,12 @@ an alist (ACCOUNT-ELEMENT . NODE)."
   (let ((comments '()))
     (save-excursion
       (goto-char (point-min))
-      ;; FIXME: This only catches comments at beginning of lines and
-      ;; starting with some spaces (so "transaction comments"). There
-      ;; can also be comments after payees or prices too
-      (while (re-search-forward "^[ \t]+;[ \t]*\\(?1:.+\\)$" nil t)
+      ;; FIXME: This only catches comments at beginning of lines and starting
+      ;; with some spaces (so "transaction comments"). There can also be
+      ;; comments after payees or prices too, as well as comments outside of
+      ;; transactions (the latter should be completed over separately).
+      ;; TODO: Unify this regex with `ledger-comment-regex'
+      (while (re-search-forward "^[ \t]+\\(?1:;.+\\)$" nil t)
         (push (match-string-no-properties 1) comments)))
     (sort (delete-dups comments) #'string-lessp)))
 
