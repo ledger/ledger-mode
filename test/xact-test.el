@@ -166,6 +166,58 @@ https://github.com/ledger/ledger-mode/issues/307"
     Assets:Bar
 "))))
 
+(ert-deftest ledger-xact/test-005 ()
+  "Add xact with quoted/escaped arguments."
+  :tags '(xact)
+
+  (ledger-tests-with-temp-file
+      "\
+2013/05/01 foo
+    Expenses:Foo                              $10.00
+    Assets:Bar
+
+2013/05/02=2013/05/03 foo bar
+    Expenses:Bar                            $10.00
+    Assets:Foo
+
+2013/05/03 foo
+    Expenses:Foo                            $10.00
+    Assets:Bar
+"
+    (save-buffer)
+
+    ;; arguments are normally word-split
+    (ledger-add-transaction "2013/05/04 foo bar")
+    (should
+     (equal (thing-at-point 'paragraph)
+            "
+2013/05/04 foo
+    Assets:Bar
+    Assets:Bar
+"))
+    (revert-buffer t t)
+
+    ;; word splitting can be inhibited by quoting...
+    (ledger-add-transaction "2013/05/04 \"foo bar\"")
+    (should
+     (equal (thing-at-point 'paragraph)
+            "
+2013/05/04 foo bar
+    Expenses:Bar                              $10.00
+    Assets:Foo
+"))
+    (revert-buffer t t)
+
+    ;; ...or backslash-escaping
+    (ledger-add-transaction "2013/05/04 foo\\ bar")
+    (should
+     (equal (thing-at-point 'paragraph)
+            "
+2013/05/04 foo bar
+    Expenses:Bar                              $10.00
+    Assets:Foo
+"))))
+
 (provide 'xact-test)
 
 ;;; xact-test.el ends here
