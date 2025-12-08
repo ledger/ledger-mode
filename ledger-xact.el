@@ -290,7 +290,11 @@ displayed."
       (delete-window window))))
 
 (defun ledger-read-transaction-text (date)
-  "Read the text of a transaction with date DATE."
+  "Read the text of a transaction with date DATE.
+
+The ledger buffer should be current when this function is called, since
+it will be used as input for \"ledger xact\" for the sake of previewing
+output."
   (let ((ledger-buf (current-buffer)))
     (minibuffer-with-setup-hook
         (lambda ()
