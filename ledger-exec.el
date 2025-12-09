@@ -114,9 +114,11 @@ otherwise the error output is displayed and an error is raised."
           nil))))) ;;failure
 
 (defun ledger-check-version ()
-  "Verify that ledger works and is modern enough."
+  "Verify that ledger works and is modern enough.
+
+Only runs in buffers visiting files."
   (interactive)
-  (if ledger-mode-should-check-version
+  (if (and buffer-file-name ledger-mode-should-check-version)
       (if (setq ledger-works (ledger-version-greater-p ledger-version-needed))
           (message "Good Ledger Version")
         (message "Bad Ledger Version"))))
