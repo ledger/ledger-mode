@@ -186,13 +186,17 @@ Leave point on the first amount, if any, otherwise the first account."
 (defvar-local ledger-xact--preview-timer nil)
 (defvar-local ledger-xact--date nil
   "In a minibuffer for the transaction text, the transaction date.")
-(defvar-local ledger-xact--ledger-buf nil
-  "In a minibuffer for the transaction text, the original ledger buffer.")
+(defvar-local ledger-xact--ledger-buf-file nil
+  "In a minibuffer for the transaction text, the input file.
 
-(defun ledger-xact--preview (ledger-buf date args)
+The original ledger buffer is written to this temporary file so it can
+be read by ledger.  This is quite a bit faster than passing in the input
+via `process-send-region'.")
+
+(defun ledger-xact--preview (date args)
   "Run \"ledger xact\" with DATE and ARGS and display the output.
 
-LEDGER-BUF's contents are passed as input to \"ledger xact\".
+`ledger-xact--ledger-buf-file' is used as input to \"ledger xact\".
 
 Return the window displaying the output buffer, or nil if it was not
 displayed."
@@ -206,6 +210,7 @@ displayed."
                (setq buffer-read-only t)
                (set-buffer-modified-p nil)
                (current-buffer))))
+        (input-file ledger-xact--ledger-buf-file)
         window)
     (with-current-buffer preview-buf
       (with-silent-modifications
@@ -225,23 +230,22 @@ displayed."
         ;; -" (even before the user has begun typing any input) and merely
         ;; inputting "xact" commands at the REPL when the input changes?
         (erase-buffer)
-        (with-current-buffer ledger-buf
-          (while-no-input
-            (unwind-protect
-                (let ((proc (make-process
-                             :name "ledger-xact-preview"
-                             :buffer preview-buf
-                             :command (append (list ledger-binary-path
-                                                    "-f" "-" "xact" date)
-                                              args)
-                             :noquery t
-                             :connection-type 'pipe
-                             :sentinel #'ignore)))
-                  (process-send-region proc (point-min) (point-max))
-                  (process-send-eof proc)
-                  (while (accept-process-output proc)))
-              (when (get-buffer-process preview-buf)
-                (delete-process preview-buf)))))
+        (while-no-input
+          (unwind-protect
+              (let ((proc (make-process
+                           :name "ledger-xact-preview"
+                           :buffer preview-buf
+                           :command (append (list ledger-binary-path
+                                                  "-f" input-file
+                                                  "xact" date)
+                                            args)
+                           :noquery t
+                           :connection-type 'pipe
+                           :sentinel #'ignore)))
+                (process-send-eof proc)
+                (while (accept-process-output proc)))
+            (when (get-buffer-process preview-buf)
+              (delete-process preview-buf))))
         (ledger-post-align-postings (point-min) (point-max))))
     (setq window
           (display-buffer preview-buf
@@ -263,10 +267,9 @@ displayed."
   (when (and (buffer-live-p minibuffer)
              (eq minibuffer (window-buffer (active-minibuffer-window))))
     (with-current-buffer minibuffer
-      (let ((ledger-buf ledger-xact--ledger-buf)
-            (date ledger-xact--date))
+      (let ((date ledger-xact--date))
         (when-let* ((args (ledger-parse-transaction-text (minibuffer-contents))))
-          (ledger-xact--preview ledger-buf date args))))))
+          (ledger-xact--preview date args))))))
 
 (defun ledger-xact--after-change-function (_beg _end _len)
   "Added to `after-change-functions' in transaction-reading minibuffers."
@@ -289,20 +292,33 @@ displayed."
     (when-let* ((window (get-buffer-window ledger-xact--preview-buffer-name)))
       (delete-window window))))
 
+(defun ledger-xact--delete-preview-temp-file ()
+  (when ledger-xact--ledger-buf-file
+    (delete-file ledger-xact--ledger-buf-file)))
+
 (defun ledger-read-transaction-text (date)
   "Read the text of a transaction with date DATE.
 
 The ledger buffer should be current when this function is called, since
 it will be used as input for \"ledger xact\" for the sake of previewing
 output."
-  (let ((ledger-buf (current-buffer)))
+  (let ((ledger-buf (current-buffer))
+        (ledger-buf-dir default-directory))
     (minibuffer-with-setup-hook
         (lambda ()
-          (setq ledger-xact--date date
-                ledger-xact--ledger-buf ledger-buf)
           (when ledger-add-transaction-idle-preview
+            (setq ledger-xact--date date
+                  ledger-xact--ledger-buf-file
+                  (let* ((temporary-file-directory ledger-buf-dir)
+                         (filename (make-temp-file "ldg-xact-preview" nil ".ldg")))
+                    (with-current-buffer ledger-buf
+                      (save-restriction
+                        (widen)
+                        (write-region nil nil filename nil 'nomessage)))
+                    filename))
             (add-hook 'after-change-functions #'ledger-xact--after-change-function nil t)
-            (add-hook 'minibuffer-exit-hook #'ledger-xact--hide-preview-window nil t)))
+            (add-hook 'minibuffer-exit-hook #'ledger-xact--hide-preview-window nil t)
+            (add-hook 'minibuffer-exit-hook #'ledger-xact--delete-preview-temp-file nil t)))
       (read-string (concat "xact " date ": ") nil 'ledger-minibuffer-history))))
 
 (defun ledger-read-transaction ()
