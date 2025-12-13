@@ -303,10 +303,8 @@ account Assets:Checking:Bank B")
 
 (ert-deftest ledger-complete/test-account-completion-in-steps ()
   :tags '(complete)
-  (let ((completion-cycle-threshold t)
-        (ledger-complete-in-steps t))
-    (ledger-tests-with-temp-file
-        "2020-01-01 Opening Balances
+  (ledger-tests-with-temp-file
+      "2020-01-01 Opening Balances
     Assets:Bank:Balance                       100.00 EUR
     Equity:Opening Balances
 
@@ -320,6 +318,8 @@ account Assets:Checking:Bank B")
 
 2020-04-01 Fnord
     As"
+    (let ((completion-cycle-threshold t)
+          (ledger-complete-in-steps t))
       (goto-char (point-max))
       (call-interactively 'completion-at-point)
       (should
@@ -342,11 +342,11 @@ account Assets:Checking:Bank B")
 (ert-deftest ledger-complete/amount-separated-by-tab ()
   "https://github.com/ledger/ledger-mode/issues/339"
   :tags '(complete regress)
-  (let ((ledger-post-auto-align nil))
-    (ledger-tests-with-temp-file
-        "2019/06/28 Foobar
+  (ledger-tests-with-temp-file
+      "2019/06/28 Foobar
 \tExpenses\t11.99 CAD
 \tEx\t-11.99 CAD"
+    (let ((ledger-post-auto-align nil))
       (forward-line 2)
       (forward-word 1)
       (call-interactively 'completion-at-point)
@@ -393,10 +393,10 @@ account Expenses:Groceries
 https://github.com/ledger/ledger-mode/issues/419"
   :tags '(complete regress)
   (let ((ledger-complete--current-time-for-testing ;2024-01-21
-         (encode-time 0 0 0 21 1 2024))
-        (ledger-default-date-format ledger-iso-date-format))
+         (encode-time 0 0 0 21 1 2024)))
     (ledger-tests-with-temp-file
         "01-19"
+      (setq ledger-default-date-format ledger-iso-date-format)
       (goto-char (point-max))
       (completion-at-point)
       (should
@@ -415,10 +415,10 @@ https://github.com/ledger/ledger-mode/issues/419"
 https://github.com/ledger/ledger-mode/issues/419"
   :tags '(complete regress)
   (let ((ledger-complete--current-time-for-testing ;2024-01-21
-         (encode-time 0 0 0 21 1 2024))
-        (ledger-default-date-format ledger-iso-date-format))
+         (encode-time 0 0 0 21 1 2024)))
     (ledger-tests-with-temp-file
         "19"
+      (setq ledger-default-date-format ledger-iso-date-format)
       (goto-char (point-max))
       (completion-at-point)
       (should
@@ -589,10 +589,10 @@ Covers the `(setq root nil elements nil)' arm."
   "Completing a date with month/day in the past of current year.
 Returns this year's date when not already past."
   :tags '(complete)
-  (let ((ledger-complete--current-time-for-testing
-         (encode-time 0 0 0 21 6 2024)) ; 2024-06-21
-        (ledger-default-date-format ledger-iso-date-format))
-    (ledger-tests-with-temp-file "03-15"
+  (ledger-tests-with-temp-file "03-15"
+    (let ((ledger-complete--current-time-for-testing
+           (encode-time 0 0 0 21 6 2024)) ; 2024-06-21
+          (ledger-default-date-format ledger-iso-date-format))
       (goto-char (point-max))
       (completion-at-point)
       (should (equal (buffer-string) "2024-03-15 ")))))
@@ -601,10 +601,10 @@ Returns this year's date when not already past."
   "Completing a day-only when current month is January falls back to Dec last year.
 Covers `last-month'/`last-year' branches in `ledger-complete-date'."
   :tags '(complete)
-  (let ((ledger-complete--current-time-for-testing
-         (encode-time 0 0 0 5 1 2024)) ; 2024-01-05
-        (ledger-default-date-format ledger-iso-date-format))
-    (ledger-tests-with-temp-file "10"
+  (ledger-tests-with-temp-file "10"
+    (let ((ledger-complete--current-time-for-testing
+           (encode-time 0 0 0 5 1 2024)) ; 2024-01-05
+          (ledger-default-date-format ledger-iso-date-format))
       (goto-char (point-max))
       (completion-at-point)
       ;; January has past day 10? No - current is Jan 5. So past day 10 is in
@@ -625,8 +625,8 @@ Covers `last-month'/`last-year' branches in `ledger-complete-date'."
 Covers lines 302-306 in `ledger-complete-at-point' that set
 `start' and `collection' for the effective-date branch."
   :tags '(complete)
-  (let ((ledger-default-date-format ledger-iso-date-format))
-    (ledger-tests-with-temp-file "2024-06-15=06-20"
+  (ledger-tests-with-temp-file "2024-06-15=06-20"
+    (let ((ledger-default-date-format ledger-iso-date-format))
       (goto-char (point-max))
       (let ((res (ledger-complete-test--call-capf-table)))
         (should res)

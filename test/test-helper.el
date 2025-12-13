@@ -47,6 +47,7 @@
       (cond ((eq (cadr member) 'custom-group)
              (ledger-tests-reset-custom-values (car member)))
             ((eq (cadr member) 'custom-variable)
+             (put (car member) 'saved-value nil)
              (custom-reevaluate-setting (car member)))))))
 
 (defun ledger-tests-with-simulated-input-1 (keys f)
@@ -96,6 +97,7 @@ provided (e.g., if BODY is still inside a minibuffer prompt)."
   (let* ((temp-file (make-temp-file "ledger-tests-"))
          (ledger-buffer (find-file-noselect temp-file))
          (ledger-init-file-name nil))
+    (ledger-tests-reset-custom-values 'ledger)
     (unwind-protect
         (with-current-buffer ledger-buffer
           (switch-to-buffer ledger-buffer) ; this selects window
