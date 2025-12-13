@@ -92,28 +92,31 @@ provided (e.g., if BODY is still inside a minibuffer prompt)."
   (declare (indent 1) (debug t))
   `(ledger-tests-with-simulated-input-1 ,keys (lambda () ,@body)))
 
+(defun ledger-tests-with-temp-file-1 (contents body)
+  (let* ((temp-file (make-temp-file "ledger-tests-"))
+         (ledger-buffer (find-file-noselect temp-file))
+         (ledger-init-file-name nil))
+    (unwind-protect
+        (with-current-buffer ledger-buffer
+          (switch-to-buffer ledger-buffer) ; this selects window
+          (ledger-mode)
+          (insert contents)
+          (goto-char (point-min))
+          (funcall body))
+      (when (buffer-live-p ledger-buffer)
+        (with-current-buffer ledger-buffer
+          (set-buffer-modified-p nil)
+          (kill-buffer)))
+      (ledger-tests-reset-custom-values 'ledger)
+      (delete-file temp-file))))
+
 (defmacro ledger-tests-with-temp-file (contents &rest body)
   ;; from python-tests-with-temp-file
   "Create a `ledger-mode' enabled file with CONTENTS.
 BODY is code to be executed within the temp buffer.  Point is
 always located at the beginning of buffer."
   (declare (indent 1) (debug t))
-  `(let* ((temp-file (make-temp-file "ledger-tests-"))
-          (ledger-buffer (find-file-noselect temp-file))
-          (ledger-init-file-name nil))
-     (unwind-protect
-         (with-current-buffer ledger-buffer
-           (switch-to-buffer ledger-buffer) ; this selects window
-           (ledger-mode)
-           (insert ,contents)
-           (goto-char (point-min))
-           ,@body)
-       (when (buffer-live-p ledger-buffer)
-         (with-current-buffer ledger-buffer
-           (set-buffer-modified-p nil)
-           (kill-buffer)))
-       (ledger-tests-reset-custom-values 'ledger)
-       (delete-file temp-file))))
+  `(ledger-tests-with-temp-file-1 ,contents (lambda () ,@body)))
 
 (defmacro ledger-tests-with-time-zone (tz &rest body)
   "Temporarily set local time zone to TZ while executing BODY."
