@@ -36,19 +36,21 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1107"
 
   (ledger-tests-with-temp-file
       demo-ledger
-    (ledger-reconcile "Assets:Checking" '(0 "$")) ; this moves to *reconcile* buffer
-    (other-window 1)                ; go to *ledger* buffer
-    (insert " ")                    ; simulate modification of ledger buffer
-    (delete-char -1)
-    (other-window 1)                ; back to *reconcile* buffer
-    (ledger-reconcile-save)         ; key 's'
-    (should ;; current buffer should be *reconcile* buffer
-     (equal (buffer-name)           ; current buffer name
-            ledger-reconcile-buffer-name))
-    (other-window 1)                ; switch to *other* window
-    (should ;; Expected: this must be ledger buffer
-     (equal (buffer-name)           ; current buffer name
-            (buffer-name ledger-buffer)))))
+    (let ((ledger-buf (current-buffer))
+          (ledger-buf-window (selected-window)))
+      (ledger-reconcile "Assets:Checking" '(0 "$")) ; this moves to *reconcile* buffer
+      (select-window ledger-buf-window)             ; go to *ledger* buffer
+      (insert " ")                      ; simulate modification of ledger buffer
+      (delete-char -1)
+      (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; back to *reconcile* buffer
+      (ledger-reconcile-save)      ; key 's'
+      (should                      ; current buffer should be *reconcile* buffer
+       (equal (buffer-name)        ; current buffer name
+              ledger-reconcile-buffer-name))
+      (select-window ledger-buf-window) ; switch to *other* window
+      (should                           ; Expected: this must be ledger buffer
+       (equal (buffer-name)             ; current buffer name
+              (buffer-name ledger-buf))))))
 
 
 (ert-deftest ledger-reconcile/test-002 ()
@@ -97,7 +99,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1061"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
-"2014/11/10  EDF
+      "2014/11/10  EDF
     Dépense:Maison:Service:Électricité    36,23 €
     Actif:Courant:BnpCc
 
@@ -119,7 +121,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=875"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
-"2008/10/16 (2090) Bountiful Blessings Farm Williamsport
+      "2008/10/16 (2090) Bountiful Blessings Farm Williamsport
     Expenses:Food:Groceries                  $ 37.50  ; [=2008/10/01]
     Expenses:Food:Groceries                  $ 37.50  ; [=2008/11/01]
     Expenses:Food:Groceries                  $ 37.50  ; [=2008/12/01]
@@ -164,7 +166,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1059"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
-"2014/03/03 * Retrait
+      "2014/03/03 * Retrait
     Dépense:Alimentation:Épicerie            20,00 €
     Dépense:Alimentation:Restaurant          23,80 €
     Dépense:Alimentation:Restaurant          11,50 €
@@ -184,7 +186,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1059"
     * Dépense:Liquide
     * Passif:Crédit:BanqueAccord            -60,00 €
 "
-             (buffer-string)))))
+      (buffer-string)))))
 
 
 (ert-deftest ledger-reconcile/test-008 ()
@@ -193,7 +195,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1056"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
-"2014/04/03 www.amazon.fr
+      "2014/04/03 www.amazon.fr
     Dépense:Loisir:Ordi:Matériel            101,50 €  ; disque dur portable 2,5\" 2000 Go
     Dépense:Maison:Service:Poste
     * Passif:Crédit:BanqueAccord           -171,63 €
@@ -238,7 +240,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=986"
     (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (should
      (equal (buffer-string)     ; default sort is by ledger file order
-      "Reconciling account Assets:Checking
+            "Reconciling account Assets:Checking
 
 2011/01/14      Bank                                               Assets:Checking                      $ -300.00
 2011/01/19      Grocery Store                                      Assets:Checking                       $ -44.00
@@ -254,7 +256,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=986"
     (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (should
      (equal (buffer-string)
-      "Reconciling account Assets:Checking
+            "Reconciling account Assets:Checking
 
 2011/01/14      Bank                                               Assets:Checking                      $ -300.00
 2011/01/19      Grocery Store                                      Assets:Checking                       $ -44.00
@@ -270,7 +272,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=986"
     (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (should
      (equal (buffer-string)             ; sort by ledger file order
-      "Reconciling account Assets:Checking
+            "Reconciling account Assets:Checking
 
 2011/01/25      Tom's Used Cars                                    Assets:Checking                    $ -5,500.00
 2011/04/25      Tom's Used Cars                                    Assets:Checking                    $ -5,500.00
@@ -286,7 +288,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=986"
     (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (should
      (equal (buffer-string)
-      "Reconciling account Assets:Checking
+            "Reconciling account Assets:Checking
 
 2011/01/14      Bank                                               Assets:Checking                      $ -300.00
 2011/01/25      Bank                                               Assets:Checking                     $ 5,500.00
@@ -302,7 +304,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=986"
     (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (should
      (equal (buffer-string)
-      "Reconciling account Assets:Checking
+            "Reconciling account Assets:Checking
 
 2011/01/14      Bank                                               Assets:Checking                      $ -300.00
 2011/01/19      Grocery Store                                      Assets:Checking                       $ -44.00
@@ -357,24 +359,25 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=957"
     Dépense:Alimentation:Restaurant          18,40 €
     Passif:Crédit:BanqueAccord
 "
-    (setq ledger-reconcile-default-commodity "€")
-    (ledger-reconcile "BanqueAccord" '(0 "€"))
-    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
-    (forward-line 2)
-    (ledger-reconcile-visit)
-    (forward-line -1)
-    (goto-char (line-beginning-position)) ; beginning-of-line
-    (insert "    Dépense:Alimentation:Alcool    1,00 €
+    (let ((ledger-buffer (current-buffer)))
+      (setq ledger-reconcile-default-commodity "€")
+      (ledger-reconcile "BanqueAccord" '(0 "€"))
+      (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
+      (forward-line 2)
+      (ledger-reconcile-visit)
+      (forward-line -1)
+      (goto-char (line-beginning-position)) ; beginning-of-line
+      (insert "    Dépense:Alimentation:Alcool    1,00 €
     Dépense:Alimentation:Alcool    1,00 €
     Dépense:Alimentation:Alcool    1,00 €
 ")
-    (save-buffer)
-    (switch-to-buffer-other-window ledger-reconcile-buffer-name)
-    (ledger-reconcile-toggle)
-    (switch-to-buffer-other-window ledger-buffer)
-    (should
-     (equal (buffer-string)
-            "2013/04/20 Petit Casino
+      (save-buffer)
+      (switch-to-buffer-other-window ledger-reconcile-buffer-name)
+      (ledger-reconcile-toggle)
+      (switch-to-buffer-other-window ledger-buffer)
+      (should
+       (equal (buffer-string)
+              "2013/04/20 Petit Casino
     Dépense:Alimentation:Alcool               6,49 €
     Dépense:Alimentation:Alcool    1,00 €
     Dépense:Alimentation:Alcool    1,00 €
@@ -386,24 +389,24 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=957"
     Dépense:Alimentation:Restaurant          18,40 €
     Passif:Crédit:BanqueAccord
 "))
-    (goto-char (point-min))  ; beginning-of-buffer
-    (forward-line 1)
-    (kill-line 4)
-    (save-buffer)
-    (switch-to-buffer-other-window ledger-reconcile-buffer-name)
-    (forward-line -1)
-    (ledger-reconcile-toggle)
-    (switch-to-buffer-other-window ledger-buffer)
-    (should
-     (equal (buffer-string)
-            "2013/04/20 Petit Casino
+      (goto-char (point-min))  ; beginning-of-buffer
+      (forward-line 1)
+      (kill-line 4)
+      (save-buffer)
+      (switch-to-buffer-other-window ledger-reconcile-buffer-name)
+      (forward-line -1)
+      (ledger-reconcile-toggle)
+      (switch-to-buffer-other-window ledger-buffer)
+      (should
+       (equal (buffer-string)
+              "2013/04/20 Petit Casino
     Dépense:Alimentation:Épicerie
     Passif:Crédit:BanqueAccord              -14,94 €
 
 2013/04/20 Les Tilleuls
     Dépense:Alimentation:Restaurant          18,40 €
     Passif:Crédit:BanqueAccord
-"))))
+")))))
 
 
 (ert-deftest ledger-reconcile/test-013 ()
@@ -413,17 +416,18 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=906"
 
   (ledger-tests-with-temp-file
       demo-ledger
-    (goto-char 1040)
-    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
-    (switch-to-buffer-other-window ledger-buffer)
-    (should (= 1040 (point)))
+    (let ((ledger-buffer (current-buffer)))
+      (goto-char 1040)
+      (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+      (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
+      (switch-to-buffer-other-window ledger-buffer)
+      (should (= 1040 (point)))
 
-    (goto-char 1265)
-    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
-    (switch-to-buffer-other-window ledger-buffer)
-    (should (= 1265 (point)))))
+      (goto-char 1265)
+      (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+      (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
+      (switch-to-buffer-other-window ledger-buffer)
+      (should (= 1265 (point))))))
 
 
 (ert-deftest ledger-reconcile/test-014 ()
@@ -433,16 +437,17 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=900"
 
   (ledger-tests-with-temp-file
       demo-ledger
-    (ledger-reconcile "Assets:Checking" '(0 "$"))
-    (select-window (get-buffer-window ledger-reconcile-buffer-name))
-    (switch-to-buffer-other-window ledger-buffer)
-    (save-buffer)
-    (let ((ledger-buffer-name (buffer-name ledger-buffer)))
-      (find-alternate-file temp-file)
-      (ledger-reconcile "Expenses:Books" '(0 "$"))
-      (should ;; Expected: buffer with same name
-       (equal (buffer-name (current-buffer))
-              ledger-buffer-name)))))
+    (let ((ledger-buffer (current-buffer)))
+      (ledger-reconcile "Assets:Checking" '(0 "$"))
+      (select-window (get-buffer-window ledger-reconcile-buffer-name))
+      (switch-to-buffer-other-window ledger-buffer)
+      (save-buffer)
+      (let ((ledger-buffer-name (buffer-name ledger-buffer)))
+        (find-alternate-file (buffer-file-name ledger-buffer))
+        (ledger-reconcile "Expenses:Books" '(0 "$"))
+        (should ;; Expected: buffer with same name
+         (equal (buffer-name (current-buffer))
+                ledger-buffer-name))))))
 
 
 (ert-deftest ledger-reconcile/test-015 ()
@@ -491,7 +496,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=895"
     (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
     (should
      (equal (buffer-string)
-      "Reconciling account Food
+            "Reconciling account Food
 
 2011/01/02      Grocery Store                                      Expenses:Food:Groceries                $ 65.00
 2011/01/19      Grocery Store                                      Expenses:Food:Groceries                $ 44.00" ))))
@@ -511,11 +516,11 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=886"
       (ledger-reconcile-toggle)           ; mark pending
       (should (eq line-before-toggle (line-number-at-pos)))
       (should (eq 'ledger-font-reconciler-pending-face
-                (get-text-property (point) 'font-lock-face)))
+                  (get-text-property (point) 'font-lock-face)))
       (ledger-reconcile-toggle)           ; mark pending
       (should (eq line-before-toggle (line-number-at-pos)))
       (should (eq 'ledger-font-reconciler-uncleared-face
-                (get-text-property (point) 'font-lock-face))))))
+                  (get-text-property (point) 'font-lock-face))))))
 
 
 (ert-deftest ledger-reconcile/test-019 ()
@@ -525,18 +530,19 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=879"
 
   (ledger-tests-with-temp-file
       demo-ledger
-    (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
-    (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
-    (switch-to-buffer-other-window ledger-buffer)
-    (ledger-reconcile "Food" '(0 "$")) ; launch a *second* time on *another* account
-    (select-window (get-buffer-window ledger-reconcile-buffer-name))
-    (should ;; current buffer should be *reconcile* buffer
-     (equal (buffer-name)           ; current buffer name
-            ledger-reconcile-buffer-name))
-    (other-window 1)                ; switch to *other* window
-    (should ;; Expected: this must be ledger buffer
-     (equal (buffer-name)           ; current buffer name
-            (buffer-name ledger-buffer)))))
+    (let ((ledger-buffer (current-buffer)))
+      (ledger-reconcile "Assets:Checking" '(0 "$")) ; launch reconciliation
+      (select-window (get-buffer-window ledger-reconcile-buffer-name)) ; IRL user select reconcile window
+      (switch-to-buffer-other-window ledger-buffer)
+      (ledger-reconcile "Food" '(0 "$")) ; launch a *second* time on *another* account
+      (select-window (get-buffer-window ledger-reconcile-buffer-name))
+      (should ;; current buffer should be *reconcile* buffer
+       (equal (buffer-name)           ; current buffer name
+              ledger-reconcile-buffer-name))
+      (other-window 1)                ; switch to *other* window
+      (should ;; Expected: this must be ledger buffer
+       (equal (buffer-name)           ; current buffer name
+              (buffer-name ledger-buffer))))))
 
 
 (ert-deftest ledger-reconcile/test-020 ()
@@ -545,17 +551,17 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=527"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
-   "2012-03-10 (#100) KFC
+      "2012-03-10 (#100) KFC
     Expenses:Food                $20.00
     Assets:Checking
 "
-   (ledger-reconcile "Expenses:Food" '(0 "$"))
-   (switch-to-buffer ledger-reconcile-buffer-name)
-   (should (equal
-            "Reconciling account Expenses:Food
+    (ledger-reconcile "Expenses:Food" '(0 "$"))
+    (switch-to-buffer ledger-reconcile-buffer-name)
+    (should (equal
+             "Reconciling account Expenses:Food
 
 2012/03/10 #100 KFC                                                Expenses:Food                           $20.00"
-            (buffer-string)))))
+             (buffer-string)))))
 
 
 (ert-deftest ledger-reconcile/test-021 ()
@@ -564,7 +570,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=922"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
-   "2012/01/02 (03DIZ3Q) Bilip
+      "2012/01/02 (03DIZ3Q) Bilip
     Nyu:sto                                      -12  B
     Foo:bar
 
@@ -572,11 +578,11 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=922"
     * Nyu:sto                                    -12  B
     Foo:bar
 "
-   (setq ledger-reconcile-buffer-header "")
-   (ledger-reconcile "Nyu" '(0 "B"))
-   (switch-to-buffer ledger-reconcile-buffer-name)
-   (should (equal (buffer-string)
-            "2012/01/02 03DIZ3Q Bilip                                              Nyu:sto                                  -12 B"))))
+    (setq ledger-reconcile-buffer-header "")
+    (ledger-reconcile "Nyu" '(0 "B"))
+    (switch-to-buffer ledger-reconcile-buffer-name)
+    (should (equal (buffer-string)
+                   "2012/01/02 03DIZ3Q Bilip                                              Nyu:sto                                  -12 B"))))
 
 
 (ert-deftest ledger-reconcile/test-022 ()
@@ -585,14 +591,14 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=951"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
-   "2012-03-10 (#100) KFC
+      "2012-03-10 (#100) KFC
     Expenses:Food                $3,877.78
     Assets:Checking
 "
-   (ledger-reconcile "Expenses:Food" '(0 "$"))
-   (switch-to-buffer ledger-reconcile-buffer-name)
-   (should (equal (buffer-string)
-            "Reconciling account Expenses:Food
+    (ledger-reconcile "Expenses:Food" '(0 "$"))
+    (switch-to-buffer ledger-reconcile-buffer-name)
+    (should (equal (buffer-string)
+                   "Reconciling account Expenses:Food
 
 2012/03/10 #100 KFC                                                Expenses:Food                        $3,877.78"))))
 
@@ -603,14 +609,14 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=897"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
-   "2012-03-10 (#100) KFC  ; comment
+      "2012-03-10 (#100) KFC  ; comment
     Expenses:Food                $3,877.78  ; comment
     * Assets:Checking                         ; comment
 "
-   (forward-line 1)                     ; go to posting not cleared
-   (ledger-toggle-current)              ; C-c C-c
-   (should (equal (buffer-string)
-            "2012-03-10 * (#100) KFC  ; comment
+    (forward-line 1)                     ; go to posting not cleared
+    (ledger-toggle-current)              ; C-c C-c
+    (should (equal (buffer-string)
+                   "2012-03-10 * (#100) KFC  ; comment
     Expenses:Food                $3,877.78  ; comment
     Assets:Checking                           ; comment
 "))))
@@ -622,15 +628,15 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=396"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
-   ;; FIXME "KFC" surrounded with double quotes should work too
-   "2012-03-10 (#100) Kentucky Fried Chicken aka 'KFC'
+      ;; FIXME "KFC" surrounded with double quotes should work too
+      "2012-03-10 (#100) Kentucky Fried Chicken aka 'KFC'
     Expenses:Food                $3,877.78
     Assets:Checking
 "
-   (ledger-reconcile "Expenses:Food" '(0 "$"))
-   (switch-to-buffer ledger-reconcile-buffer-name)
-   (should (equal (buffer-string)
-                  "Reconciling account Expenses:Food
+    (ledger-reconcile "Expenses:Food" '(0 "$"))
+    (switch-to-buffer ledger-reconcile-buffer-name)
+    (should (equal (buffer-string)
+                   "Reconciling account Expenses:Food
 
 2012/03/10 #100 Kentucky Fried Chicken aka 'KFC'                   Expenses:Food                        $3,877.78"))))
 
@@ -641,34 +647,34 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=262"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
-   "2011/11/16 Amazon.com
+      "2011/11/16 Amazon.com
     Expenses:Entertainment:Misc               $32.64
     Assets:VWCU:Joint Checking
 "
-   (forward-line 2)
-   (ledger-toggle-current-transaction)  ; C-c C-e
-   (should
-    (equal
-     (buffer-string)
-     "2011/11/16 * Amazon.com
+    (forward-line 2)
+    (ledger-toggle-current-transaction)  ; C-c C-e
+    (should
+     (equal
+      (buffer-string)
+      "2011/11/16 * Amazon.com
     Expenses:Entertainment:Misc               $32.64
     Assets:VWCU:Joint Checking
 "))
-   (goto-char (point-min))  ; beginning-of-buffer
-   (forward-line 1)
-   (ledger-toggle-current)             ; C-c C-c
-   (should
-    (equal
-     (buffer-string)
-     "2011/11/16 Amazon.com
+    (goto-char (point-min))  ; beginning-of-buffer
+    (forward-line 1)
+    (ledger-toggle-current)             ; C-c C-c
+    (should
+     (equal
+      (buffer-string)
+      "2011/11/16 Amazon.com
     Expenses:Entertainment:Misc               $32.64
     * Assets:VWCU:Joint Checking
 "))
-   (ledger-toggle-current)             ; C-c C-c
-   (should
-    (equal
-     (buffer-string)
-     "2011/11/16 * Amazon.com
+    (ledger-toggle-current)             ; C-c C-c
+    (should
+     (equal
+      (buffer-string)
+      "2011/11/16 * Amazon.com
     Expenses:Entertainment:Misc               $32.64
     Assets:VWCU:Joint Checking
 "))))
@@ -680,16 +686,16 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=262"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
-   "2011/11/16 Amazon.com
+      "2011/11/16 Amazon.com
     Expenses:Entertainment:Misc               $32.64
     Assets:VWCU:Joint Checking
 "
-   (forward-line 1)
-   (ledger-toggle-current)             ; C-c C-c
-   (should
-    (equal
-     (buffer-string)
-     "2011/11/16 Amazon.com
+    (forward-line 1)
+    (ledger-toggle-current)             ; C-c C-c
+    (should
+     (equal
+      (buffer-string)
+      "2011/11/16 Amazon.com
     * Expenses:Entertainment:Misc             $32.64
     Assets:VWCU:Joint Checking
 "))))
@@ -701,22 +707,23 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=262"
 
   (ledger-tests-with-temp-file
       demo-ledger
-    (ledger-reconcile "Expenses" '(0 "$"))
-    (select-window (get-buffer-window ledger-reconcile-buffer-name))
-    (forward-line 2)       ; because of ledger-reconcile-buffer-header
-    (forward-line 4)       ; move to not be on first line of reconcile
-    (let ((line-before-delete (line-number-at-pos)))
-      (ledger-reconcile-delete)             ; key 'd'
-      (should ;; Expected: line position is kept
-       (eq line-before-delete (line-number-at-pos)))
-      (should ;; current buffer should be *reconcile* buffer
-       (equal (buffer-name)           ; current buffer name
-              ledger-reconcile-buffer-name))
-      (other-window 1)                ; switch to *other* window
-      (should ;; Expected: this must be ledger buffer
-       (equal (buffer-name)           ; current buffer name
-              (buffer-name ledger-buffer)))
-      (should (= 1322 (point))))))    ; expected on "Book Store" xact
+    (let ((ledger-buffer (current-buffer)))
+      (ledger-reconcile "Expenses" '(0 "$"))
+      (select-window (get-buffer-window ledger-reconcile-buffer-name))
+      (forward-line 2)       ; because of ledger-reconcile-buffer-header
+      (forward-line 4)       ; move to not be on first line of reconcile
+      (let ((line-before-delete (line-number-at-pos)))
+        (ledger-reconcile-delete)             ; key 'd'
+        (should ;; Expected: line position is kept
+         (eq line-before-delete (line-number-at-pos)))
+        (should ;; current buffer should be *reconcile* buffer
+         (equal (buffer-name)           ; current buffer name
+                ledger-reconcile-buffer-name))
+        (other-window 1)                ; switch to *other* window
+        (should ;; Expected: this must be ledger buffer
+         (equal (buffer-name)           ; current buffer name
+                (buffer-name ledger-buffer)))
+        (should (= 1322 (point)))))))    ; expected on "Book Store" xact
 
 
 (ert-deftest ledger-reconcile/test-028 ()
@@ -819,14 +826,14 @@ https://github.com/ledger/ledger-mode/issues/408"
   :tags '(reconcile regress)
 
   (ledger-tests-with-temp-file
-   demo-ledger
-   (let ((ledger-reconcile-default-date-format "%Y-%m-%d"))
-     (ledger-reconcile "Expenses:Books" '(0 "$")))
-   (set-buffer ledger-reconcile-buffer-name)
-   (should
-    (equal
-     (buffer-string)
-     "Reconciling account Expenses:Books
+      demo-ledger
+    (let ((ledger-reconcile-default-date-format "%Y-%m-%d"))
+      (ledger-reconcile "Expenses:Books" '(0 "$")))
+    (set-buffer ledger-reconcile-buffer-name)
+    (should
+     (equal
+      (buffer-string)
+      "Reconciling account Expenses:Books
 
 2011-01-27      Book Store                                         Expenses:Books                         $ 20.00
 2011-04-27      Bookstore                                          Expenses:Books                         $ 20.00"))))
