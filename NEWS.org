@@ -1,5 +1,5 @@
 * Development (v4.1)
-** Ledger-mode now requires Emacs 25 or later
+** Ledger-mode now requires Emacs 26 or later
 ** ledger-add-transaction now uses org-read-date
 This is more consistent with the behavior of =ledger-copy-transaction-at-point=
 and =ledger-insert-effective-date=. In order to disable the pop-up calendar, bind
