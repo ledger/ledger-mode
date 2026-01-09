@@ -60,20 +60,20 @@
 https://github.com/ledger/ledger-mode/issues/424"
   :tags '(report regress)
 
-  (let ((ledger-reports
-         (cons '("dummy-report-name"
-                 "%(binary) -f %(ledger-file) reg --strict --period %(month) %(account)")
-               ledger-reports))
-        (ledger-report-format-specifiers
-         (cl-list* '("account" . report-test--dummy-format-specifier)
-                   ledger-report-format-specifiers))
-        (report-test--account-format-specifier-called-p nil))
-    (ledger-tests-with-temp-file demo-ledger
+  (ledger-tests-with-temp-file demo-ledger
+    (let ((ledger-reports
+           (cons '("dummy-report-name"
+                   "%(binary) -f %(ledger-file) reg --strict --period %(month) %(account)")
+                 ledger-reports))
+          (ledger-report-format-specifiers
+           (cl-list* '("account" . report-test--dummy-format-specifier)
+                     ledger-report-format-specifiers))
+          (report-test--account-format-specifier-called-p nil))
       (ledger-report "dummy-report-name" nil)
       (should report-test--account-format-specifier-called-p)
       (should (equal (buffer-local-value
-                     'ledger-report-cmd
-                     (get-buffer ledger-report-buffer-name))
+                      'ledger-report-cmd
+                      (get-buffer ledger-report-buffer-name))
                      (concat "ledger [[ledger-mode-flags]] -f "
                              buffer-file-name
                              " reg --strict --period "

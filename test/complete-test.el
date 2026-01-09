@@ -303,10 +303,8 @@ account Assets:Checking:Bank B")
 
 (ert-deftest ledger-complete/test-account-completion-in-steps ()
   :tags '(complete)
-  (let ((completion-cycle-threshold t)
-        (ledger-complete-in-steps t))
-    (ledger-tests-with-temp-file
-        "2020-01-01 Opening Balances
+  (ledger-tests-with-temp-file
+      "2020-01-01 Opening Balances
     Assets:Bank:Balance                       100.00 EUR
     Equity:Opening Balances
 
@@ -320,6 +318,8 @@ account Assets:Checking:Bank B")
 
 2020-04-01 Fnord
     As"
+    (let ((completion-cycle-threshold t)
+          (ledger-complete-in-steps t))
       (goto-char (point-max))
       (call-interactively 'completion-at-point)
       (should
@@ -342,11 +342,11 @@ account Assets:Checking:Bank B")
 (ert-deftest ledger-complete/amount-separated-by-tab ()
   "https://github.com/ledger/ledger-mode/issues/339"
   :tags '(complete regress)
-  (let ((ledger-post-auto-align nil))
-    (ledger-tests-with-temp-file
-        "2019/06/28 Foobar
+  (ledger-tests-with-temp-file
+      "2019/06/28 Foobar
 \tExpenses\t11.99 CAD
 \tEx\t-11.99 CAD"
+    (let ((ledger-post-auto-align nil))
       (forward-line 2)
       (forward-word 1)
       (call-interactively 'completion-at-point)
@@ -393,10 +393,10 @@ account Expenses:Groceries
 https://github.com/ledger/ledger-mode/issues/419"
   :tags '(complete regress)
   (let ((ledger-complete--current-time-for-testing ;2024-01-21
-         (encode-time 0 0 0 21 1 2024))
-        (ledger-default-date-format ledger-iso-date-format))
+         (encode-time 0 0 0 21 1 2024)))
     (ledger-tests-with-temp-file
         "01-19"
+      (setq ledger-default-date-format ledger-iso-date-format)
       (goto-char (point-max))
       (completion-at-point)
       (should
@@ -415,10 +415,10 @@ https://github.com/ledger/ledger-mode/issues/419"
 https://github.com/ledger/ledger-mode/issues/419"
   :tags '(complete regress)
   (let ((ledger-complete--current-time-for-testing ;2024-01-21
-         (encode-time 0 0 0 21 1 2024))
-        (ledger-default-date-format ledger-iso-date-format))
+         (encode-time 0 0 0 21 1 2024)))
     (ledger-tests-with-temp-file
         "19"
+      (setq ledger-default-date-format ledger-iso-date-format)
       (goto-char (point-max))
       (completion-at-point)
       (should
