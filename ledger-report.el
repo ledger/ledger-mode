@@ -551,18 +551,17 @@ arguments returned by `ledger-report--compute-extra-args'."
 If `ledger-report-links-beginning-of-xact' is nil, visit the
 specific posting at point instead."
   (interactive)
-  (let* ((prop (get-text-property (point) 'ledger-source))
-         (file (car prop))
-         (xact-position (cdr prop)))
-    (when (and file xact-position)
-      (find-file-other-window file)
-      (widen)
-      (if (markerp xact-position)
-          (goto-char xact-position)
-        (progn (goto-char (point-min))
-               (forward-line (1- xact-position))))
-      (when ledger-report-links-beginning-of-xact
-        (ledger-navigate-beginning-of-xact)))))
+  ;; `ledger-source' may be (FILE . LINE) or MARKER.
+  (when-let* ((prop (get-text-property (point) 'ledger-source)))
+    (if (consp prop)
+        (let ((file (car prop)) (line (cdr prop)))
+          (find-file-other-window file)
+          (widen)
+          (ledger-navigate-to-line line))
+      (pop-to-buffer (marker-buffer prop))
+      (goto-char prop))
+    (when ledger-report-links-beginning-of-xact
+      (ledger-navigate-beginning-of-xact))))
 
 (defun ledger-report-goto ()
   "Goto the ledger report buffer."
