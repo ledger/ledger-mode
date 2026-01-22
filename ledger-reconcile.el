@@ -27,6 +27,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'subr-x))
 (require 'easymenu)
 (require 'ledger-init)
 
