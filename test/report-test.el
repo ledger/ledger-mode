@@ -184,9 +184,9 @@
 (ert-deftest ledger-report/read-command-default ()
   (cl-letf (((symbol-function 'read-from-minibuffer)
              (lambda (_prompt initial &rest _rest) initial)))
-    (should (string= "ledger " (ledger-report-read-command nil)))
-    (should (string= "ledger bal X"
-                     (ledger-report-read-command "ledger bal X")))))
+    (should (string= "%(binary) " (ledger-report-read-command nil)))
+    (should (string= "%(binary) bal X"
+                     (ledger-report-read-command "%(binary) bal X")))))
 
 
 ;;; Header function ------------------------------------------------------
@@ -513,14 +513,59 @@ https://github.com/ledger/ledger-mode/issues/424"
     (ledger-tests-with-temp-file demo-ledger
       (ledger-report "dummy-report-name" nil)
       (should report-test--account-format-specifier-called-p)
+      ;; `ledger-report-cmd' keeps the raw template so format specifiers
+      ;; are re-evaluated on every run, letting saved reports respect
+      ;; later changes to `ledger-binary-path' and the current ledger
+      ;; file (issue ledger/ledger#1172).
       (should (equal (buffer-local-value
                       'ledger-report-cmd
                       (get-buffer ledger-report-buffer-name))
-                     (concat "ledger [[ledger-mode-flags]] -f "
-                             buffer-file-name
-                             " reg --strict --period "
-                             (ledger-report-month-format-specifier)
-                             " ''"))))))
+                     "%(binary) -f %(ledger-file) reg --strict --period %(month) %(account)")))))
+
+(ert-deftest ledger-report/binary-path-not-baked-in ()
+  "Regression test for ledger/ledger#1172.
+Saved reports must keep the %(binary) format specifier unexpanded
+so changes to `ledger-binary-path' take effect on subsequent runs."
+  :tags '(report regress)
+  (let* ((unique-name (format "ledger-report-1172-%d" (random 100000)))
+         (ledger-reports (copy-tree ledger-reports)))
+    (cl-letf (((symbol-function 'ledger-reports-custom-save) #'ignore)
+              ((symbol-function 'ledger-report-read-command)
+               (lambda (&rest _)
+                 "%(binary) -f %(ledger-file) bal"))
+              ((symbol-function 'ledger-do-report) #'ignore))
+      (ledger-tests-with-temp-file demo-ledger
+        (let ((ledger-binary-path "ledger-initial"))
+          (ledger-report unique-name nil))
+        ;; The saved command must still contain the raw %(binary)
+        ;; specifier rather than the expanded "ledger-initial" path.
+        (let ((saved-cmd (car (cdr (assoc unique-name ledger-reports)))))
+          (should saved-cmd)
+          (should (string-match-p (regexp-quote "%(binary)") saved-cmd))
+          (should-not (string-match-p "ledger-initial" saved-cmd)))
+        ;; The buffer-local command is likewise the raw template.
+        (should (equal (buffer-local-value
+                        'ledger-report-cmd
+                        (get-buffer ledger-report-buffer-name))
+                       "%(binary) -f %(ledger-file) bal"))))))
+
+(ert-deftest ledger-report/binary-path-expansion-dynamic ()
+  "Regression test for ledger/ledger#1172.
+Format specifiers like %(binary) are expanded fresh at each
+invocation of `ledger-report-expand-format-specifiers', so updates
+to `ledger-binary-path' between runs are honored."
+  :tags '(report regress)
+  (ledger-tests-with-temp-file demo-ledger
+    (let ((ledger-report-ledger-buf (current-buffer))
+          (template "%(binary) -f %(ledger-file) bal"))
+      (let ((ledger-binary-path "first-ledger"))
+        (should (string-match-p
+                 "first-ledger"
+                 (ledger-report-expand-format-specifiers template))))
+      (let ((ledger-binary-path "second-ledger"))
+        (let ((expanded (ledger-report-expand-format-specifiers template)))
+          (should (string-match-p "second-ledger" expanded))
+          (should-not (string-match-p "first-ledger" expanded)))))))
 
 
 ;;; Additional fill-in tests for residual gaps -------------------------
