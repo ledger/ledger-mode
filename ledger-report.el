@@ -162,7 +162,12 @@ Calls `shrink-window-if-larger-than-buffer'."
 (defvar ledger-report-buffer-name "*Ledger Report*")
 
 (defvar-local ledger-report-name nil)
-(defvar-local ledger-report-cmd nil)
+(defvar-local ledger-report-cmd nil
+  "The raw command template for the current ledger report buffer.
+Format specifiers such as %(binary) and %(ledger-file) are left
+unexpanded and resolved at execution time in `ledger-do-report',
+so the current values of `ledger-binary-path' and the ledger file
+take effect on each run.")
 (defvar-local ledger-report-saved nil)
 (defvar-local ledger-report-current-month nil)
 (defvar-local ledger-report-is-reversed nil)
@@ -339,7 +344,7 @@ returns nil."
 (defun ledger-report-read-command (report-cmd)
   "Read the command line to create a report from REPORT-CMD."
   (read-from-minibuffer "Report command line: "
-                        (if (null report-cmd) "ledger " report-cmd)
+                        (if (null report-cmd) "%(binary) " report-cmd)
                         nil nil 'ledger-report-cmd-prompt-history))
 
 (defun ledger-report-ledger-file-format-specifier ()
@@ -465,13 +470,19 @@ called in the ledger buffer for which the report is being run."
 
 (defun ledger-report-cmd (report-name edit)
   "Get the command line to run the report name REPORT-NAME.
-Optionally EDIT the command."
+Optionally EDIT the command.
+
+The returned command retains its format specifiers (e.g., %(binary)
+and %(ledger-file)) so that `ledger-do-report' can expand them each
+time the report runs.  This keeps saved reports in `ledger-reports'
+responsive to later changes in `ledger-binary-path' or the current
+ledger file, rather than baking in the values observed when the
+report was first run."
   (let ((report-cmd (car (cdr (assoc report-name ledger-reports)))))
     ;; logic for substitution goes here
     (when (or (null report-cmd) edit)
       (setq report-cmd (ledger-report-read-command report-cmd))
       (setq ledger-report-saved nil)) ;; this is a new report, or edited report
-    (setq report-cmd (ledger-report-expand-format-specifiers report-cmd))
     (setq ledger-report-cmd report-cmd)
     (or (string-empty-p report-name)
         (ledger-report-name-exists report-name)
@@ -518,16 +529,19 @@ Optionally EDIT the command."
 
 (defun ledger-do-report (cmd)
   "Run a report command line CMD.
-CMD may contain a (shell-quoted) version of
-`ledger-report--extra-args-marker', which will be replaced by
-arguments returned by `ledger-report--compute-extra-args'."
+CMD may contain format specifiers (e.g., %(binary), %(ledger-file))
+which are expanded via `ledger-report-expand-format-specifiers'
+each time the report runs.  It may also contain a (shell-quoted)
+version of `ledger-report--extra-args-marker', which will be
+replaced by arguments returned by `ledger-report--compute-extra-args'."
   (goto-char (point-min))
-  (let* ((marker ledger-report--extra-args-marker)
+  (let* ((expanded-cmd (ledger-report-expand-format-specifiers cmd))
+         (marker ledger-report--extra-args-marker)
          (marker-re (concat " *" (regexp-quote marker)))
-         (args (ledger-report--compute-extra-args cmd))
+         (args (ledger-report--compute-extra-args expanded-cmd))
          (args-str (concat " " (mapconcat #'shell-quote-argument args " ")))
-         (clean-cmd (replace-regexp-in-string marker-re "" cmd t t))
-         (real-cmd (replace-regexp-in-string marker-re args-str cmd t t)))
+         (clean-cmd (replace-regexp-in-string marker-re "" expanded-cmd t t))
+         (real-cmd (replace-regexp-in-string marker-re args-str expanded-cmd t t)))
     (setq header-line-format
           (and ledger-report-use-header-line
                `(:eval (ledger-report--compute-header-line ,clean-cmd))))
@@ -541,7 +555,7 @@ arguments returned by `ledger-report--compute-extra-args'."
         (setq report (ansi-color-apply report)))
       (save-excursion
         (insert report))
-      (when (ledger-report--cmd-needs-links-p cmd)
+      (when (ledger-report--cmd-needs-links-p expanded-cmd)
         (save-excursion
           (ledger-report--add-links))))))
 
