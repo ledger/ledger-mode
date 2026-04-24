@@ -1,0 +1,23 @@
+ledger-report.el
+  2b1b0d8d85f5368b 165-170,347,473-480,532-536,538-539,541,543-544,558
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.3",
+  "base_commit_sha": "2523c38bc6417566aa1e3ad1c7ca049c2a5ef929",
+  "prompts": {
+    "2b1b0d8d85f5368b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038da974-e92d-4484-9d3b-e170ca688945",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": null,
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 26,
+      "overriden_lines": 0
+    }
+  }
+}
