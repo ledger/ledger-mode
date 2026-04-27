@@ -4,3 +4,12 @@ CMakeCache.txt
 CMakeFiles/
 /Makefile
 cmake_install.cmake
+
+# Nix
+result
+result-*
+.direnv/
+
+# Generated reports
+/coverage/
+/bench/current.txt
