@@ -4,7 +4,9 @@
 
 ;; This file is not part of GNU Emacs.
 
+;; Version: 4.1.0
 ;; Package-Requires: ((emacs "26.1"))
+;; URL: https://github.com/ledger/ledger-mode
 
 ;; This is free software; you can redistribute it and/or modify it under
 ;; the terms of the GNU General Public License as published by the Free
@@ -384,7 +386,9 @@ With prefix ARG, decrement by that many instead."
 
     (define-key map (kbd "C-c C-o C-a") #'ledger-report-redo)
     (define-key map (kbd "C-c C-o C-e") #'ledger-report-edit-report)
-    (define-key map (kbd "C-c C-o C-g") #'ledger-report-goto)
+    ;; `C-g' is reserved as the universal quit key, so use `C-v' (visit) for
+    ;; ledger-report-goto instead.
+    (define-key map (kbd "C-c C-o C-v") #'ledger-report-goto)
     (define-key map (kbd "C-c C-o C-k") #'ledger-report-quit)
     (define-key map (kbd "C-c C-o C-r") #'ledger-report)
     (define-key map (kbd "C-c C-o C-s") #'ledger-report-save)
