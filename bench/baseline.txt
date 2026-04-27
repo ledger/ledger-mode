@@ -1,0 +1,4 @@
+load-mode	0.5000
+fontify-big	0.6000
+navigate-big	0.3500
+regex-iso-date	0.0050
