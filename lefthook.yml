@@ -1,0 +1,56 @@
+# Pre-commit and pre-push checks for ledger-mode.
+#
+# Pre-commit runs lightweight checks directly inside the Nix dev shell so
+# feedback is fast.  Pre-push delegates to `nix flake check`, which builds the
+# full set of derivations and is what CI runs as well.
+#
+# `LEDGER_MODE_QUIET=1` suppresses the dev-shell banner so it isn't reprinted
+# once per check.  `--no-warn-dirty` silences the per-check "uncommitted
+# changes" warning.
+
+pre-commit:
+  parallel: true
+  commands:
+    format-check:
+      glob: "*.el"
+      env: { LEDGER_MODE_QUIET: "1" }
+      run: nix develop --no-warn-dirty --command tools/format-check.sh {staged_files}
+    nix-format:
+      glob: "*.nix"
+      env: { LEDGER_MODE_QUIET: "1" }
+      run: nix develop --no-warn-dirty --command nixpkgs-fmt --check {staged_files}
+    shellcheck:
+      glob: "*.sh"
+      env: { LEDGER_MODE_QUIET: "1" }
+      run: nix develop --no-warn-dirty --command shellcheck {staged_files}
+    byte-compile:
+      glob: "*.el"
+      env: { LEDGER_MODE_QUIET: "1" }
+      run: nix develop --no-warn-dirty --command bash -c 'emacs -Q --batch --load tools/byte-compile.el'
+    lint:
+      glob: "*.el"
+      env: { LEDGER_MODE_QUIET: "1" }
+      run: nix develop --no-warn-dirty --command bash -c 'emacs -Q --batch --load tools/lint.el'
+    tests:
+      glob: "*.{el,texi}"
+      env: { LEDGER_MODE_QUIET: "1" }
+      run: nix develop --no-warn-dirty --command bash -c 'emacs -Q --batch --load tools/run-tests.el'
+    coverage:
+      glob: "*.el"
+      env: { LEDGER_MODE_QUIET: "1" }
+      run: nix develop --no-warn-dirty --command bash -c 'emacs -Q --batch --load tools/coverage.el && tools/coverage-check.sh'
+    benchmark:
+      glob: "*.el"
+      env: { LEDGER_MODE_QUIET: "1" }
+      run: nix develop --no-warn-dirty --command bash -c 'emacs -Q --batch --load tools/benchmark.el && tools/benchmark-check.sh'
+    docs:
+      glob: "doc/**"
+      run: nix build --no-warn-dirty --no-link --print-build-logs .#docs
+
+pre-push:
+  parallel: true
+  commands:
+    flake-check:
+      run: nix flake check --no-warn-dirty --print-build-logs --keep-going
+    flake-build:
+      run: nix build --no-warn-dirty --no-link --print-build-logs .#default .#docs
