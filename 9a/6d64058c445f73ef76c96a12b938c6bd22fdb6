@@ -1,0 +1,87 @@
+test/commodities-test.el
+  d13d3f5090caffef 1-254
+test/sort-test.el
+  d13d3f5090caffef 134-213
+test/complete-test.el
+  d13d3f5090caffef 483-700
+ledger-report.el
+  d13d3f5090caffef 1
+test/exec-test.el
+  d13d3f5090caffef 44-138
+test/navigate-test.el
+  d13d3f5090caffef 86-234
+ledger-reconcile.el
+  d13d3f5090caffef 159-162
+ledger-regex.el
+  d13d3f5090caffef 43
+ledger-context.el
+  d13d3f5090caffef 186,190,194,198,202,206,210,215,219
+test/context-test.el
+  d13d3f5090caffef 324-402
+test/reconcile-test.el
+  d13d3f5090caffef 835-1079
+ledger-check.el
+  d13d3f5090caffef 72-73,92
+test/mode-test.el
+  d13d3f5090caffef 287-605
+ledger-fonts.el
+  d13d3f5090caffef 310-311
+test/schedule-test.el
+  d13d3f5090caffef 1-329
+ledger-flymake.el
+  d13d3f5090caffef 117-120,122-124,139
+tools/byte-compile.el
+  d13d3f5090caffef 17-18,20
+ledger-schedule.el
+  d13d3f5090caffef 140-141
+bench/coverage-baseline
+  d13d3f5090caffef 1
+ledger-complete.el
+  d13d3f5090caffef 87,379
+tools/format.el
+  d13d3f5090caffef 42-46
+ledger-mode.el
+  d13d3f5090caffef 73,159,402,450-452
+tools/benchmark.el
+  d13d3f5090caffef 38
+test/post-test.el
+  d13d3f5090caffef 660-860
+test/texi-test.el
+  d13d3f5090caffef 1-239
+test/report-test.el
+  d13d3f5090caffef 3,13,17-18,20,38-492,525-658
+ledger-occur.el
+  d13d3f5090caffef 156-159,166-176
+tools/coverage.el
+  d13d3f5090caffef 36,48,64-74
+test/test-test.el
+  d13d3f5090caffef 1-238
+test/state-test.el
+  d13d3f5090caffef 164-447
+test/xact-test.el
+  d13d3f5090caffef 169-423
+test/occur-test.el
+  d13d3f5090caffef 185-270
+test/check-test.el
+  d13d3f5090caffef 1-190
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.5",
+  "base_commit_sha": "9a6d64058c445f73ef76c96a12b938c6bd22fdb6",
+  "prompts": {
+    "d13d3f5090caffef": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "75fa87d2-7046-47ac-a01a-51f3cdbdee8a",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "John Wiegley <johnw@newartisans.com>",
+      "messages": [],
+      "total_additions": 4331,
+      "total_deletions": 489,
+      "accepted_lines": 3931,
+      "overriden_lines": 0
+    }
+  }
+}
