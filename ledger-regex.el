@@ -40,7 +40,7 @@
   "\\(^[~=A-Za-z].+\\)+")
 
 (defconst ledger-comment-regex
-  "^[;#|\\*%].*\\|[ \t]+;.*")
+  "^[;#|*%].*\\|[ \t]+;.*")
 
 (defconst ledger-multiline-comment-start-regex
   "^!comment$")
@@ -86,12 +86,6 @@
 ;; allows us to have just one match result
 (defconst ledger-account-name-or-directive-regex
   (format "\\(?:%s\\|%s\\)" ledger-account-any-status-regex ledger-account-directive-regex))
-
-(defconst ledger-account-pending-regex
-  (concat "\\(^[ \t]+\\)!" ledger-account-name-maybe-virtual-regex))
-
-(defconst ledger-account-cleared-regex
-  (concat "\\(^[ \t]+\\)*" ledger-account-name-maybe-virtual-regex))
 
 (defmacro ledger-define-regexp (name regex docs &rest args)
   "Simplify the creation of a Ledger regex and helper functions."

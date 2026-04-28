@@ -70,7 +70,7 @@
 (defun ledger-mode-dump-variable (var)
   "Format VAR for dump to buffer."
   (if var
-      (insert (format "         %s: %S\n" (symbol-name var) (eval var)))))
+      (insert (format "         %s: %S\n" (symbol-name var) (symbol-value var)))))
 
 (defun ledger-mode-dump-group (group)
   "Dump GROUP customizations to current buffer."
@@ -156,11 +156,9 @@ the balance into that."
                     (ledger-exec-ledger buffer (current-buffer) "stats")
                     (buffer-substring-no-properties (point-min) (1- (point-max))))))
     (when balance
-      (message balance))))
+      (message "%s" balance))))
 
 (defvar ledger-mode-abbrev-table)
-
-(defvar ledger-date-string-today (ledger-format-date))
 
 
 
@@ -401,7 +399,7 @@ With prefix ARG, decrement by that many instead."
     (define-key map (kbd "S-<down>") #'ledger-date-down)
 
     ;; Reset the `text-mode' override of this standard binding
-    (define-key map (kbd "C-M-i") 'completion-at-point)
+    (define-key map (kbd "C-M-i") #'completion-at-point)
     map)
   "Keymap for `ledger-mode'.")
 
@@ -449,9 +447,9 @@ With prefix ARG, decrement by that many instead."
 (define-derived-mode ledger-mode text-mode "Ledger"
   "A mode for editing ledger data files."
   (ledger-check-version)
-  (setq font-lock-defaults
-        '(ledger-font-lock-keywords t nil nil nil))
-  (add-hook 'font-lock-extend-region-functions 'ledger-fontify-extend-region)
+  (setq-local font-lock-defaults
+              '(ledger-font-lock-keywords t nil nil nil))
+  (add-hook 'font-lock-extend-region-functions #'ledger-fontify-extend-region nil t)
   (add-hook 'completion-at-point-functions #'ledger-complete-at-point nil t)
   (add-hook 'after-save-hook 'ledger-report-redo nil t)
 

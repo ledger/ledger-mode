@@ -321,6 +321,85 @@ https://github.com/ledger/ledger-mode/issues/211"
      (should (equal "-$1,000.00"
                     (ledger-context-field-value context 'commoditized-amount))))))
 
+(ert-deftest ledger-context/test-thing-day ()
+  "`ledger-thing-at-point' identifies day-of-week lines."
+  :tags '(context)
+  (ledger-tests-with-temp-file
+   "Y2024
+mon  some entry
+"
+   (forward-line 1)
+   (should (eq 'day (ledger-thing-at-point)))))
+
+
+(ert-deftest ledger-context/test-other-line ()
+  "`ledger-context-other-line' returns context at relative offsets,
+or nil if the offset would go off the end of the buffer."
+  :tags '(context)
+  (ledger-tests-with-temp-file
+   "2024/01/01 Foo
+    Assets:Bank  $10
+    Equity:Open
+"
+   (goto-char (point-min))
+   ;; Same line, offset 0.
+   (let ((ctx (ledger-context-other-line 0)))
+     (should (eq (ledger-context-line-type ctx) 'xact)))
+   ;; Next line is acct-transaction.
+   (let ((ctx (ledger-context-other-line 1)))
+     (should (eq (ledger-context-line-type ctx) 'acct-transaction)))
+   ;; Out of range.
+   (should (null (ledger-context-other-line 1000)))))
+
+
+(ert-deftest ledger-context/test-line-types ()
+  "Each leading character maps to the expected line type."
+  :tags '(context)
+  (dolist (case '((?Y "Y2024" default-year)
+                  (?P "P 2024/01/01 AAPL $100" commodity-price)
+                  (?N "N AAPL" price-ignored-commodity)
+                  (?D "D $1000.00" default-commodity)
+                  (?C "C 1.00 EUR = 1.10 USD" commodity-conversion)
+                  (?i "i 2024/01/01 12:00:00 Foo" timeclock-i)
+                  (?o "o 2024/01/01 13:00:00" timeclock-o)
+                  (?b "b 2024/01/01 12:00:00 Foo" timeclock-b)
+                  (?h "h 2024/01/01 12:00:00 Foo" timeclock-h)
+                  (?\; "; comment" comment)
+                  (?\= "= /Account/" automated-xact)
+                  (?\~ "~ Monthly" period-xact)
+                  (?Q "Q strange" unknown)))
+    (let ((line (nth 1 case))
+          (expected (nth 2 case)))
+      (ledger-tests-with-temp-file
+       (concat line "\n")
+       (goto-char (point-min))
+       (let ((ctx (ledger-context-at-point)))
+         (should (eq (ledger-context-line-type ctx) expected)))))))
+
+
+(ert-deftest ledger-context/test-field-helpers ()
+  "Test field-info accessor helpers."
+  :tags '(context)
+  (ledger-tests-with-temp-file
+   "    Assets:Bank        $10\n"
+   (goto-char (point-min))
+   (forward-line 0)
+   (let ((ctx (ledger-context-at-point)))
+     (should (ledger-context-field-present-p ctx 'account))
+     (should-not (ledger-context-field-present-p ctx 'no-such-field))
+     (let* ((pos (ledger-context-field-position ctx 'account))
+            (end (ledger-context-field-end-position ctx 'account)))
+       (should (integerp pos))
+       (should (= (- end pos) (length (ledger-context-field-value ctx 'account)))))
+     ;; goto-field-start / goto-field-end
+     (save-excursion
+       (ledger-context-goto-field-start ctx 'account)
+       (should (= (point) (ledger-context-field-position ctx 'account))))
+     (save-excursion
+       (ledger-context-goto-field-end ctx 'account)
+       (should (= (point) (ledger-context-field-end-position ctx 'account)))))))
+
+
 (provide 'context-test)
 
 ;;; context-test.el ends here

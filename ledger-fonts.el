@@ -307,7 +307,8 @@
 
 (defface ledger-font-N-symbol-face
   `((t :inherit default))
-  "Face for symbol in N directives")
+  "Face for symbol in N directives"
+  :group 'ledger-faces)
 
 (defface ledger-font-payee-directive-face
   `((t :inherit ledger-font-directive-face))

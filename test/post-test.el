@@ -657,6 +657,207 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=946"
              (cadr (should-error (ledger-post-fill)))
              "Missing amount but amounts balance already"))))
 
+;;; -------------------------------------------------------------------
+;;; Coverage tests for previously uncovered branches
+;;; -------------------------------------------------------------------
+
+(ert-deftest ledger-post/next-account-default-end ()
+  "`ledger-next-account' with no END uses point-max.
+Covers the `(or end (point-max))' branch and successful match path."
+  :tags '(post)
+  (ledger-tests-with-temp-file
+      "2024/01/01 Test
+    Assets:Cash    $10
+    Expenses:Food
+"
+    (forward-line 1)
+    (beginning-of-line)
+    ;; Without END, ledger-next-account scans to point-max
+    (let ((col (ledger-next-account)))
+      (should (numberp col))
+      (should (= col 4))
+      ;; point should be at start of account
+      (should (looking-at-p "Assets:Cash")))))
+
+(ert-deftest ledger-post/next-account-with-status ()
+  "`ledger-next-account' moves to start of account name even with status marker.
+Covers the `match-beginning 1' branch."
+  :tags '(post)
+  (ledger-tests-with-temp-file
+      "2024/01/01 Test
+    * Assets:Cash    $10
+    Expenses:Food
+"
+    (forward-line 1)
+    (beginning-of-line)
+    (let ((col (ledger-next-account (point-max))))
+      (should (numberp col))
+      ;; The regex captures the account name in group 1 (after the optional
+      ;; status marker), so point lands at column 6.
+      (should (= col 6))
+      (should (looking-at-p "Assets:Cash")))))
+
+(ert-deftest ledger-post/next-account-end-before-point ()
+  "`ledger-next-account' returns nil when END is before point.
+Covers the `(if (> end (point))' false branch."
+  :tags '(post)
+  (ledger-tests-with-temp-file
+      "2024/01/01 Test
+    Assets:Cash    $10
+"
+    (goto-char (point-max))
+    (should (null (ledger-next-account 1)))))
+
+(ert-deftest ledger-post/indent-line-on-posting ()
+  "`ledger-indent-line' indents a posting line to the alignment column.
+Covers `ledger-indent-line' indent and align branches."
+  :tags '(post)
+  (ledger-tests-with-temp-file
+      "2024/01/01 Test
+Assets:Cash    $10
+"
+    (forward-line 1)
+    ;; Currently no indent on posting; indent it
+    (ledger-indent-line)
+    (should (string-match-p
+             "^    Assets:Cash"
+             (buffer-substring-no-properties (line-beginning-position)
+                                              (line-end-position))))))
+
+(ert-deftest ledger-post/indent-line-no-change ()
+  "`ledger-indent-line' is a no-op on a non-posting line.
+Covers the case where current-indentation already matches indent-level."
+  :tags '(post)
+  (ledger-tests-with-temp-file
+      "; just a comment
+"
+    (let ((before (buffer-string)))
+      (ledger-indent-line)
+      ;; A comment at top-level shouldn't be re-indented
+      (should (equal (buffer-string) before)))))
+
+(ert-deftest ledger-post/post-align-dwim-region ()
+  "`ledger-post-align-dwim' uses the active region when one is set.
+Covers the `(use-region-p)' branch."
+  :tags '(post)
+  (ledger-tests-with-temp-file
+      "2024/01/01 Test
+  Assets:Cash    $10
+  Expenses:Food
+"
+    (forward-line 1)
+    (beginning-of-line)
+    (push-mark (point) t t)
+    (forward-line 2)
+    (activate-mark)
+    (let ((transient-mark-mode t))
+      (ledger-post-align-dwim))
+    (should (string-match-p "    Assets:Cash"
+                            (buffer-substring-no-properties (point-min) (point-max))))))
+
+(ert-deftest ledger-post/post-align-dwim-xact ()
+  "`ledger-post-align-dwim' aligns the current xact when no region active.
+Covers the default `t' branch."
+  :tags '(post)
+  (ledger-tests-with-temp-file
+      "2024/01/01 Test
+  Assets:Cash    $10
+  Expenses:Food
+"
+    (forward-line 1)
+    (deactivate-mark)
+    (ledger-post-align-dwim)
+    (should (string-match-p "    Assets:Cash"
+                            (buffer-substring-no-properties (point-min) (point-max))))))
+
+(ert-deftest ledger-post/post-align-dwim-comment ()
+  "`ledger-post-align-dwim' fills paragraph when point is in a comment.
+Covers the `nth 4 (syntax-ppss)' branch."
+  :tags '(post)
+  (ledger-tests-with-temp-file
+      "2024/01/01 Test
+    Assets:Cash    $10
+    ; this is a comment that we will fill
+    Expenses:Food
+"
+    (forward-line 2)
+    (end-of-line)
+    ;; Activate region so call-interactively gets one
+    (push-mark (line-beginning-position) t t)
+    (let ((fill-called nil)
+          (transient-mark-mode t))
+      (cl-letf (((symbol-function 'fill-paragraph)
+                 (lambda (&rest _) (setq fill-called t))))
+        (ledger-post-align-dwim))
+      (should fill-called))))
+
+(ert-deftest ledger-post/edit-amount-with-amount ()
+  "`ledger-post-edit-amount' enters calc with the amount on the stack.
+Covers the `(if (re-search-forward ledger-amount-regexp ...))' true branch
+and lines 174-187."
+  :tags '(post)
+  (ledger-tests-with-temp-file
+      "2024/01/01 Test
+    Assets:Cash                                  $10.00
+    Expenses:Food
+"
+    (forward-line 1)
+    (beginning-of-line)
+    ;; Mock calc/calc-eval/calc-renumber-stack so we don't switch to calc
+    (let ((pushed-values nil)
+          (calc-called nil)
+          (renumber-called nil))
+      (cl-letf (((symbol-function 'calc)
+                 (lambda (&rest _) (setq calc-called t)))
+                ((symbol-function 'calc-eval)
+                 (lambda (val op) (when (eq op 'push) (push val pushed-values))))
+                ((symbol-function 'calc-renumber-stack)
+                 (lambda () (setq renumber-called t))))
+        (ledger-post-edit-amount))
+      (should calc-called)
+      (should renumber-called)
+      (should (= 1 (length pushed-values)))
+      ;; The amount is removed from the buffer
+      (should-not (string-match-p "10.00" (buffer-string))))))
+
+(ert-deftest ledger-post/edit-amount-without-amount-with-spaces ()
+  "`ledger-post-edit-amount' on a line whose account is followed by two spaces.
+Covers the `(search-backward \"  \"...)' true branch (line 190)."
+  :tags '(post)
+  ;; Two trailing spaces after the account name on the first posting line.
+  (ledger-tests-with-temp-file
+      (concat "2024/01/01 Test\n"
+              "    Assets:Cash  \n"
+              "    Expenses:Food\n")
+    (forward-line 1)
+    (beginning-of-line)
+    (let ((calc-called nil))
+      (cl-letf (((symbol-function 'calc)
+                 (lambda (&rest _) (setq calc-called t))))
+        (ledger-post-edit-amount))
+      (should calc-called))))
+
+(ert-deftest ledger-post/edit-amount-without-amount-without-spaces ()
+  "`ledger-post-edit-amount' on a posting with no amount and no extra spaces.
+Covers the `(insert \"  \")' branch (line 191)."
+  :tags '(post)
+  (ledger-tests-with-temp-file
+      "2024/01/01 Test
+    Assets:Cash
+    Expenses:Food
+"
+    (forward-line 1)
+    (beginning-of-line)
+    (let ((calc-called nil))
+      (cl-letf (((symbol-function 'calc)
+                 (lambda (&rest _) (setq calc-called t))))
+        (ledger-post-edit-amount))
+      (should calc-called)
+      ;; The function should have inserted two spaces after the account name
+      (should (string-match-p "Assets:Cash  $" (buffer-substring-no-properties
+                                                 (line-beginning-position)
+                                                 (line-end-position)))))))
+
 (provide 'post-test)
 
 ;;; post-test.el ends here

@@ -182,6 +182,92 @@ https://github.com/ledger/ledger-mode/issues/415"
 "))))
 
 
+(ert-deftest ledger-occur/test-empty-regex-clears ()
+  "Calling `ledger-occur' with empty or nil regex turns off occur mode."
+  :tags '(occur)
+  (ledger-tests-with-temp-file
+      "\
+2024-03-12 Grocery Store
+  Expenses:Food:Groceries     $50
+  Assets:Checking
+
+2024-03-15 Employer
+  * Assets:Checking           $2000.00
+  Income:Salary
+"
+    (ledger-occur "Groceries")
+    (should ledger-occur-mode)
+    (ledger-occur "")
+    (should-not ledger-occur-mode)
+
+    (ledger-occur "Groceries")
+    (should ledger-occur-mode)
+    (ledger-occur nil)
+    (should-not ledger-occur-mode)))
+
+
+(ert-deftest ledger-occur/test-interactive ()
+  "Calling `ledger-occur' interactively prompts for the regexp."
+  :tags '(occur)
+  (ledger-tests-with-temp-file
+      "\
+2024-03-12 Grocery Store
+  Expenses:Food:Groceries     $50
+  Assets:Checking
+"
+    (cl-letf (((symbol-function 'read-regexp)
+               (lambda (&rest _) "Groceries")))
+      (call-interactively #'ledger-occur)
+      (should ledger-occur-mode)
+      (should (equal "Groceries" ledger-occur-current-regex)))))
+
+
+(ert-deftest ledger-occur/test-prompt-region ()
+  "`ledger-occur-prompt' returns active region when single-line."
+  :tags '(occur)
+  (ledger-tests-with-temp-file
+   "Hello World\n"
+   (goto-char (point-min))
+   (push-mark (point) t t)
+   (forward-char 5)                     ; select "Hello"
+   (activate-mark)
+   (should (equal "Hello" (ledger-occur-prompt)))
+   (deactivate-mark)))
+
+
+(ert-deftest ledger-occur/test-prompt-multiline-region ()
+  "`ledger-occur-prompt' returns nil when region spans multiple lines."
+  :tags '(occur)
+  (ledger-tests-with-temp-file
+   "first\nsecond\n"
+   (goto-char (point-min))
+   (push-mark (point) t t)
+   (goto-char (point-max))
+   (activate-mark)
+   (should (null (ledger-occur-prompt)))
+   (deactivate-mark)))
+
+
+(ert-deftest ledger-occur/test-prompt-current-word ()
+  "`ledger-occur-prompt' returns current word when no region active."
+  :tags '(occur)
+  (ledger-tests-with-temp-file
+   "Hello\n"
+   (goto-char (point-min))
+   (forward-char 1)                     ; inside "Hello"
+   (should (equal "Hello" (ledger-occur-prompt)))))
+
+
+(ert-deftest ledger-occur/test-compress-adjacent ()
+  "`ledger-occur-compress-matches' merges adjacent xacts into one entry."
+  :tags '(occur)
+  ;; Two xact bounds with end+1 == next-begin should be compressed.
+  (let ((result (ledger-occur-compress-matches '((1 10) (11 20) (100 110)))))
+    ;; (11 - 10) < 2 → first two get merged into (1 20). Then (100 110) is a
+    ;; separate entry.
+    (should (equal result '((1 20) (100 110))))))
+
+
 (provide 'occur-test)
 
 ;;; occur-test.el ends here

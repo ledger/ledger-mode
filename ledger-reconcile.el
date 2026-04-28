@@ -156,8 +156,10 @@ described above."
   :type 'boolean
   :group 'ledger-reconcile)
 
-(defvar-local ledger-reconcile-last-balance-message nil)
-(defvar-local ledger-reconcile-last-balance-equals-target nil)
+(defvar-local ledger-reconcile-last-balance-message nil
+  "Most recent cleared/pending balance line, displayed in the reconcile header.")
+(defvar-local ledger-reconcile-last-balance-equals-target nil
+  "Non-nil when the most recent balance equals the reconciliation target.")
 
 (defface ledger-reconcile-last-balance-equals-target-face
   '((t :inherit (header-line success)))

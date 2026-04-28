@@ -131,6 +131,86 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=260"
 "))))
 
 
+(defun ledger-sort-test-count-matches (re str)
+  "Count occurrences of regex RE in STR."
+  (let ((count 0)
+        (start 0))
+    (while (string-match re str start)
+      (setq count (1+ count))
+      (setq start (match-end 0)))
+    count))
+
+
+(ert-deftest ledger-sort/test-insert-start-mark ()
+  "`ledger-sort-insert-start-mark' inserts (and replaces) the start marker."
+  :tags '(sort)
+  (ledger-tests-with-temp-file
+   "2024/01/01 Foo
+    Assets:Bank  $10
+    Equity:Open
+"
+   (goto-char (point-min))
+   (ledger-sort-insert-start-mark)
+   (should (string-match-p "; Ledger-mode: Start sort" (buffer-string)))
+   ;; Inserting again should replace, not duplicate.
+   (goto-char (point-min))
+   (ledger-sort-insert-start-mark)
+   (should (= 1 (ledger-sort-test-count-matches
+                 ";.*Ledger-mode:.*Start sort" (buffer-string))))))
+
+
+(ert-deftest ledger-sort/test-insert-end-mark ()
+  "`ledger-sort-insert-end-mark' inserts (and replaces) the end marker."
+  :tags '(sort)
+  (ledger-tests-with-temp-file
+   "2024/01/01 Foo
+    Assets:Bank  $10
+    Equity:Open
+"
+   (goto-char (point-max))
+   (ledger-sort-insert-end-mark)
+   (should (string-match-p "; Ledger-mode: End sort" (buffer-string)))
+   ;; Inserting again should replace.
+   (goto-char (point-max))
+   (ledger-sort-insert-end-mark)
+   (should (= 1 (ledger-sort-test-count-matches
+                 ";.*Ledger-mode:.*End sort" (buffer-string))))))
+
+
+(ert-deftest ledger-sort/test-buffer-uses-markers ()
+  "`ledger-sort-buffer' restricts sorting to start/end markers."
+  :tags '(sort)
+  (ledger-tests-with-temp-file
+      "2024/03/01 Last
+    Expenses:Foo  $3
+    Assets:Cash
+
+; Ledger-mode: Start sort
+
+2024/02/01 Mid
+    Expenses:Foo  $2
+    Assets:Cash
+
+2024/01/01 First
+    Expenses:Foo  $1
+    Assets:Cash
+
+; Ledger-mode: End sort
+"
+    (ledger-sort-buffer)
+    ;; The first xact (outside the sort region) must remain at the top.
+    (goto-char (point-min))
+    (should (looking-at-p "2024/03/01 Last"))
+    ;; Within the sort region, "First" must come before "Mid".
+    (let ((mid-pos (progn (goto-char (point-min))
+                          (search-forward "2024/02/01 Mid")
+                          (line-beginning-position)))
+          (first-pos (progn (goto-char (point-min))
+                            (search-forward "2024/01/01 First")
+                            (line-beginning-position))))
+      (should (< first-pos mid-pos)))))
+
+
 (provide 'sort-test)
 
 ;;; sort-test.el ends here

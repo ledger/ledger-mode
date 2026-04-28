@@ -69,7 +69,8 @@
      ;;  one will ever have an account named "e342asd2131".  If
      ;;  someones does, this will probably still work for them.
      ;;  I should only highlight error and warning lines.
-     "ledger bal e342asd2131 --strict --explicit "
+     (format "%s bal e342asd2131 --strict --explicit "
+             (shell-quote-argument ledger-binary-path))
      t nil)
     (goto-char data-pos)
 
@@ -88,7 +89,7 @@
                                                                    (point-marker))))))
           (add-text-properties (line-beginning-position) (line-end-position)
                                (list 'font-lock-face 'ledger-font-report-clickable-face))
-          (setq have-warnings 'true)
+          (setq have-warnings t)
           (end-of-line))))
     (if (not have-warnings)
         (insert "No errors or warnings reported."))))

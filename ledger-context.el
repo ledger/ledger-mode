@@ -183,31 +183,40 @@ specified line, returns nil."
         (ledger-context-at-point)))))
 
 (defun ledger-context-line-type (context-info)
+  "Return the line-type symbol component of CONTEXT-INFO."
   (nth 0 context-info))
 
 (defun ledger-context-current-field (context-info)
+  "Return the symbol naming the field at point in CONTEXT-INFO."
   (nth 1 context-info))
 
 (defun ledger-context-field-info (context-info field-name)
+  "Return the (FIELD VALUE POSITION) cell for FIELD-NAME in CONTEXT-INFO."
   (assoc field-name (nth 2 context-info)))
 
 (defun ledger-context-field-present-p (context-info field-name)
+  "Return non-nil if FIELD-NAME is present in CONTEXT-INFO."
   (not (null (ledger-context-field-info context-info field-name))))
 
 (defun ledger-context-field-value (context-info field-name)
+  "Return the string value of FIELD-NAME in CONTEXT-INFO."
   (nth 1 (ledger-context-field-info context-info field-name)))
 
 (defun ledger-context-field-position (context-info field-name)
+  "Return the buffer position of FIELD-NAME's start in CONTEXT-INFO."
   (nth 2 (ledger-context-field-info context-info field-name)))
 
 (defun ledger-context-field-end-position (context-info field-name)
+  "Return the buffer position one past FIELD-NAME's end in CONTEXT-INFO."
   (+ (ledger-context-field-position context-info field-name)
      (length (ledger-context-field-value context-info field-name))))
 
 (defun ledger-context-goto-field-start (context-info field-name)
+  "Move point to the start of FIELD-NAME in CONTEXT-INFO."
   (goto-char (ledger-context-field-position context-info field-name)))
 
 (defun ledger-context-goto-field-end (context-info field-name)
+  "Move point one past the end of FIELD-NAME in CONTEXT-INFO."
   (goto-char (ledger-context-field-end-position context-info field-name)))
 
 (provide 'ledger-context)

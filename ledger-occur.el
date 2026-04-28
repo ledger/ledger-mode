@@ -153,25 +153,27 @@ Argument OVL-BOUNDS contains bounds for the transactions to be left visible."
         (when-let* ((endpoint (re-search-forward regex nil 'end))
                     (bounds (ledger-navigate-find-element-extents endpoint)))
           (push bounds lines)
-          ;; move to the end of the xact, no need to search inside it more
-          (goto-char (cadr bounds))))
+          ;; Move to the end of the xact, no need to search inside it more.
+          ;; Defensive: if extent end is at or before point, advance past the
+          ;; match end so the loop can never wedge.
+          (goto-char (max (cadr bounds) (1+ (match-end 0))))))
       (nreverse lines))))
 
 (defun ledger-occur-compress-matches (buffer-matches)
   "Identify sequential xacts to reduce number of overlays required.
 
 BUFFER-MATCHES should be a list of (BEG END) lists."
-  (if buffer-matches
-      (let ((points (list))
-            (current-beginning (caar buffer-matches))
-            (current-end (cl-cadar buffer-matches)))
-        (dolist (match (cdr buffer-matches))
-          (if (< (- (car match) current-end) 2)
-              (setq current-end (cadr match))
-            (push (list current-beginning current-end) points)
-            (setq current-beginning (car match))
-            (setq current-end (cadr match))))
-        (nreverse (push (list current-beginning current-end) points)))))
+  (when buffer-matches
+    (let ((points (list))
+          (current-beginning (caar buffer-matches))
+          (current-end (cl-cadar buffer-matches)))
+      (dolist (match (cdr buffer-matches))
+        (if (< (- (car match) current-end) 2)
+            (setq current-end (cadr match))
+          (push (list current-beginning current-end) points)
+          (setq current-beginning (car match))
+          (setq current-end (cadr match))))
+      (nreverse (push (list current-beginning current-end) points)))))
 
 (provide 'ledger-occur)
 

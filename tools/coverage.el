@@ -33,7 +33,7 @@
   (let ((scratch (make-temp-file "ledger-mode-cov-" t)))
     ;; Copy *.el and the test/ tree into scratch; skip everything else
     ;; (build artefacts, .git, .elc files).
-    (dolist (f (directory-files ledger-mode/coverage-source t "\\.el\\'"))
+    (dolist (f (directory-files ledger-mode/coverage-source t "\\`ledger-.*\\.el\\'"))
       (copy-file f (expand-file-name (file-name-nondirectory f) scratch)))
     (let ((dest-test (expand-file-name "test" scratch)))
       (make-directory dest-test t)
@@ -45,7 +45,7 @@
       (let ((src-input (expand-file-name "test/input" ledger-mode/coverage-source))
             (dst-input (expand-file-name "input" dest-test)))
         (make-directory dst-input t)
-        (dolist (f (directory-files src-input t "[^.]"))
+        (dolist (f (directory-files src-input t directory-files-no-dot-files-regexp))
           (unless (file-directory-p f)
             (copy-file f (expand-file-name (file-name-nondirectory f) dst-input) t)))))
     scratch))
@@ -61,12 +61,17 @@
 (require 'undercover)
 (setq undercover-force-coverage t)
 
-(let ((default-directory (file-name-as-directory ledger-mode/coverage-root)))
-  (undercover "ledger-*.el"
-              (:report-format 'lcov)
-              (:report-file (or (getenv "COVERAGE_OUT") "coverage/lcov.info"))
-              (:merge-report nil)
-              (:send-report nil)))
+(let ((default-directory (file-name-as-directory ledger-mode/coverage-root))
+      (abs-out (expand-file-name "coverage/lcov.info"
+                                 ledger-mode/coverage-root)))
+  ;; The `undercover' macro does not evaluate its arguments, so the report
+  ;; file path is stitched in via `eval' to keep things absolute regardless
+  ;; of the cwd at report-emit time.
+  (eval `(undercover "ledger-*.el"
+                     (:report-format 'lcov)
+                     (:report-file ,abs-out)
+                     (:merge-report nil)
+                     (:send-report nil))))
 
 (load (expand-file-name "test/test-helper.el" ledger-mode/coverage-root) nil t)
 (dolist (f (directory-files (expand-file-name "test" ledger-mode/coverage-root)

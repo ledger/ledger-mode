@@ -39,10 +39,11 @@
 
 (defun ledger-mode/format--buffer ()
   (delete-trailing-whitespace)
-  (goto-char (point-max))
-  (skip-chars-backward "\n")
-  (delete-region (point) (point-max))
-  (insert "\n"))
+  (unless (zerop (point-max))
+    (goto-char (point-max))
+    (skip-chars-backward "\n")
+    (delete-region (point) (point-max))
+    (insert "\n")))
 
 (defun ledger-mode/format-main ()
   (let ((files (ledger-mode/format--collect-files))

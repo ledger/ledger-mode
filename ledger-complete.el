@@ -84,7 +84,7 @@ If nil, full account names are offered for completion."
     (sort (delete-dups payees-list) #'string-lessp)))
 
 (defun ledger-payees-list ()
-  "Return a list of all known account names as strings.
+  "Return a list of all known payees as strings.
 Looks in `ledger-payees-file' if set, otherwise the current buffer."
   (if ledger-payees-file
       (let ((f ledger-payees-file))
@@ -355,9 +355,6 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                                (when (and realign-after ledger-post-auto-align)
                                  (ledger-post-align-postings (line-beginning-position) (line-end-position)))))))))
 
-(defun ledger-trim-trailing-whitespace (str)
-  (replace-regexp-in-string "[ \t]*$" "" str))
-
 (defun ledger-comments-list ()
   "Collect comments from the buffer."
   (let ((comments '()))
@@ -379,7 +376,7 @@ Interactively, if point is after a payee, complete the
 transaction with the details from the last transaction to that
 payee."
   (interactive)
-  (let* ((name (ledger-trim-trailing-whitespace
+  (let* ((name (string-trim-right
                 (buffer-substring
                  (save-excursion
                    (unless (eq (ledger-thing-at-point) 'transaction)

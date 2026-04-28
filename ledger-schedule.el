@@ -74,11 +74,6 @@ abbreviation for a day and the number of that day in the week."
   :type '(alist :key-type string :value-type (group integer))
   :group 'ledger-schedule)
 
-(defsubst ledger-between (val low high)
-  "Return TRUE if VAL >= LOW and <= HIGH."
-  (declare (obsolete <= "Ledger-mode v4.0.1"))
-  (<= low val high))
-
 (defun ledger-schedule-days-in-month (month year)
   "Return number of days in the MONTH, MONTH is from 1 to 12.
 If YEAR is nil, assume it is not a leap year"
@@ -142,8 +137,8 @@ The dates are given by the pairs MONTH1 DAY1 and MONTH2 DAY2."
         (target-month (gensym))
         (target-day (gensym)))
     `(let* ((,decoded (decode-time date))
-            (,target-month (nth 4 decoded))
-            (,target-day (nth 3 decoded)))
+            (,target-month (nth 4 ,decoded))
+            (,target-day (nth 3 ,decoded)))
        (and (and (> ,target-month ,month1)
                  (< ,target-month ,month2))
             (and (> ,target-day ,day1)

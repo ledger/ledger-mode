@@ -114,14 +114,14 @@ Flymake calls this with REPORT-FN as needed."
                                   (group-n 1 "Error: " (one-or-more not-newline) "\n"))
                               nil t)
                        for msg = (match-string 1)
-                       for (beg . end) = (flymake-diag-region
-                                          source
-                                          (string-to-number (match-string 2)))
-                       for type = :error
+                       for region = (flymake-diag-region
+                                     source
+                                     (string-to-number (match-string 2)))
+                       when region
                        collect (flymake-make-diagnostic source
-                                                        beg
-                                                        end
-                                                        type
+                                                        (car region)
+                                                        (cdr region)
+                                                        :error
                                                         msg)
                        into diags
                        finally (funcall report-fn diags)))
@@ -134,11 +134,9 @@ Flymake calls this with REPORT-FN as needed."
 ;;;###autoload
 (defun ledger-flymake-enable ()
   "Enable `flymake-mode' in `ledger-mode' buffers."
-  (unless (> emacs-major-version 25)
-    (error "Ledger-flymake requires Emacs version 26 or higher"))
   ;; Add `ledger-flymake' to `flymake-diagnostic-functions' so that flymake can
   ;; work in ledger-mode:
-  (add-hook 'flymake-diagnostic-functions 'ledger-flymake nil t)
+  (add-hook 'flymake-diagnostic-functions #'ledger-flymake nil t)
   (flymake-mode))
 
 (provide 'ledger-flymake)

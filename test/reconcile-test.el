@@ -832,6 +832,251 @@ https://github.com/ledger/ledger-mode/issues/408"
 2011-04-27      Bookstore                                          Expenses:Books                         $ 20.00"))))
 
 
+(ert-deftest ledger-reconcile/test-s-helpers ()
+  "`ledger-reconcile-s-left' and `-s-right' are no-ops when string is short enough."
+  :tags '(reconcile)
+  (should (equal "abc" (ledger-reconcile-s-left 5 "abc")))
+  (should (equal "abc" (ledger-reconcile-s-right 5 "abc")))
+  (should (equal "abc" (ledger-reconcile-s-left 3 "abc")))
+  (should (equal "abc" (ledger-reconcile-s-right 3 "abc")))
+  ;; Truncation forms
+  (should (equal "abc" (ledger-reconcile-s-left 3 "abcdef")))
+  (should (equal "def" (ledger-reconcile-s-right 3 "abcdef"))))
+
+
+(ert-deftest ledger-reconcile/test-is-stdin ()
+  "`ledger-is-stdin' recognises stdin variations."
+  :tags '(reconcile)
+  (should (ledger-is-stdin ""))
+  (should (ledger-is-stdin "<stdin>"))
+  (should (ledger-is-stdin "/dev/stdin"))
+  (should-not (ledger-is-stdin "/tmp/foo.dat")))
+
+
+(ert-deftest ledger-reconcile/test-get-buffer-error ()
+  "`ledger-reconcile-get-buffer' errors when no buffer is set."
+  :tags '(reconcile)
+  (should-error (ledger-reconcile-get-buffer '(nil . 0))))
+
+
+(ert-deftest ledger-reconcile/test-insert-effective-date-function ()
+  "Function form of `ledger-reconcile-insert-effective-date' is called."
+  :tags '(reconcile)
+  (let* ((called nil)
+         (ledger-reconcile-insert-effective-date (lambda () (setq called t) nil)))
+    (cl-letf (((symbol-function 'ledger-insert-effective-date)
+               (lambda (&rest _) nil)))
+      (ledger-reconcile-insert-effective-date)
+      (should called))))
+
+
+(ert-deftest ledger-reconcile/test-insert-effective-date-non-function ()
+  "Non-function truthy value of `ledger-reconcile-insert-effective-date'
+calls the inserter."
+  :tags '(reconcile)
+  (let ((called nil)
+        (ledger-reconcile-insert-effective-date t))
+    (cl-letf (((symbol-function 'ledger-insert-effective-date)
+               (lambda (&rest _) (setq called t))))
+      (ledger-reconcile-insert-effective-date)
+      (should called))))
+
+
+(ert-deftest ledger-reconcile/test-format-posting-cleared-face ()
+  "`ledger-reconcile-format-posting' sets cleared face for cleared postings."
+  :tags '(reconcile)
+  (with-temp-buffer
+    (let ((fmt (ledger-reconcile-compile-format-string "%(date)s %(account)s %(amount)s\n"))
+          (where (cons (current-buffer) 1))
+          (beg (point)))
+      (ledger-reconcile-format-posting beg where fmt
+                                       "2024/01/01" "" 'cleared
+                                       "Foo" "Acct" "$1")
+      (goto-char beg)
+      (should (eq 'ledger-font-reconciler-cleared-face
+                  (get-text-property (point) 'font-lock-face))))))
+
+
+(ert-deftest ledger-reconcile/test-toggle-cleared-face ()
+  "Toggling with `ledger-reconcile-toggle-to-pending' nil yields cleared face."
+  :tags '(reconcile)
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (let ((ledger-reconcile-toggle-to-pending nil))
+      (ledger-reconcile "Assets:Checking" '(0 "$"))
+      (select-window (get-buffer-window ledger-reconcile-buffer-name))
+      (forward-line 2)
+      (ledger-reconcile-toggle)
+      (forward-line -1)
+      (should (eq 'ledger-font-reconciler-cleared-face
+                  (get-text-property (point) 'font-lock-face))))))
+
+
+(ert-deftest ledger-reconcile/test-add ()
+  "`ledger-reconcile-add' inserts a transaction and refreshes."
+  :tags '(reconcile)
+  (let ((ledger-narrow-on-reconcile nil))
+    (ledger-tests-with-temp-file
+        demo-ledger
+      (ledger-reconcile "Expenses:Books" '(0 "$"))
+      (select-window (get-buffer-window ledger-reconcile-buffer-name))
+      (cl-letf (((symbol-function 'ledger-read-date)
+                 (lambda (&rest _) "2024/01/01")))
+        (ledger-reconcile-add "2024/01/01" "Bookstore  $5.00"))
+      (with-current-buffer ledger-reconcile-ledger-buf
+        (should (string-match-p "2024/01/01 Bookstore" (buffer-string)))))))
+
+
+(ert-deftest ledger-reconcile/test-add-interactive ()
+  "`ledger-reconcile-add' prompts for date and transaction interactively."
+  :tags '(reconcile)
+  (let ((ledger-narrow-on-reconcile nil))
+    (ledger-tests-with-temp-file
+        demo-ledger
+      (ledger-reconcile "Expenses:Books" '(0 "$"))
+      (select-window (get-buffer-window ledger-reconcile-buffer-name))
+      (cl-letf (((symbol-function 'ledger-read-date)
+                 (lambda (&rest _) "2024/01/01"))
+                ((symbol-function 'read-string)
+                 (lambda (&rest _) "Bookstore  $5.00")))
+        (call-interactively #'ledger-reconcile-add))
+      (with-current-buffer ledger-reconcile-ledger-buf
+        (should (string-match-p "2024/01/01 Bookstore" (buffer-string)))))))
+
+
+(ert-deftest ledger-reconcile/test-marker-where-xact-is ()
+  "`ledger-marker-where-xact-is' returns line-no of posting when not whole-tx."
+  :tags '(reconcile)
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (setq ledger-reconcile-ledger-buf (current-buffer))
+    (let ((ledger-clear-whole-transactions nil))
+      (let* ((emacs-xact (list "<stdin>" 5 nil nil "Foo"))
+             (posting (list 7 "Acct" "$1" nil))
+             (where (ledger-marker-where-xact-is emacs-xact posting)))
+        (should (bufferp (car where)))
+        (should (= 7 (cdr where))))
+      ;; -1 posting falls through to xact line.
+      (let* ((emacs-xact (list "<stdin>" 5 nil nil "Foo"))
+             (posting (list -1 "Acct" "$1" nil))
+             (where (ledger-marker-where-xact-is emacs-xact posting)))
+        (should (= 5 (cdr where)))))))
+
+
+(ert-deftest ledger-reconcile/test-marker-where-xact-is-other-file ()
+  "`ledger-marker-where-xact-is' opens external files for non-stdin xacts."
+  :tags '(reconcile)
+  (let* ((tmp (make-temp-file "ledger-marker-" nil ".dat")))
+    (unwind-protect
+        (progn
+          (with-temp-file tmp
+            (insert "2024/01/01 Foo\n  A  $1\n  B\n"))
+          (let* ((emacs-xact (list tmp 1 nil nil "Foo"))
+                 (posting (list -1 "B" "$1" nil))
+                 (where (ledger-marker-where-xact-is emacs-xact posting)))
+            (should (bufferp (car where)))
+            (kill-buffer (car where))))
+      (delete-file tmp))))
+
+
+(ert-deftest ledger-reconcile/test-do-reconcile-no-uncleared ()
+  "`ledger-do-reconcile' inserts the empty marker when no xacts are uncleared."
+  :tags '(reconcile)
+  (ledger-tests-with-temp-file
+      "2024/01/01 * Foo
+    Assets:Bank  $10
+    Equity:Open
+"
+    (ledger-reconcile "Assets:Bank" '(0 "$"))
+    (with-current-buffer ledger-reconcile-buffer-name
+      (should (string-match-p "no uncleared entries" (buffer-string))))))
+
+
+(ert-deftest ledger-reconcile/test-track-xact ()
+  "`ledger-reconcile-track-xact' performs visit when this-command matches."
+  :tags '(reconcile)
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (ledger-reconcile "Assets:Checking" '(0 "$"))
+    (select-window (get-buffer-window ledger-reconcile-buffer-name))
+    (forward-line 2)
+    (let ((this-command 'next-line)
+          (ledger-buffer-tracks-reconcile-buffer t))
+      (ledger-reconcile-track-xact))
+    ;; And the negative branch (no recenter).
+    (let ((this-command 'self-insert-command)
+          (ledger-buffer-tracks-reconcile-buffer t))
+      (ledger-reconcile-track-xact))))
+
+
+(ert-deftest ledger-reconcile/test-open-windows-force-bottom ()
+  "`ledger-reconcile-open-windows' splits below when force-window-bottom is set."
+  :tags '(reconcile)
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (let ((ledger-reconcile-force-window-bottom t)
+          (ledger-narrow-on-reconcile nil))
+      (ledger-reconcile "Assets:Checking" '(0 "$"))
+      (should (get-buffer-window ledger-reconcile-buffer-name)))))
+
+
+(ert-deftest ledger-reconcile/test-interactive-prompt ()
+  "Calling `ledger-reconcile' interactively asks for an account name."
+  :tags '(reconcile)
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (cl-letf (((symbol-function 'ledger-read-account-with-prompt)
+               (lambda (_p) "Assets:Checking"))
+              ((symbol-function 'ledger-read-commodity-string)
+               (lambda (&rest _) '(0 "$"))))
+      (call-interactively #'ledger-reconcile)
+      (should (get-buffer ledger-reconcile-buffer-name)))))
+
+
+(ert-deftest ledger-reconcile/test-change-target-interactive ()
+  "`ledger-reconcile-change-target' calls the prompt when no target supplied."
+  :tags '(reconcile)
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (let ((prompted nil))
+      (cl-letf (((symbol-function 'ledger-read-commodity-string)
+                 (lambda (&rest _) (setq prompted t) '(0 "$"))))
+        (ledger-reconcile "Assets:Checking" '(0 "$"))
+        (with-current-buffer ledger-reconcile-buffer-name
+          (call-interactively #'ledger-reconcile-change-target)
+          (should prompted))))))
+
+
+(ert-deftest ledger-reconcile/test-sort-by-commands ()
+  "Each `ledger-reconcile-sort-by-*' command sets the sort key and refreshes."
+  :tags '(reconcile)
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (ledger-reconcile "Assets:Checking" '(0 "$"))
+    (select-window (get-buffer-window ledger-reconcile-buffer-name))
+    (ledger-reconcile-sort-by-amount)
+    (should (equal "(amount)" ledger-reconcile-sort-key))
+    (ledger-reconcile-sort-by-date)
+    (should (equal "(date)" ledger-reconcile-sort-key))
+    (ledger-reconcile-sort-by-payee)
+    (should (equal "(payee)" ledger-reconcile-sort-key))
+    (ledger-reconcile-sort-by-file-order)
+    (should (equal "(0)" ledger-reconcile-sort-key))))
+
+
+(ert-deftest ledger-reconcile/test-display-balance-header-mode ()
+  "`ledger-reconcile-display-balance-in-header-mode' toggles header-line-format."
+  :tags '(reconcile)
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (ledger-reconcile "Assets:Checking" '(0 "$"))
+    (select-window (get-buffer-window ledger-reconcile-buffer-name))
+    (ledger-reconcile-display-balance-in-header-mode 1)
+    (should header-line-format)
+    (ledger-reconcile-display-balance-in-header-mode -1)
+    (should-not header-line-format)))
+
+
 (provide 'reconcile-test)
 
 ;;; reconcile-test.el ends here

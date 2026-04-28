@@ -14,8 +14,10 @@
 (setq byte-compile-warnings t)
 
 (let* ((root (or (getenv "LEDGER_MODE_ROOT") default-directory))
-       (files (or command-line-args-left
+       (args (seq-remove (lambda (a) (string= a "--")) command-line-args-left))
+       (files (or args
                   (directory-files root t "\\`ledger-.*\\.el\\'"))))
+  (setq command-line-args-left nil)
   (add-to-list 'load-path root)
   (let ((failed 0))
     (dolist (f files)

@@ -35,7 +35,7 @@
   (mapconcat #'identity (make-list 200 ledger-mode/bench--demo) "\n"))
 
 (defmacro ledger-mode/bench (name iterations &rest body)
-  (declare (indent defun))
+  (declare (indent 2))
   `(let ((res (benchmark-run ,iterations (progn ,@body))))
      (princ (format "%s\t%.4f\n" ,name (car res)))))
 
