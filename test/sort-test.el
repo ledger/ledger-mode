@@ -89,7 +89,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=260"
   :tags '(sort regress)
 
   (ledger-tests-with-temp-file
-   "2013/05/03 foo
+      "2013/05/03 foo
     Expenses:Foo                             3,00 €
     Assets:Bar
 
@@ -101,9 +101,9 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=260"
     Expenses:Foo                             1,00 €
     Assets:Bar
 "
-   (ledger-sort-region (point-min) 168) ; first two transactions
-   (should (equal (buffer-string)
-                  "2013/05/02 foo
+    (ledger-sort-region (point-min) 168) ; first two transactions
+    (should (equal (buffer-string)
+                   "2013/05/02 foo
     Expenses:Foo                               2,00 €
     Assets:Bar
 
@@ -115,9 +115,9 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=260"
     Expenses:Foo                             1,00 €
     Assets:Bar
 "))
-   (ledger-sort-region 85 (point-max))  ; last two transactions
-   (should (equal (buffer-string)
-                  "2013/05/02 foo
+    (ledger-sort-region 85 (point-max))  ; last two transactions
+    (should (equal (buffer-string)
+                   "2013/05/02 foo
     Expenses:Foo                               2,00 €
     Assets:Bar
 
@@ -145,36 +145,36 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=260"
   "`ledger-sort-insert-start-mark' inserts (and replaces) the start marker."
   :tags '(sort)
   (ledger-tests-with-temp-file
-   "2024/01/01 Foo
+      "2024/01/01 Foo
     Assets:Bank  $10
     Equity:Open
 "
-   (goto-char (point-min))
-   (ledger-sort-insert-start-mark)
-   (should (string-match-p "; Ledger-mode: Start sort" (buffer-string)))
-   ;; Inserting again should replace, not duplicate.
-   (goto-char (point-min))
-   (ledger-sort-insert-start-mark)
-   (should (= 1 (ledger-sort-test-count-matches
-                 ";.*Ledger-mode:.*Start sort" (buffer-string))))))
+    (goto-char (point-min))
+    (ledger-sort-insert-start-mark)
+    (should (string-match-p "; Ledger-mode: Start sort" (buffer-string)))
+    ;; Inserting again should replace, not duplicate.
+    (goto-char (point-min))
+    (ledger-sort-insert-start-mark)
+    (should (= 1 (ledger-sort-test-count-matches
+                  ";.*Ledger-mode:.*Start sort" (buffer-string))))))
 
 
 (ert-deftest ledger-sort/test-insert-end-mark ()
   "`ledger-sort-insert-end-mark' inserts (and replaces) the end marker."
   :tags '(sort)
   (ledger-tests-with-temp-file
-   "2024/01/01 Foo
+      "2024/01/01 Foo
     Assets:Bank  $10
     Equity:Open
 "
-   (goto-char (point-max))
-   (ledger-sort-insert-end-mark)
-   (should (string-match-p "; Ledger-mode: End sort" (buffer-string)))
-   ;; Inserting again should replace.
-   (goto-char (point-max))
-   (ledger-sort-insert-end-mark)
-   (should (= 1 (ledger-sort-test-count-matches
-                 ";.*Ledger-mode:.*End sort" (buffer-string))))))
+    (goto-char (point-max))
+    (ledger-sort-insert-end-mark)
+    (should (string-match-p "; Ledger-mode: End sort" (buffer-string)))
+    ;; Inserting again should replace.
+    (goto-char (point-max))
+    (ledger-sort-insert-end-mark)
+    (should (= 1 (ledger-sort-test-count-matches
+                  ";.*Ledger-mode:.*End sort" (buffer-string))))))
 
 
 (ert-deftest ledger-sort/test-buffer-uses-markers ()

@@ -34,9 +34,9 @@
   :tags '(context regress)
 
   (ledger-tests-with-temp-file
-   "    Actif:Courant:BnpCc  25,17 €  ; Rembt tissus"
-   (goto-char 26)                       ; on the '2' of 25,17
-   (let ((context (ledger-context-at-point)))
+      "    Actif:Courant:BnpCc  25,17 €  ; Rembt tissus"
+    (goto-char 26)                       ; on the '2' of 25,17
+    (let ((context (ledger-context-at-point)))
       (should (eq (ledger-context-current-field context) 'commoditized-amount))
       (should (equal "25,17 €"
                      (ledger-context-field-value context 'commoditized-amount))))))
@@ -47,15 +47,15 @@
   :tags '(context regress)
 
   (ledger-tests-with-temp-file
-   "    Actif:Courant:BnpCc  25 €  ; Rembt tissus"
-   (goto-char 19)                       ; on the 'B' of BnpCc
-   (let ((context (ledger-context-at-point)))
+      "    Actif:Courant:BnpCc  25 €  ; Rembt tissus"
+    (goto-char 19)                       ; on the 'B' of BnpCc
+    (let ((context (ledger-context-at-point)))
       (should (eq (ledger-context-current-field context) 'account))
       (should (equal "Actif:Courant:BnpCc"
                      (ledger-context-field-value context 'account))))
 
-   (goto-char 26)                       ; on the '2' of 25
-   (let ((context (ledger-context-at-point)))
+    (goto-char 26)                       ; on the '2' of 25
+    (let ((context (ledger-context-at-point)))
       (should (eq (ledger-context-current-field context) 'commoditized-amount))
       (should (equal "25 €"
                      (ledger-context-field-value context 'commoditized-amount))))))
@@ -66,9 +66,9 @@
   :tags '(context regress)
 
   (ledger-tests-with-temp-file
-   "    Dépense:Impôt:Local                      48,00 €  ; TH 2013"
-   (should (equal (ledger-context-at-point)
-                  '(acct-transaction indent ((indent "   " 1) (status nil nil) (account "Dépense:Impôt:Local" 5) (separator "                      " 24) (commoditized-amount "48,00 €" 46) (comment "TH 2013" 57)))))))
+      "    Dépense:Impôt:Local                      48,00 €  ; TH 2013"
+    (should (equal (ledger-context-at-point)
+                   '(acct-transaction indent ((indent "   " 1) (status nil nil) (account "Dépense:Impôt:Local" 5) (separator "                      " 24) (commoditized-amount "48,00 €" 46) (comment "TH 2013" 57)))))))
 
 
 (ert-deftest ledger-context/test-004 ()
@@ -77,7 +77,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=947"
   :tags '(context regress)
 
   (ledger-tests-with-temp-file
-   "2014/11/10  EDF
+      "2014/11/10  EDF
     * Dépense:Maison:Service:Électricité    36,23 €
     Actif:Courant:BnpCc
 
@@ -85,16 +85,16 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=947"
     ! Passif:Crédit:BanqueAccord              60,00 €
     Actif:Courant:BnpCc
 "
-   (goto-char 34)                      ; line 2, on Maison
-   (let ((context (ledger-context-at-point)))
-     (should (eq (ledger-context-current-field context) 'account))
-     (should (equal "Dépense:Maison:Service:Électricité"
-                    (ledger-context-field-value context 'account))))
-   (goto-char 154)                     ; line 6, on Accord
-   (let ((context (ledger-context-at-point)))
-     (should (eq (ledger-context-current-field context) 'account))
-     (should (equal "Passif:Crédit:BanqueAccord"
-                    (ledger-context-field-value context 'account))))))
+    (goto-char 34)                      ; line 2, on Maison
+    (let ((context (ledger-context-at-point)))
+      (should (eq (ledger-context-current-field context) 'account))
+      (should (equal "Dépense:Maison:Service:Électricité"
+                     (ledger-context-field-value context 'account))))
+    (goto-char 154)                     ; line 6, on Accord
+    (let ((context (ledger-context-at-point)))
+      (should (eq (ledger-context-current-field context) 'account))
+      (should (equal "Passif:Crédit:BanqueAccord"
+                     (ledger-context-field-value context 'account))))))
 
 
 (ert-deftest ledger-context/test-005 ()
@@ -103,7 +103,7 @@ https://github.com/ledger/ledger-mode/issues/1"
   :tags '(context regress)
 
   (ledger-tests-with-temp-file
-   "2016/08/12 KFC
+      "2016/08/12 KFC
     a  $7
     b
 
@@ -159,49 +159,49 @@ https://github.com/ledger/ledger-mode/issues/1"
     a  $7
     b
 "
-   (goto-char (point-min))              ; beginning-of-buffer
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 1) (payee "KFC" 12)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 33) (status "*" 44) (payee "KFC" 46)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 67) (status "!" 78) (payee "KFC" 80)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 101) (code "(1234)" 112) (payee "KFC" 119)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 140) (status "*" 151) (code "(1234)" 153) (payee "KFC" 160)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 181) (status "!" 192) (code "(1234)" 194) (payee "KFC" 201)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 222) (payee "KFC" 233) (comment "comment" 240)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 265) (status "*" 276) (payee "KFC" 278) (comment "comment" 285)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 310) (status "!" 321) (payee "KFC" 323) (comment "comment" 330)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 355) (code "(1234)" 366) (payee "KFC" 373) (comment "comment" 380)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 405) (status "*" 416) (code "(1234)" 418) (payee "KFC" 425) (comment "comment" 432)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 457) (status "!" 468) (code "(1234)" 470) (payee "KFC" 477) (comment "comment" 484)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 509) (status "!" 520) (code "(1234)" 522) (payee "KFC" 529) (comment "comment" 540)))))
-   (ledger-navigate-next-xact-or-directive)
-   (should (equal (ledger-context-at-point)
-                  '(xact date ((date "2016/08/12" 565) (status "!" 578) (code "(1234)" 582) (payee "KFC" 591) (comment "comment" 601)))))
-   ))
+    (goto-char (point-min))              ; beginning-of-buffer
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 1) (payee "KFC" 12)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 33) (status "*" 44) (payee "KFC" 46)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 67) (status "!" 78) (payee "KFC" 80)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 101) (code "(1234)" 112) (payee "KFC" 119)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 140) (status "*" 151) (code "(1234)" 153) (payee "KFC" 160)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 181) (status "!" 192) (code "(1234)" 194) (payee "KFC" 201)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 222) (payee "KFC" 233) (comment "comment" 240)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 265) (status "*" 276) (payee "KFC" 278) (comment "comment" 285)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 310) (status "!" 321) (payee "KFC" 323) (comment "comment" 330)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 355) (code "(1234)" 366) (payee "KFC" 373) (comment "comment" 380)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 405) (status "*" 416) (code "(1234)" 418) (payee "KFC" 425) (comment "comment" 432)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 457) (status "!" 468) (code "(1234)" 470) (payee "KFC" 477) (comment "comment" 484)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 509) (status "!" 520) (code "(1234)" 522) (payee "KFC" 529) (comment "comment" 540)))))
+    (ledger-navigate-next-xact-or-directive)
+    (should (equal (ledger-context-at-point)
+                   '(xact date ((date "2016/08/12" 565) (status "!" 578) (code "(1234)" 582) (payee "KFC" 591) (comment "comment" 601)))))
+    ))
 
 
 (ert-deftest ledger-context/test-006 ()
@@ -210,7 +210,7 @@ https://github.com/ledger/ledger-mode/issues/1"
   :tags '(context regress)
 
   (ledger-tests-with-temp-file
-   "2016/08/12 KFC
+      "2016/08/12 KFC
  a  $7
  b
 
@@ -218,21 +218,21 @@ https://github.com/ledger/ledger-mode/issues/1"
 	a		$7
 	b
 "
-   (goto-char (point-min))              ; beginning-of-buffer
-   (forward-line 1)
-   (should (equal (ledger-context-at-point)
-                  '(acct-transaction indent ((indent " " 16) (account "a" 17) (separator "  " 18) (commoditized-amount "$7" 20)))))
-   (forward-line 1)
-   (should (equal (ledger-context-at-point)
-                  '(acct-transaction indent ((indent " " 23) (account "b" 24)))))
-   (ledger-navigate-next-xact-or-directive)
-   (forward-line 1)
-   (should (equal (ledger-context-at-point)
-                  '(acct-transaction indent ((indent "	" 42) (account "a" 43) (separator "		" 44) (commoditized-amount "$7" 46)))))
-   (forward-line 1)
-   (should (equal (ledger-context-at-point)
-                  '(acct-transaction indent ((indent "	" 49) (account "b" 50)))))
-   ))
+    (goto-char (point-min))              ; beginning-of-buffer
+    (forward-line 1)
+    (should (equal (ledger-context-at-point)
+                   '(acct-transaction indent ((indent " " 16) (account "a" 17) (separator "  " 18) (commoditized-amount "$7" 20)))))
+    (forward-line 1)
+    (should (equal (ledger-context-at-point)
+                   '(acct-transaction indent ((indent " " 23) (account "b" 24)))))
+    (ledger-navigate-next-xact-or-directive)
+    (forward-line 1)
+    (should (equal (ledger-context-at-point)
+                   '(acct-transaction indent ((indent "	" 42) (account "a" 43) (separator "		" 44) (commoditized-amount "$7" 46)))))
+    (forward-line 1)
+    (should (equal (ledger-context-at-point)
+                   '(acct-transaction indent ((indent "	" 49) (account "b" 50)))))
+    ))
 
 
 (ert-deftest ledger-context/test-007 ()
@@ -241,15 +241,15 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=257"
   :tags '(context regress)
 
   (ledger-tests-with-temp-file
-   "2004/05/01 * Checking balance
+      "2004/05/01 * Checking balance
   Assets:Bank:Checking        1000.00
   Equity:Opening Balances
 "
-   (goto-char 63)                      ; on the amount 1000.00
-   (let ((context (ledger-context-at-point)))
-     (should (eq (ledger-context-current-field context) 'amount))
-     (should (equal "1000.00"
-                    (ledger-context-field-value context 'amount))))))
+    (goto-char 63)                      ; on the amount 1000.00
+    (let ((context (ledger-context-at-point)))
+      (should (eq (ledger-context-current-field context) 'amount))
+      (should (equal "1000.00"
+                     (ledger-context-field-value context 'amount))))))
 
 
 (ert-deftest ledger-context/test-008 ()
@@ -258,15 +258,15 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=257"
   :tags '(context regress)
 
   (ledger-tests-with-temp-file
-   "2004/05/01 * Checking balance
+      "2004/05/01 * Checking balance
   Assets:Bank:Checking        $1,000.00
   Equity:Opening Balances
 "
-   (goto-char 65)                      ; on the amount 1,000.00
-   (let ((context (ledger-context-at-point)))
-     (should (eq (ledger-context-current-field context) 'commoditized-amount))
-     (should (equal "$1,000.00"
-                    (ledger-context-field-value context 'commoditized-amount))))))
+    (goto-char 65)                      ; on the amount 1,000.00
+    (let ((context (ledger-context-at-point)))
+      (should (eq (ledger-context-current-field context) 'commoditized-amount))
+      (should (equal "$1,000.00"
+                     (ledger-context-field-value context 'commoditized-amount))))))
 
 (ert-deftest ledger-context/test-009 ()
   "Regress test for #302.
@@ -274,17 +274,17 @@ https://github.com/ledger/ledger-mode/issues/302"
   :tags '(context regress)
 
   (ledger-tests-with-temp-file
-   "2016/08/12 KFC
+      "2016/08/12 KFC
  ; xact note
  a  $7
  b"
-   (goto-char 12)                       ; on the payee
-   (let ((context (ledger-context-at-point)))
-     (should (eq (ledger-context-current-field context) 'payee))
-     (should (equal "KFC"
-                    (ledger-context-field-value context 'payee)))
-     (should (equal "xact note"
-                    (ledger-context-field-value context 'comment))))))
+    (goto-char 12)                       ; on the payee
+    (let ((context (ledger-context-at-point)))
+      (should (eq (ledger-context-current-field context) 'payee))
+      (should (equal "KFC"
+                     (ledger-context-field-value context 'payee)))
+      (should (equal "xact note"
+                     (ledger-context-field-value context 'comment))))))
 
 (ert-deftest ledger-context/test-010 ()
   "Regress test for #352
@@ -292,18 +292,18 @@ https://github.com/ledger/ledger-mode/issues/352"
   :tags '(context regress)
 
   (ledger-tests-with-temp-file
-   "2016/08/12 KFC
+      "2016/08/12 KFC
   a  7 AAPL @ $100
   b"
-   (goto-char 18)                       ; on the first posting
-   (let ((context (ledger-context-at-point)))
-     (should (eq (ledger-context-current-field context) 'account))
-     (should (equal "a"
-                    (ledger-context-field-value context 'account)))
-     (should (equal "7 AAPL"
-                    (ledger-context-field-value context 'commoditized-amount)))
-     (should (equal "$100"
-                    (ledger-context-field-value context 'cost))))))
+    (goto-char 18)                       ; on the first posting
+    (let ((context (ledger-context-at-point)))
+      (should (eq (ledger-context-current-field context) 'account))
+      (should (equal "a"
+                     (ledger-context-field-value context 'account)))
+      (should (equal "7 AAPL"
+                     (ledger-context-field-value context 'commoditized-amount)))
+      (should (equal "$100"
+                     (ledger-context-field-value context 'cost))))))
 
 (ert-deftest ledger-context/test-011 ()
   "Regress test for #211
@@ -311,25 +311,25 @@ https://github.com/ledger/ledger-mode/issues/211"
   :tags '(context regress)
 
   (ledger-tests-with-temp-file
-   "2004/05/01 * Checking balance
+      "2004/05/01 * Checking balance
   Assets:Bank:Checking        -$1,000.00
   Equity:Opening Balances
 "
-   (goto-char 65)                      ; on the amount 1,000.00
-   (let ((context (ledger-context-at-point)))
-     (should (eq (ledger-context-current-field context) 'commoditized-amount))
-     (should (equal "-$1,000.00"
-                    (ledger-context-field-value context 'commoditized-amount))))))
+    (goto-char 65)                      ; on the amount 1,000.00
+    (let ((context (ledger-context-at-point)))
+      (should (eq (ledger-context-current-field context) 'commoditized-amount))
+      (should (equal "-$1,000.00"
+                     (ledger-context-field-value context 'commoditized-amount))))))
 
 (ert-deftest ledger-context/test-thing-day ()
   "`ledger-thing-at-point' identifies day-of-week lines."
   :tags '(context)
   (ledger-tests-with-temp-file
-   "Y2024
+      "Y2024
 mon  some entry
 "
-   (forward-line 1)
-   (should (eq 'day (ledger-thing-at-point)))))
+    (forward-line 1)
+    (should (eq 'day (ledger-thing-at-point)))))
 
 
 (ert-deftest ledger-context/test-other-line ()
@@ -337,19 +337,19 @@ mon  some entry
 or nil if the offset would go off the end of the buffer."
   :tags '(context)
   (ledger-tests-with-temp-file
-   "2024/01/01 Foo
+      "2024/01/01 Foo
     Assets:Bank  $10
     Equity:Open
 "
-   (goto-char (point-min))
-   ;; Same line, offset 0.
-   (let ((ctx (ledger-context-other-line 0)))
-     (should (eq (ledger-context-line-type ctx) 'xact)))
-   ;; Next line is acct-transaction.
-   (let ((ctx (ledger-context-other-line 1)))
-     (should (eq (ledger-context-line-type ctx) 'acct-transaction)))
-   ;; Out of range.
-   (should (null (ledger-context-other-line 1000)))))
+    (goto-char (point-min))
+    ;; Same line, offset 0.
+    (let ((ctx (ledger-context-other-line 0)))
+      (should (eq (ledger-context-line-type ctx) 'xact)))
+    ;; Next line is acct-transaction.
+    (let ((ctx (ledger-context-other-line 1)))
+      (should (eq (ledger-context-line-type ctx) 'acct-transaction)))
+    ;; Out of range.
+    (should (null (ledger-context-other-line 1000)))))
 
 
 (ert-deftest ledger-context/test-line-types ()
@@ -371,33 +371,33 @@ or nil if the offset would go off the end of the buffer."
     (let ((line (nth 1 case))
           (expected (nth 2 case)))
       (ledger-tests-with-temp-file
-       (concat line "\n")
-       (goto-char (point-min))
-       (let ((ctx (ledger-context-at-point)))
-         (should (eq (ledger-context-line-type ctx) expected)))))))
+          (concat line "\n")
+        (goto-char (point-min))
+        (let ((ctx (ledger-context-at-point)))
+          (should (eq (ledger-context-line-type ctx) expected)))))))
 
 
 (ert-deftest ledger-context/test-field-helpers ()
   "Test field-info accessor helpers."
   :tags '(context)
   (ledger-tests-with-temp-file
-   "    Assets:Bank        $10\n"
-   (goto-char (point-min))
-   (forward-line 0)
-   (let ((ctx (ledger-context-at-point)))
-     (should (ledger-context-field-present-p ctx 'account))
-     (should-not (ledger-context-field-present-p ctx 'no-such-field))
-     (let* ((pos (ledger-context-field-position ctx 'account))
-            (end (ledger-context-field-end-position ctx 'account)))
-       (should (integerp pos))
-       (should (= (- end pos) (length (ledger-context-field-value ctx 'account)))))
-     ;; goto-field-start / goto-field-end
-     (save-excursion
-       (ledger-context-goto-field-start ctx 'account)
-       (should (= (point) (ledger-context-field-position ctx 'account))))
-     (save-excursion
-       (ledger-context-goto-field-end ctx 'account)
-       (should (= (point) (ledger-context-field-end-position ctx 'account)))))))
+      "    Assets:Bank        $10\n"
+    (goto-char (point-min))
+    (forward-line 0)
+    (let ((ctx (ledger-context-at-point)))
+      (should (ledger-context-field-present-p ctx 'account))
+      (should-not (ledger-context-field-present-p ctx 'no-such-field))
+      (let* ((pos (ledger-context-field-position ctx 'account))
+             (end (ledger-context-field-end-position ctx 'account)))
+        (should (integerp pos))
+        (should (= (- end pos) (length (ledger-context-field-value ctx 'account)))))
+      ;; goto-field-start / goto-field-end
+      (save-excursion
+        (ledger-context-goto-field-start ctx 'account)
+        (should (= (point) (ledger-context-field-position ctx 'account))))
+      (save-excursion
+        (ledger-context-goto-field-end ctx 'account)
+        (should (= (point) (ledger-context-field-end-position ctx 'account)))))))
 
 
 (provide 'context-test)

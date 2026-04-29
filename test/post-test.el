@@ -722,7 +722,7 @@ Assets:Cash    $10
     (should (string-match-p
              "^    Assets:Cash"
              (buffer-substring-no-properties (line-beginning-position)
-                                              (line-end-position))))))
+                                             (line-end-position))))))
 
 (ert-deftest ledger-post/indent-line-no-change ()
   "`ledger-indent-line' is a no-op on a non-posting line.
@@ -855,8 +855,8 @@ Covers the `(insert \"  \")' branch (line 191)."
       (should calc-called)
       ;; The function should have inserted two spaces after the account name
       (should (string-match-p "Assets:Cash  $" (buffer-substring-no-properties
-                                                 (line-beginning-position)
-                                                 (line-end-position)))))))
+                                                (line-beginning-position)
+                                                (line-end-position)))))))
 
 (provide 'post-test)
 

@@ -514,8 +514,8 @@ https://github.com/ledger/ledger-mode/issues/424"
       (ledger-report "dummy-report-name" nil)
       (should report-test--account-format-specifier-called-p)
       (should (equal (buffer-local-value
-                     'ledger-report-cmd
-                     (get-buffer ledger-report-buffer-name))
+                      'ledger-report-cmd
+                      (get-buffer ledger-report-buffer-name))
                      (concat "ledger [[ledger-mode-flags]] -f "
                              buffer-file-name
                              " reg --strict --period "

@@ -226,36 +226,36 @@ https://github.com/ledger/ledger-mode/issues/415"
   "`ledger-occur-prompt' returns active region when single-line."
   :tags '(occur)
   (ledger-tests-with-temp-file
-   "Hello World\n"
-   (goto-char (point-min))
-   (push-mark (point) t t)
-   (forward-char 5)                     ; select "Hello"
-   (activate-mark)
-   (should (equal "Hello" (ledger-occur-prompt)))
-   (deactivate-mark)))
+      "Hello World\n"
+    (goto-char (point-min))
+    (push-mark (point) t t)
+    (forward-char 5)                     ; select "Hello"
+    (activate-mark)
+    (should (equal "Hello" (ledger-occur-prompt)))
+    (deactivate-mark)))
 
 
 (ert-deftest ledger-occur/test-prompt-multiline-region ()
   "`ledger-occur-prompt' returns nil when region spans multiple lines."
   :tags '(occur)
   (ledger-tests-with-temp-file
-   "first\nsecond\n"
-   (goto-char (point-min))
-   (push-mark (point) t t)
-   (goto-char (point-max))
-   (activate-mark)
-   (should (null (ledger-occur-prompt)))
-   (deactivate-mark)))
+      "first\nsecond\n"
+    (goto-char (point-min))
+    (push-mark (point) t t)
+    (goto-char (point-max))
+    (activate-mark)
+    (should (null (ledger-occur-prompt)))
+    (deactivate-mark)))
 
 
 (ert-deftest ledger-occur/test-prompt-current-word ()
   "`ledger-occur-prompt' returns current word when no region active."
   :tags '(occur)
   (ledger-tests-with-temp-file
-   "Hello\n"
-   (goto-char (point-min))
-   (forward-char 1)                     ; inside "Hello"
-   (should (equal "Hello" (ledger-occur-prompt)))))
+      "Hello\n"
+    (goto-char (point-min))
+    (forward-char 1)                     ; inside "Hello"
+    (should (equal "Hello" (ledger-occur-prompt)))))
 
 
 (ert-deftest ledger-occur/test-compress-adjacent ()

@@ -87,7 +87,7 @@ Regression test for https://github.com/ledger/ledger-mode/issues/448.
   "`ledger-navigate-next-xact' moves on when point is already on a payee line."
   :tags '(navigate)
   (ledger-tests-with-temp-file
-   "2024/01/01 Foo
+      "2024/01/01 Foo
     Assets:Bank  $10
     Equity:Open
 
@@ -95,16 +95,16 @@ Regression test for https://github.com/ledger/ledger-mode/issues/448.
     Assets:Bank  $20
     Equity:Open
 "
-   (goto-char (point-min))             ; on first xact
-   (ledger-navigate-next-xact)
-   (should (looking-at-p (regexp-quote "2024/02/01 Bar")))))
+    (goto-char (point-min))             ; on first xact
+    (ledger-navigate-next-xact)
+    (should (looking-at-p (regexp-quote "2024/02/01 Bar")))))
 
 
 (ert-deftest ledger-navigate/test-prev-xact-from-posting ()
   "`ledger-navigate-prev-xact-or-directive' from a posting line jumps to enclosing xact."
   :tags '(navigate)
   (ledger-tests-with-temp-file
-   "2024/01/01 First
+      "2024/01/01 First
     Assets:Bank  $10
     Equity:Open
 
@@ -112,19 +112,19 @@ Regression test for https://github.com/ledger/ledger-mode/issues/448.
     Assets:Bank  $20
     Equity:Open
 "
-   ;; Position inside Second's posting line.
-   (goto-char (point-min))
-   (search-forward "2024/02/01")
-   (forward-line 1)                     ; now on the posting line
-   (ledger-navigate-prev-xact-or-directive)
-   (should (looking-at-p (regexp-quote "2024/01/01 First")))))
+    ;; Position inside Second's posting line.
+    (goto-char (point-min))
+    (search-forward "2024/02/01")
+    (forward-line 1)                     ; now on the posting line
+    (ledger-navigate-prev-xact-or-directive)
+    (should (looking-at-p (regexp-quote "2024/01/01 First")))))
 
 
 (ert-deftest ledger-navigate/test-find-element-extents-block-comment ()
   "Comment block extents are returned correctly."
   :tags '(navigate)
   (ledger-tests-with-temp-file
-   "comment
+      "comment
 This is a comment
 that spans multiple lines.
 end comment
@@ -133,11 +133,11 @@ end comment
     Assets:Bank  $10
     Equity:Open
 "
-   (goto-char (point-min))
-   (forward-line 1)                     ; inside the block
-   (let ((extents (ledger-navigate-find-element-extents (point))))
-     (should (consp extents))
-     (should (= 2 (length extents))))))
+    (goto-char (point-min))
+    (forward-line 1)                     ; inside the block
+    (let ((extents (ledger-navigate-find-element-extents (point))))
+      (should (consp extents))
+      (should (= 2 (length extents))))))
 
 
 (ert-deftest ledger-navigate/test-find-directive-extents-with-comment ()
@@ -145,7 +145,7 @@ end comment
 Uses ;-prefixed comment lines (looking-at-p comment-re branch)."
   :tags '(navigate)
   (ledger-tests-with-temp-file
-   "; First comment line
+      "; First comment line
 ; Second comment line
 ; Third comment line
 
@@ -153,20 +153,20 @@ Uses ;-prefixed comment lines (looking-at-p comment-re branch)."
     Assets:Bank  $10
     Equity:Open
 "
-   (goto-char (point-min))
-   ;; Position inside comment block.
-   (forward-line 1)
-   (save-excursion
-     (let ((extents (ledger-navigate-find-element-extents (point))))
-       (should (consp extents))
-       (should (= 2 (length extents)))))))
+    (goto-char (point-min))
+    ;; Position inside comment block.
+    (forward-line 1)
+    (save-excursion
+      (let ((extents (ledger-navigate-find-element-extents (point))))
+        (should (consp extents))
+        (should (= 2 (length extents)))))))
 
 
 (ert-deftest ledger-navigate/test-find-directive-extents-comment-after-text ()
   "Comment block preceded by a non-comment line: forward-line branch is reached."
   :tags '(navigate)
   (ledger-tests-with-temp-file
-   "alias TX = Expenses:Transport
+      "alias TX = Expenses:Transport
 ; First comment line
 ; Second comment line
 
@@ -174,18 +174,18 @@ Uses ;-prefixed comment lines (looking-at-p comment-re branch)."
     Assets:Bank  $10
     Equity:Open
 "
-   (goto-char (point-min))
-   (forward-line 1)                     ; on first comment line
-   (let ((extents (ledger-navigate-find-element-extents (point))))
-     (should (consp extents))
-     (should (= 2 (length extents))))))
+    (goto-char (point-min))
+    (forward-line 1)                     ; on first comment line
+    (let ((extents (ledger-navigate-find-element-extents (point))))
+      (should (consp extents))
+      (should (= 2 (length extents))))))
 
 
 (ert-deftest ledger-navigate/test-block-comment ()
   "`ledger-navigate-block-comment' returns comment extents."
   :tags '(navigate)
   (ledger-tests-with-temp-file
-   "; First comment line
+      "; First comment line
 ; Second comment line
 ; Third comment line
 
@@ -193,34 +193,34 @@ Uses ;-prefixed comment lines (looking-at-p comment-re branch)."
     Assets:Bank  $10
     Equity:Open
 "
-   (goto-char (point-min))
-   (forward-line 1)                     ; inside the comment block
-   (let ((extents (ledger-navigate-block-comment (point))))
-     (should (consp extents))
-     (should (= 2 (length extents)))
-     ;; Both bounds should be valid buffer positions.
-     (should (and (integerp (car extents)) (integerp (cadr extents)))))))
+    (goto-char (point-min))
+    (forward-line 1)                     ; inside the comment block
+    (let ((extents (ledger-navigate-block-comment (point))))
+      (should (consp extents))
+      (should (= 2 (length extents)))
+      ;; Both bounds should be valid buffer positions.
+      (should (and (integerp (car extents)) (integerp (cadr extents)))))))
 
 
 (ert-deftest ledger-navigate/test-block-comment-non-comment ()
   "`ledger-navigate-block-comment' returns single-line bounds when not on comment."
   :tags '(navigate)
   (ledger-tests-with-temp-file
-   "2024/01/01 Foo
+      "2024/01/01 Foo
     Assets:Bank  $10
     Equity:Open
 "
-   (goto-char (point-min))
-   (let ((extents (ledger-navigate-block-comment (point))))
-     (should (consp extents))
-     (should (= 2 (length extents))))))
+    (goto-char (point-min))
+    (let ((extents (ledger-navigate-block-comment (point))))
+      (should (consp extents))
+      (should (= 2 (length extents))))))
 
 
 (ert-deftest ledger-navigate/test-no-previous-uncleared ()
   "`ledger-navigate-previous-uncleared' raises a user-error when none found."
   :tags '(navigate)
   (ledger-tests-with-temp-file
-   "2024/01/01 * Foo
+      "2024/01/01 * Foo
     Assets:Bank  $10
     Equity:Open
 
@@ -228,8 +228,8 @@ Uses ;-prefixed comment lines (looking-at-p comment-re branch)."
     Assets:Bank  $20
     Equity:Open
 "
-   (goto-char (point-max))
-   (should-error (ledger-navigate-previous-uncleared) :type 'user-error)))
+    (goto-char (point-max))
+    (should-error (ledger-navigate-previous-uncleared) :type 'user-error)))
 
 
 (provide 'navigate-test)

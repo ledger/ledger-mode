@@ -35,7 +35,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1030"
   :tags '(state regress)
 
   (ledger-tests-with-temp-file
-"2013/06/09 * 4 Saisons
+      "2013/06/09 * 4 Saisons
     Dépense:Alimentation:Restaurant          23,00 €
     Passif:Crédit:BanqueAccord
 "
@@ -43,14 +43,14 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=1030"
     (ledger-toggle-current)             ; C-c C-c
     (should
      (equal (buffer-string)
-      "2013/06/09 4 Saisons
+            "2013/06/09 4 Saisons
     Dépense:Alimentation:Restaurant          23,00 €
     * Passif:Crédit:BanqueAccord
 " ))
     (ledger-toggle-current)             ; C-c C-c
     (should
      (equal (buffer-string)
-      "2013/06/09 * 4 Saisons
+            "2013/06/09 * 4 Saisons
     Dépense:Alimentation:Restaurant          23,00 €
     Passif:Crédit:BanqueAccord
 " ))))
@@ -124,14 +124,14 @@ https://github.com/ledger/ledger-mode/issues/274"
 
   ;; deliberately no newline at the end of the file
   (ledger-tests-with-temp-file
-   "2011/01/19 Grocery Store
+      "2011/01/19 Grocery Store
   Expenses:Food:Groceries             $ 44.00 ; hastag: not block
   Assets:Checking"
-   (goto-char (point-min))
-   (ledger-toggle-current)
-   (should
-    (equal (buffer-string)
-           "2011/01/19 * Grocery Store
+    (goto-char (point-min))
+    (ledger-toggle-current)
+    (should
+     (equal (buffer-string)
+            "2011/01/19 * Grocery Store
   Expenses:Food:Groceries             $ 44.00 ; hastag: not block
   Assets:Checking"))))
 

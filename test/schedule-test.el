@@ -243,13 +243,13 @@ with `date' bound to DATE.  Returns the form's value."
 
 (ert-deftest ledger-schedule/scan-transactions ()
   (schedule-test--with-schedule-file
-    (let ((xacts (ledger-schedule-scan-transactions schedule-file)))
-      (should (= 2 (length xacts)))
-      ;; Each entry is (predicate-form payload-string).
-      (dolist (x xacts)
-        (should (= 2 (length x)))
-        (should (eq 'lambda (car (car x))))
-        (should (stringp (cadr x)))))))
+   (let ((xacts (ledger-schedule-scan-transactions schedule-file)))
+     (should (= 2 (length xacts)))
+     ;; Each entry is (predicate-form payload-string).
+     (dolist (x xacts)
+       (should (= 2 (length x)))
+       (should (eq 'lambda (car (car x))))
+       (should (stringp (cadr x)))))))
 
 (ert-deftest ledger-schedule/list-upcoming-xacts ()
   ;; Use a synthetic candidate list whose predicate matches every day.
@@ -283,33 +283,33 @@ with `date' bound to DATE.  Returns the form's value."
 
 (ert-deftest ledger-schedule/upcoming-end-to-end ()
   (schedule-test--with-schedule-file
-    (unwind-protect
-        (progn
-          ;; Emit into the schedule buffer.
-          (ledger-schedule-upcoming schedule-file 30 30)
-          (should (get-buffer ledger-schedule-buffer-name)))
-      (when (get-buffer ledger-schedule-buffer-name)
-        (kill-buffer ledger-schedule-buffer-name)))))
+   (unwind-protect
+       (progn
+         ;; Emit into the schedule buffer.
+         (ledger-schedule-upcoming schedule-file 30 30)
+         (should (get-buffer ledger-schedule-buffer-name)))
+     (when (get-buffer ledger-schedule-buffer-name)
+       (kill-buffer ledger-schedule-buffer-name)))))
 
 
 (ert-deftest ledger-schedule/upcoming-with-prefix-arg-prompts ()
   "With `current-prefix-arg' set, the interactive form prompts for parameters."
   (schedule-test--with-schedule-file
-    (let ((current-prefix-arg t)
-          (read-numbers (list 5 10)))
-      (cl-letf (((symbol-function 'read-file-name)
-                 (lambda (&rest _) schedule-file))
-                ((symbol-function 'read-number)
-                 (lambda (&rest _) (pop read-numbers))))
-        (let ((interactive-form (interactive-form 'ledger-schedule-upcoming)))
-          (should interactive-form)
-          ;; Resolve the args via the interactive form, exercising the
-          ;; prefix-arg branch.
-          (let ((args (eval (cadr interactive-form) t)))
-            (should (= 3 (length args)))
-            (should (string= (car args) schedule-file))
-            (should (= 5 (cadr args)))
-            (should (= 10 (caddr args)))))))))
+   (let ((current-prefix-arg t)
+         (read-numbers (list 5 10)))
+     (cl-letf (((symbol-function 'read-file-name)
+                (lambda (&rest _) schedule-file))
+               ((symbol-function 'read-number)
+                (lambda (&rest _) (pop read-numbers))))
+       (let ((interactive-form (interactive-form 'ledger-schedule-upcoming)))
+         (should interactive-form)
+         ;; Resolve the args via the interactive form, exercising the
+         ;; prefix-arg branch.
+         (let ((args (eval (cadr interactive-form) t)))
+           (should (= 3 (length args)))
+           (should (string= (car args) schedule-file))
+           (should (= 5 (cadr args)))
+           (should (= 10 (caddr args)))))))))
 
 
 (ert-deftest ledger-schedule/parse-complex-date-letter-day ()
