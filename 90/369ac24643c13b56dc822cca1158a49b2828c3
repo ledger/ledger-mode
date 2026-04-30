@@ -1,0 +1,23 @@
+test/regex-test.el
+  f52892d6367ac936 101-105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.5",
+  "base_commit_sha": "90369ac24643c13b56dc822cca1158a49b2828c3",
+  "prompts": {
+    "f52892d6367ac936": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "33c1dc3f-df53-45bb-9423-9d840cc6113e",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "John Wiegley <johnw@newartisans.com>",
+      "messages": [],
+      "total_additions": 5,
+      "total_deletions": 1,
+      "accepted_lines": 5,
+      "overriden_lines": 0
+    }
+  }
+}
