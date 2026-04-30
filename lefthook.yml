@@ -41,7 +41,7 @@ pre-commit:
       run: nix develop --no-warn-dirty --command bash -c 'emacs -Q --batch --load tools/coverage.el && tools/coverage-check.sh'
     benchmark:
       glob: "*.el"
-      env: { LEDGER_MODE_QUIET: "1" }
+      env: { LEDGER_MODE_QUIET: "1", LEDGER_MODE_STRICT_BENCH: "1" }
       run: nix develop --no-warn-dirty --command bash -c 'emacs -Q --batch --load tools/benchmark.el && tools/benchmark-check.sh'
     docs:
       glob: "doc/**"
