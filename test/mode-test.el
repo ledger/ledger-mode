@@ -26,6 +26,7 @@
 ;;  Regression tests for ledger-mode
 
 ;;; Code:
+(require 'subr-x)
 (require 'test-helper)
 
 

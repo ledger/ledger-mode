@@ -98,7 +98,7 @@ added to this file similar to the tests for the other regexps."
           #'identity
           (seq-map
            (lambda (symbol)
-             (when (string-match (rx (and bos "ledger-regex-" (group (* any)) "-group--count" eos))
+             (when (string-match (rx (and bos "ledger-regex-" (group (* anychar)) "-group--count" eos))
                                  (symbol-name symbol))
                (match-string 1 (symbol-name symbol))))
            regex-test--all-ledger-regex-symbols))))
