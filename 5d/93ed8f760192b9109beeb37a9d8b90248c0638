@@ -1,0 +1,27 @@
+lefthook.yml
+  f52892d6367ac936 44
+test/regex-test.el
+  f52892d6367ac936 101
+test/mode-test.el
+  f52892d6367ac936 29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.5",
+  "base_commit_sha": "5d93ed8f760192b9109beeb37a9d8b90248c0638",
+  "prompts": {
+    "f52892d6367ac936": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "33c1dc3f-df53-45bb-9423-9d840cc6113e",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "John Wiegley <johnw@newartisans.com>",
+      "messages": [],
+      "total_additions": 3,
+      "total_deletions": 2,
+      "accepted_lines": 3,
+      "overriden_lines": 0
+    }
+  }
+}
