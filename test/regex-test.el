@@ -98,7 +98,11 @@ added to this file similar to the tests for the other regexps."
           #'identity
           (seq-map
            (lambda (symbol)
-             (when (string-match (rx (and bos "ledger-regex-" (group (* any)) "-group--count" eos))
+             ;; Symbol names never contain newlines, so `not-newline' is
+             ;; equivalent to "any char" here and is portable across the
+             ;; entire Emacs matrix.  `any' is obsolete on the snapshot;
+             ;; `anychar' was introduced in 27.1 and fails on 26.x.
+             (when (string-match (rx (and bos "ledger-regex-" (group (* not-newline)) "-group--count" eos))
                                  (symbol-name symbol))
                (match-string 1 (symbol-name symbol))))
            regex-test--all-ledger-regex-symbols))))

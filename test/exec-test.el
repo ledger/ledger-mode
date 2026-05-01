@@ -26,6 +26,7 @@
 ;;  Regression tests for ledger-exec
 
 ;;; Code:
+(require 'subr-x)
 (require 'test-helper)
 
 
@@ -76,7 +77,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=254"
            (inhibit-message t))
        (ledger-exec-ledger (current-buffer) nil "balance"))))
   ;; The error buffer should have been created.
-  (when-let ((buf (get-buffer "*Ledger Error*")))
+  (when-let* ((buf (get-buffer "*Ledger Error*")))
     (kill-buffer buf)))
 
 
@@ -119,7 +120,7 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=254"
               (kill-buffer buf))))
       (delete-file tmp)
       ;; Kill the master-file buffer that may have been created.
-      (when-let ((b (get-file-buffer tmp)))
+      (when-let* ((b (get-file-buffer tmp)))
         (kill-buffer b)))))
 
 
