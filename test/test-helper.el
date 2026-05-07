@@ -134,7 +134,7 @@ always located at the beginning of buffer."
 (defun ledger-test-visible-buffer-substring (start end)
   "Same as `buffer-substring', but excludes invisible text.
 The two arguments START and END are character positions."
-  (let (str)
+  (let ((str ""))
     (while (< start end)
       (let ((next-pos (next-char-property-change start end)))
         (when (not (invisible-p start))
