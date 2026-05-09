@@ -211,6 +211,146 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=260"
       (should (< first-pos mid-pos)))))
 
 
+(ert-deftest ledger-sort/test-1068-year-directive ()
+  "Regress test for Bug 1068
+https://github.com/ledger/ledger/issues/1068
+
+Dates lacking a year component should be interpreted relative to the
+preceding `year NNNN' directive when sorting."
+  :tags '(sort regress)
+
+  (ledger-tests-with-temp-file
+      "year 2040
+
+07/17 Payee B
+    Expenses:B                                $20.00
+    Assets:Cash
+
+2040/07/15 Payee A
+    Expenses:A                                $10.00
+    Assets:Cash
+"
+    (ledger-sort-buffer)
+    (should (equal (buffer-string)
+                   "year 2040
+
+2040/07/15 Payee A
+    Expenses:A                                $10.00
+    Assets:Cash
+
+07/17 Payee B
+    Expenses:B                                $20.00
+    Assets:Cash
+"))))
+
+
+(ert-deftest ledger-sort/test-1068-Y-directive ()
+  "Regress test for Bug 1068
+https://github.com/ledger/ledger/issues/1068
+
+The `Y NNNN' form of the year directive should also be honored."
+  :tags '(sort regress)
+
+  (ledger-tests-with-temp-file
+      "Y 2040
+
+07/17 Payee B
+    Expenses:B                                $20.00
+    Assets:Cash
+
+2040/07/15 Payee A
+    Expenses:A                                $10.00
+    Assets:Cash
+"
+    (ledger-sort-buffer)
+    (should (equal (buffer-string)
+                   "Y 2040
+
+2040/07/15 Payee A
+    Expenses:A                                $10.00
+    Assets:Cash
+
+07/17 Payee B
+    Expenses:B                                $20.00
+    Assets:Cash
+"))))
+
+
+(ert-deftest ledger-sort/test-1068-unpadded-dates ()
+  "Regress test for Bug 1068
+https://github.com/ledger/ledger/issues/1068
+
+Dates written without leading zeros (e.g. 2015/5/7) should sort
+chronologically, not lexicographically."
+  :tags '(sort regress)
+
+  (ledger-tests-with-temp-file
+      "2015/5/10 Payee A
+    Expenses:A                                $10.00
+    Assets:Cash
+
+2015/5/7 Payee B
+    Expenses:B                                $20.00
+    Assets:Cash
+"
+    (ledger-sort-buffer)
+    (should (equal (buffer-string)
+                   "2015/5/7 Payee B
+    Expenses:B                                $20.00
+    Assets:Cash
+
+2015/5/10 Payee A
+    Expenses:A                                $10.00
+    Assets:Cash
+"))))
+
+
+(ert-deftest ledger-sort/test-1068-year-directive-above-region ()
+  "Regress test for Bug 1068
+https://github.com/ledger/ledger/issues/1068
+
+A `year NNNN' directive preceding the sort region should still apply
+when only a sub-region is sorted (so narrowing does not hide it)."
+  :tags '(sort regress)
+
+  (ledger-tests-with-temp-file
+      "year 2040
+
+2040/01/01 Prelude
+    Expenses:Foo                              $1.00
+    Assets:Cash
+
+07/17 Payee B
+    Expenses:B                                $20.00
+    Assets:Cash
+
+03/05 Payee A
+    Expenses:A                                $10.00
+    Assets:Cash
+"
+    ;; Sort only the last two transactions (below the year directive).
+    (goto-char (point-min))
+    (search-forward "07/17")
+    (beginning-of-line)
+    (let ((region-start (point)))
+      (ledger-sort-region region-start (point-max)))
+    (should (equal (buffer-string)
+                   "year 2040
+
+2040/01/01 Prelude
+    Expenses:Foo                              $1.00
+    Assets:Cash
+
+03/05 Payee A
+    Expenses:A                                $10.00
+    Assets:Cash
+
+07/17 Payee B
+    Expenses:B                                $20.00
+    Assets:Cash
+"))))
+
+
 (provide 'sort-test)
 
 ;;; sort-test.el ends here
