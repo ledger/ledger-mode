@@ -698,6 +698,39 @@ to `ledger-binary-path' between runs are honored."
           (kill-buffer ledger-report-buffer-name)))
       (when (file-exists-p tmp) (delete-file tmp)))))
 
+(ert-deftest ledger-report/redo-after-killed-source-buffer ()
+  "Do not refresh report if the source buffer has been killed."
+  :tags '(report regress)
+  :expected-result :failed
+  (let (ledger-buf
+        (reports-run 0))
+    (ledger-tests-with-temp-file demo-ledger
+      (let ((ledger-report-after-report-hook
+             (cons (lambda () (cl-incf reports-run))
+                   ledger-report-after-report-hook)))
+        (setq ledger-buf (current-buffer))
+        (should (= reports-run 0))
+        (ledger-report "bal" nil)
+        (with-current-buffer ledger-report-buffer-name
+          (goto-char (point-min))
+          (should (equal (buffer-substring-no-properties (line-beginning-position)
+                                                         (line-end-position))
+                         "Report: bal"))
+          (should (= reports-run 1)))
+        ;; Saving a ledger-mode buffer reruns any reports
+        (save-buffer)
+        (should (= reports-run 2))))
+    ;; Now, the ledger buffer has been killed.  Open a new one.
+    (should (null (buffer-name ledger-buf)))
+    (ledger-tests-with-temp-file demo-ledger
+      (let ((ledger-report-after-report-hook
+             (cons (lambda () (cl-incf reports-run))
+                   ledger-report-after-report-hook)))
+        ;; Saving a new ledger buffer should not attempt to rerun reports,
+        ;; because the report may depend on buffer-local state from the source
+        ;; buffer where it was created.
+        (save-buffer)
+        (should (= reports-run 2))))))
 
 (provide 'report-test)
 
