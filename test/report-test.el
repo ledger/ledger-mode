@@ -100,13 +100,10 @@
     (should (string= "Assets:Bank" (ledger-report-account-format-specifier)))))
 
 (ert-deftest ledger-report/month-format-specifier-default ()
-  ;; The function does `(with-current-buffer (or ledger-report-buffer-name …))',
-  ;; so the report buffer must exist.
-  (let ((buf (get-buffer-create ledger-report-buffer-name)))
-    (unwind-protect
-        (let ((ledger-report-current-month '(2024 . 4)))
-          (should (string= "2024-4" (ledger-report-month-format-specifier))))
-      (let ((kill-buffer-query-functions nil)) (kill-buffer buf)))))
+  (with-current-buffer (get-buffer-create ledger-report-buffer-name)
+    (ledger-report-mode)
+    (setq ledger-report-current-month '(2024 . 4))
+    (should (string= "2024-4" (ledger-report-month-format-specifier)))))
 
 (ert-deftest ledger-report/expand-format-specifiers ()
   ;; Substitute %(month) and %(foo).  Needs both a ledger-buf and the report
