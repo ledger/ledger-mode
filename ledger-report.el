@@ -421,7 +421,7 @@ MONTH is of the form (YEAR . INDEX) where INDEX ranges from
 
 (defun ledger-report-month-format-specifier ()
   "Substitute current month."
-  (with-current-buffer (or ledger-report-buffer-name (current-buffer))
+  (with-current-buffer ledger-report-buffer-name
     (let* ((month (or ledger-report-current-month (ledger-report--current-month)))
            (year (car month))
            (month-index (cdr month)))
