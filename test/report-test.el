@@ -633,21 +633,19 @@ to `ledger-binary-path' between runs are honored."
 
 (ert-deftest ledger-report/redo-runs-in-report-buffer ()
   "`ledger-report-redo' rebuilds the report from `ledger-report-cmd'."
-  (let ((rbuf (get-buffer-create ledger-report-buffer-name))
-        (calls 0))
-    (unwind-protect
-        (with-current-buffer rbuf
-          (ledger-report-mode)
-          (setq-local ledger-report-cmd "ledger bal")
-          (setq-local ledger-report-name "X")
-          (setq-local ledger-report-is-reversed nil)
-          (cl-letf (((symbol-function 'shell-command-to-string)
-                     (lambda (_cmd) (cl-incf calls) "out\n"))
-                    ((symbol-function 'pop-to-buffer)
-                     (lambda (b &rest _) (set-buffer b) b)))
-            (ledger-report-redo)
-            (should (>= calls 1))))
-      (let ((kill-buffer-query-functions nil)) (kill-buffer rbuf)))))
+  (let ((calls 0))
+    (ledger-tests-with-temp-file ""
+      (add-to-list 'ledger-reports '("temp-report-for-testing" "zzzzz"))
+      (ledger-report "temp-report-for-testing" nil)
+      (cl-letf (((symbol-function 'shell-command-to-string)
+                 (lambda (cmd)
+                   (should (equal cmd "zzzzz"))
+                   (cl-incf calls)
+                   "out\n")))
+        (should (eq major-mode 'ledger-mode))
+        (ledger-report-redo)
+        (should (equal calls 1)))
+      (kill-buffer ledger-report-buffer-name))))
 
 (ert-deftest ledger-report/main-runs-end-to-end ()
   "Drive the main `ledger-report' entry point through a synthetic command."
