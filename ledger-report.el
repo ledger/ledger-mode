@@ -432,7 +432,9 @@ MONTH is of the form (YEAR . INDEX) where INDEX ranges from
 
 Format specifiers are defined in the
 `ledger-report-format-specifiers' alist.  The functions are
-called in the ledger buffer for which the report is being run."
+called in the ledger buffer for which the report is being run.
+
+This function must be called from a report buffer."
   (let ((ledger-buf ledger-report-ledger-buf))
     (with-temp-buffer
       (save-excursion (insert report-cmd))

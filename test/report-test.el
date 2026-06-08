@@ -108,31 +108,39 @@
 (ert-deftest ledger-report/expand-format-specifiers ()
   ;; Substitute %(month) and %(foo).  Needs both a ledger-buf and the report
   ;; buffer because month-format-specifier-default switches there.
-  (let ((report-buf (get-buffer-create ledger-report-buffer-name))
-        (src-buf (current-buffer)))
+  ;;
+  ;; `src-buf' can be an arbitrary buffer here.
+  (let ((src-buf (current-buffer)))
     (unwind-protect
-        (let ((ledger-report-current-month '(2024 . 4))
-              (ledger-report-ledger-buf src-buf)
-              (ledger-report-format-specifiers
-               '(("month" . ledger-report-month-format-specifier)
-                 ("foo" . (lambda () "QUOTED ME")))))
-          (let ((result (ledger-report-expand-format-specifiers
-                         "ledger -p %(month) reg %(foo)")))
+        (with-current-buffer (get-buffer-create ledger-report-buffer-name)
+          (ledger-report-mode)
+          (setq ledger-report-current-month '(2024 . 4)
+                ledger-report-ledger-buf src-buf)
+          (let* ((ledger-report-format-specifiers
+                  '(("month" . ledger-report-month-format-specifier)
+                    ("foo" . (lambda () "QUOTED ME"))))
+                 (result (ledger-report-expand-format-specifiers
+                          "ledger -p %(month) reg %(foo)")))
             (should (string-match-p "ledger -p 2024-4 reg" result))
             ;; shell-quote-argument escapes the space, so the literal output
             ;; contains "QUOTED\ ME".
             (should (string-match-p "QUOTED" result))
             (should (string-match-p "ME" result))))
-      (let ((kill-buffer-query-functions nil)) (kill-buffer report-buf)))))
+      (kill-buffer ledger-report-buffer-name))))
 
 (ert-deftest ledger-report/expand-format-specifiers-list ()
   ;; A list-returning specifier is space-joined, not shell-quoted.
-  (let ((ledger-report-ledger-buf (current-buffer))
-        (ledger-report-format-specifiers
-         '(("multi" . (lambda () (list "a" "b" "c"))))))
-    (let ((result (ledger-report-expand-format-specifiers
-                   "ledger %(multi) reg")))
-      (should (string-match-p "ledger a b c reg" result)))))
+  (let ((src-buf (current-buffer)))
+    (unwind-protect
+        (with-current-buffer (get-buffer-create ledger-report-buffer-name)
+          (ledger-report-mode)
+          (setq ledger-report-ledger-buf src-buf)
+          (let* ((ledger-report-format-specifiers
+                  '(("multi" . (lambda () (list "a" "b" "c")))))
+                 (result (ledger-report-expand-format-specifiers
+                          "ledger %(multi) reg")))
+            (should (equal "ledger a b c reg" result))))
+      (kill-buffer ledger-report-buffer-name))))
 
 
 ;;; Header line + extra args ---------------------------------------------
