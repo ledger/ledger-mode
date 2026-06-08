@@ -9,6 +9,11 @@
 
 ;;; Code:
 
+(define-advice ert-select-tests (:filter-return (selected-tests) randomize-order)
+  "Randomize the order of ERT tests to avoid accidental state dependencies."
+  (sort selected-tests
+        (lambda (_ _) (zerop (random 2)))))
+
 (let* ((root (or (getenv "LEDGER_MODE_ROOT") default-directory))
        (test-dir (expand-file-name "test" root)))
   (add-to-list 'load-path root)
