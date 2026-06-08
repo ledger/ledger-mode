@@ -35,6 +35,9 @@
 (defvar ledger-works nil
   "Non-nil if the ledger binary can support `ledger-mode' interactive features.")
 
+(defvar ledger-exec--args-only nil
+  "Internal variable, used for testing.")
+
 (defgroup ledger-exec nil
   "Interface to the Ledger command-line accounting program."
   :group 'ledger)
@@ -90,6 +93,8 @@ otherwise the error output is displayed and an error is raised."
                           (append (list (point-min) (point-max)
                                         ledger-binary-path nil (list outbuf errfile) nil "-f" "-")
                                   (list "--date-format" ledger-default-date-format)
+                                  (when ledger-exec--args-only
+                                    (list "--args-only"))
                                   args)))))
             (if (ledger-exec-success-p exit-code outbuf)
                 outbuf

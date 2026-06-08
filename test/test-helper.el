@@ -96,7 +96,9 @@ provided (e.g., if BODY is still inside a minibuffer prompt)."
 (defun ledger-tests-with-temp-file-1 (contents body)
   (let* ((temp-file (make-temp-file "ledger-tests-"))
          (ledger-buffer (find-file-noselect temp-file))
-         (ledger-init-file-name nil))
+         (ledger-init-file-name nil)
+         ;; also prevent the ledger binary itself from reading the init file
+         (ledger-exec--args-only t))
     (ledger-tests-reset-custom-values 'ledger)
     (unwind-protect
         (with-current-buffer ledger-buffer

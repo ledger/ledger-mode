@@ -27,7 +27,9 @@
 ;;; Code:
 
 (defcustom ledger-init-file-name "~/.ledgerrc"
-  "Location of the ledger initialization file.  nil if you don't have one."
+  "Location of the ledger initialization file.
+
+nil if you don't have one or don't wish to read it."
   :type '(choice (const :tag "Do not read ledger initialization file" nil)
                  file)
   :group 'ledger-exec)

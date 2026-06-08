@@ -27,6 +27,7 @@
 
 ;;; Code:
 (require 'subr-x)
+(require 'ledger-exec)
 (require 'test-helper)
 
 
@@ -108,7 +109,8 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=254"
 (ert-deftest ledger-exec/test-default-input-buffer ()
   "When no INPUT-BUFFER is given, `ledger-exec-ledger' uses `ledger-master-file'."
   :tags '(exec)
-  (let* ((tmp (make-temp-file "ledger-master-" nil ".dat")))
+  (let* ((tmp (make-temp-file "ledger-master-" nil ".dat"))
+         (ledger-exec--args-only t))
     (unwind-protect
         (progn
           (with-temp-file tmp
