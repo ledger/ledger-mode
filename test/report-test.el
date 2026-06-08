@@ -701,7 +701,6 @@ to `ledger-binary-path' between runs are honored."
 (ert-deftest ledger-report/redo-after-killed-source-buffer ()
   "Do not refresh report if the source buffer has been killed."
   :tags '(report regress)
-  :expected-result :failed
   (let (ledger-buf
         (reports-run 0))
     (ledger-tests-with-temp-file demo-ledger

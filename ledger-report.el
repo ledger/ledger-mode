@@ -597,7 +597,9 @@ IGNORE-AUTO and NOCONFIRM are for compatibility with
     (user-error "Not in a ledger-mode or ledger-report-mode buffer"))
   (let ((cur-buf (current-buffer)))
     (when (and ledger-report-auto-refresh
-               (get-buffer ledger-report-buffer-name))
+               (get-buffer ledger-report-buffer-name)
+               (with-current-buffer ledger-report-buffer-name
+                 (buffer-live-p ledger-report-ledger-buf)))
       (pop-to-buffer (get-buffer ledger-report-buffer-name))
       (ledger-report-maybe-shrink-window)
       (setq ledger-report-cursor-line-number (line-number-at-pos))
