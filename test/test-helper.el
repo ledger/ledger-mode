@@ -109,6 +109,10 @@ provided (e.g., if BODY is still inside a minibuffer prompt)."
         (with-current-buffer ledger-buffer
           (set-buffer-modified-p nil)
           (kill-buffer)))
+      (when (get-buffer ledger-report-buffer-name)
+        (kill-buffer ledger-report-buffer-name))
+      (when (get-buffer ledger-reconcile-buffer-name)
+        (kill-buffer ledger-reconcile-buffer-name))
       (ledger-tests-reset-custom-values 'ledger)
       (delete-file temp-file))))
 
