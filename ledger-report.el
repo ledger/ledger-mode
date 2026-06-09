@@ -32,6 +32,7 @@
 (declare-function ledger-read-string-with-default "ledger-mode" (prompt default))
 (declare-function ledger-read-account-with-prompt "ledger-mode" (prompt))
 (declare-function ledger-read-payee-with-prompt "ledger-mode" (prompt))
+(declare-function ledger-read-date "ledger-mode" (prompt))
 
 (require 'easymenu)
 (require 'ansi-color)
@@ -267,12 +268,12 @@ See documentation for the function `ledger-master-file'")
   (ledger-read-string-with-default "Tag Value" nil))
 
 (defun ledger-report-amount-format-specifier ()
-  "Return an amount."
-  (ledger-read-string-with-default "Amount: " nil))
+  "Return a commoditized amount."
+  (ledger-commodity-to-string (ledger-read-commodity-string "Amount")))
 
 (defun ledger-report-date-format-specifier ()
   "Return a date."
-  (ledger-read-string-with-default "Date: " nil))
+  (ledger-read-date "Date: "))
 
 (defun ledger-report-read-name ()
   "Read the name of a ledger report to use, with completion.
