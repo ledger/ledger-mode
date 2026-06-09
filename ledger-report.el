@@ -70,10 +70,8 @@ specifier."
     ("payee" . ledger-report-payee-format-specifier)
     ("account" . ledger-report-account-format-specifier)
     ("month" . ledger-report-month-format-specifier)
-    ("amount1" . ledger-report-amount1-format-specifier)
-    ("amount2" . ledger-report-amount2-format-specifier)
-    ("date1" . ledger-report-date1-format-specifier)
-    ("date2" . ledger-report-date2-format-specifier)
+    ("amount" . ledger-report-amount-format-specifier)
+    ("date" . ledger-report-date-format-specifier)
     ("tagname" . ledger-report-tagname-format-specifier)
     ("tagvalue" . ledger-report-tagvalue-format-specifier))
   "An alist mapping ledger report format specifiers to implementing functions.
@@ -268,21 +266,13 @@ See documentation for the function `ledger-master-file'")
   ;; values, but it remains to be implemented.
   (ledger-read-string-with-default "Tag Value" nil))
 
-(defun ledger-report-amount1-format-specifier ()
+(defun ledger-report-amount-format-specifier ()
   "Return an amount."
   (ledger-read-string-with-default "Amount: " nil))
 
-(defun ledger-report-amount2-format-specifier ()
-  "Return an amount."
-  (ledger-read-string-with-default "Second amount: " nil))
-
-(defun ledger-report-date1-format-specifier ()
+(defun ledger-report-date-format-specifier ()
   "Return a date."
   (ledger-read-string-with-default "Date: " nil))
-
-(defun ledger-report-date2-format-specifier ()
-  "Return a date."
-  (ledger-read-string-with-default "Second date: " nil))
 
 (defun ledger-report-read-name ()
   "Read the name of a ledger report to use, with completion.
