@@ -99,6 +99,16 @@
              (lambda (_prompt) "Assets:Bank")))
     (should (string= "Assets:Bank" (ledger-report-account-format-specifier)))))
 
+(ert-deftest ledger-report/format-specifier-amount ()
+  (cl-letf (((symbol-function 'read-string)
+             (lambda (&rest _) "1 GBP")))
+    (should (string= "1 GBP" (ledger-report-amount-format-specifier)))))
+
+(ert-deftest ledger-report/format-specifier-date ()
+  (cl-letf (((symbol-function 'ledger-read-date)
+             (lambda (_prompt) "2026-06-09")))
+    (should (string= "2026-06-09" (ledger-report-date-format-specifier)))))
+
 (ert-deftest ledger-report/month-format-specifier-default ()
   ;; The function does `(with-current-buffer (or ledger-report-buffer-name …))',
   ;; so the report buffer must exist.
@@ -503,24 +513,24 @@ https://github.com/ledger/ledger-mode/issues/424"
   :tags '(report regress)
 
   (ledger-tests-with-temp-file demo-ledger
-    (let ((ledger-reports
-           (cons '("dummy-report-name"
-                   "%(binary) -f %(ledger-file) reg --strict --period %(month) %(account)")
-                 ledger-reports))
-          (ledger-report-format-specifiers
-           (cl-list* '("account" . report-test--dummy-format-specifier)
-                     ledger-report-format-specifiers))
-          (report-test--account-format-specifier-called-p nil))
-      (ledger-report "dummy-report-name" nil)
-      (should report-test--account-format-specifier-called-p)
-      ;; `ledger-report-cmd' keeps the raw template so format specifiers
-      ;; are re-evaluated on every run, letting saved reports respect
-      ;; later changes to `ledger-binary-path' and the current ledger
-      ;; file (issue ledger/ledger#1172).
-      (should (equal (buffer-local-value
-                      'ledger-report-cmd
-                      (get-buffer ledger-report-buffer-name))
-                     "%(binary) -f %(ledger-file) reg --strict --period %(month) %(account)")))))
+                               (let ((ledger-reports
+                                      (cons '("dummy-report-name"
+                                              "%(binary) -f %(ledger-file) reg --strict --period %(month) %(account)")
+                                            ledger-reports))
+                                     (ledger-report-format-specifiers
+                                      (cl-list* '("account" . report-test--dummy-format-specifier)
+                                                ledger-report-format-specifiers))
+                                     (report-test--account-format-specifier-called-p nil))
+                                 (ledger-report "dummy-report-name" nil)
+                                 (should report-test--account-format-specifier-called-p)
+                                 ;; `ledger-report-cmd' keeps the raw template so format specifiers
+                                 ;; are re-evaluated on every run, letting saved reports respect
+                                 ;; later changes to `ledger-binary-path' and the current ledger
+                                 ;; file (issue ledger/ledger#1172).
+                                 (should (equal (buffer-local-value
+                                                 'ledger-report-cmd
+                                                 (get-buffer ledger-report-buffer-name))
+                                                "%(binary) -f %(ledger-file) reg --strict --period %(month) %(account)")))))
 
 (ert-deftest ledger-report/binary-path-not-baked-in ()
   "Regression test for ledger/ledger#1172.
@@ -535,19 +545,19 @@ so changes to `ledger-binary-path' take effect on subsequent runs."
                  "%(binary) -f %(ledger-file) bal"))
               ((symbol-function 'ledger-do-report) #'ignore))
       (ledger-tests-with-temp-file demo-ledger
-        (let ((ledger-binary-path "ledger-initial"))
-          (ledger-report unique-name nil))
-        ;; The saved command must still contain the raw %(binary)
-        ;; specifier rather than the expanded "ledger-initial" path.
-        (let ((saved-cmd (car (cdr (assoc unique-name ledger-reports)))))
-          (should saved-cmd)
-          (should (string-match-p (regexp-quote "%(binary)") saved-cmd))
-          (should-not (string-match-p "ledger-initial" saved-cmd)))
-        ;; The buffer-local command is likewise the raw template.
-        (should (equal (buffer-local-value
-                        'ledger-report-cmd
-                        (get-buffer ledger-report-buffer-name))
-                       "%(binary) -f %(ledger-file) bal"))))))
+                                   (let ((ledger-binary-path "ledger-initial"))
+                                     (ledger-report unique-name nil))
+                                   ;; The saved command must still contain the raw %(binary)
+                                   ;; specifier rather than the expanded "ledger-initial" path.
+                                   (let ((saved-cmd (car (cdr (assoc unique-name ledger-reports)))))
+                                     (should saved-cmd)
+                                     (should (string-match-p (regexp-quote "%(binary)") saved-cmd))
+                                     (should-not (string-match-p "ledger-initial" saved-cmd)))
+                                   ;; The buffer-local command is likewise the raw template.
+                                   (should (equal (buffer-local-value
+                                                   'ledger-report-cmd
+                                                   (get-buffer ledger-report-buffer-name))
+                                                  "%(binary) -f %(ledger-file) bal"))))))
 
 (ert-deftest ledger-report/binary-path-expansion-dynamic ()
   "Regression test for ledger/ledger#1172.
@@ -556,16 +566,16 @@ invocation of `ledger-report-expand-format-specifiers', so updates
 to `ledger-binary-path' between runs are honored."
   :tags '(report regress)
   (ledger-tests-with-temp-file demo-ledger
-    (let ((ledger-report-ledger-buf (current-buffer))
-          (template "%(binary) -f %(ledger-file) bal"))
-      (let ((ledger-binary-path "first-ledger"))
-        (should (string-match-p
-                 "first-ledger"
-                 (ledger-report-expand-format-specifiers template))))
-      (let ((ledger-binary-path "second-ledger"))
-        (let ((expanded (ledger-report-expand-format-specifiers template)))
-          (should (string-match-p "second-ledger" expanded))
-          (should-not (string-match-p "first-ledger" expanded)))))))
+                               (let ((ledger-report-ledger-buf (current-buffer))
+                                     (template "%(binary) -f %(ledger-file) bal"))
+                                 (let ((ledger-binary-path "first-ledger"))
+                                   (should (string-match-p
+                                            "first-ledger"
+                                            (ledger-report-expand-format-specifiers template))))
+                                 (let ((ledger-binary-path "second-ledger"))
+                                   (let ((expanded (ledger-report-expand-format-specifiers template)))
+                                     (should (string-match-p "second-ledger" expanded))
+                                     (should-not (string-match-p "first-ledger" expanded)))))))
 
 
 ;;; Additional fill-in tests for residual gaps -------------------------
