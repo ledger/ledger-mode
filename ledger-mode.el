@@ -111,6 +111,8 @@ This uses `org-read-date', which see."
   (ledger-format-date (let ((org-read-date-prefer-future nil))
                         (org-read-date nil t nil prompt))))
 
+;; TODO: This is more-or-less equivalent to `format-prompt', introduced in Emacs
+;; 28.1.
 (defun ledger-get-minibuffer-prompt (prompt default)
   "Return a minibuffer prompt string composing PROMPT and DEFAULT."
   (concat prompt
