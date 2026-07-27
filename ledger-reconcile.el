@@ -408,17 +408,12 @@ exit reconcile mode if `ledger-reconcile-finish-force-quit'"
 (defun ledger-reconcile-quit ()
   "Quit the reconcile window without saving ledger buffer."
   (interactive)
-  (let ((reconcile-buf (get-buffer ledger-reconcile-buffer-name))
-        buf)
-    (if reconcile-buf
-        (with-current-buffer reconcile-buf
-          (ledger-reconcile-quit-cleanup)
-          (setq buf ledger-reconcile-ledger-buf)
-          ;; Make sure you delete the window before you delete the buffer,
-          ;; otherwise, madness ensues
-          (delete-window (get-buffer-window reconcile-buf))
-          (kill-buffer reconcile-buf)
-          (set-window-buffer (selected-window) buf)))))
+  (when-let* ((reconcile-buf (get-buffer ledger-reconcile-buffer-name)))
+    (with-current-buffer reconcile-buf
+      (ledger-reconcile-quit-cleanup)
+      ;; Make sure you delete the window before you delete the buffer,
+      ;; otherwise, madness ensues
+      (quit-window 'kill (get-buffer-window reconcile-buf)))))
 
 (defun ledger-reconcile-quit-cleanup ()
   "Cleanup all hooks established by reconcile mode."
