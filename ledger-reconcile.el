@@ -142,6 +142,9 @@ It can also be any value accepted by ledger's --sort option."
           (string :tag "Custom --sort expression"))
   :group 'ledger-reconcile)
 
+(defvar-local ledger-reconcile-sort-reversed nil
+  "If non-nil, display uncleared transactions in reverse order.")
+
 (defcustom ledger-reconcile-insert-effective-date nil
   "If t, prompt for effective date when clearing transactions.
 
@@ -294,8 +297,7 @@ do the same if its value is non-nil."
              (add-text-properties (line-beginning-position)
                                   (line-end-position)
                                   (list 'font-lock-face 'ledger-font-reconciler-uncleared-face )))))
-    (forward-line)
-    (beginning-of-line)
+    (forward-line (if ledger-reconcile-sort-reversed -1 +1))
     (ledger-display-balance)))
 
 (defun ledger-reconcile-refresh ()
@@ -518,7 +520,9 @@ Return a count of the uncleared transactions."
         (insert (concat "There are no uncleared entries for " account))
       (if ledger-reconcile-buffer-header
           (insert (format ledger-reconcile-buffer-header account)))
-      (dolist (xact xacts)
+      (dolist (xact (if ledger-reconcile-sort-reversed
+                        (reverse xacts)
+                      xacts))
         (ledger-reconcile-format-xact xact fmt))
       (goto-char (point-max))
       (delete-char -1)) ;gets rid of the extra line feed at the bottom of the list
@@ -650,6 +654,15 @@ The command will re-sort the reconcile buffer by EXPR."
 (ledger-reconcile--define-sort-command date "(date)")
 (ledger-reconcile--define-sort-command payee "(payee)")
 
+(defun ledger-reconcile-sort-reverse ()
+  "Reverse the order of transactions.
+
+This also causes `ledger-reconcile-toggle' to advance in the opposite
+direction after toggling a transaction."
+  (interactive)
+  (setq ledger-reconcile-sort-reversed (not ledger-reconcile-sort-reversed))
+  (ledger-reconcile-refresh))
+
 (defvar ledger-reconcile-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-m") #'ledger-reconcile-visit)
@@ -660,7 +673,7 @@ The command will re-sort the reconcile buffer by EXPR."
     (define-key map (kbd "SPC") #'ledger-reconcile-toggle)
     (define-key map (kbd "a") #'ledger-reconcile-add)
     (define-key map (kbd "d") #'ledger-reconcile-delete)
-    (define-key map (kbd "g") #'ledger-reconcile);
+    (define-key map (kbd "g") #'ledger-reconcile)
     (define-key map (kbd "n") #'next-line)
     (define-key map (kbd "p") #'previous-line)
     (define-key map (kbd "t") #'ledger-reconcile-change-target)
@@ -673,6 +686,7 @@ The command will re-sort the reconcile buffer by EXPR."
     (define-key map (kbd "C-c C-a") #'ledger-reconcile-sort-by-amount)
     (define-key map (kbd "C-c C-d") #'ledger-reconcile-sort-by-date)
     (define-key map (kbd "C-c C-p") #'ledger-reconcile-sort-by-payee)
+    (define-key map (kbd "C-c C-r") #'ledger-reconcile-sort-reverse)
     map)
   "Keymap for `ledger-reconcile-mode'.")
 
