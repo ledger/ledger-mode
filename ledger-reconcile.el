@@ -652,8 +652,10 @@ The command will re-sort the reconcile buffer by EXPR."
 This also causes `ledger-reconcile-toggle' to advance in the opposite
 direction after toggling a transaction."
   (interactive)
-  (setq ledger-reconcile-sort-reversed (not ledger-reconcile-sort-reversed))
-  (ledger-reconcile-refresh))
+  (when-let* ((reconcile-buf (get-buffer ledger-reconcile-buffer-name)))
+    (with-current-buffer reconcile-buf
+      (setq ledger-reconcile-sort-reversed (not ledger-reconcile-sort-reversed))
+      (ledger-reconcile-refresh))))
 
 (defvar ledger-reconcile-mode-map
   (let ((map (make-sparse-keymap)))

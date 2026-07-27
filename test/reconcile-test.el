@@ -1083,6 +1083,25 @@ calls the inserter."
     (ledger-reconcile-display-balance-in-header-mode -1)
     (should-not header-line-format)))
 
+(ert-deftest ledger-reconcile/test-sort-reverse ()
+  "Reverse sort order using `ledger-reconcile-sort-reverse'."
+  :tags '(reconcile)
+  (ledger-tests-with-temp-file
+      demo-ledger
+    (let ((ledger-reconcile-buffer-header "")
+          lines)
+      (ledger-reconcile "Assets:Checking" '(0 "$"))
+      (set-buffer (get-buffer ledger-reconcile-buffer-name))
+      (setq lines (split-string (buffer-string) "\n"))
+      (ledger-reconcile-sort-reverse)
+      (should (equal (split-string (buffer-string) "\n") (reverse lines)))
+
+      ;; reversed sort makes `ledger-reconcile-toggle' advance backwards
+      (goto-char (point-max))
+      (should (equal (line-number-at-pos) 7))
+      (ledger-reconcile-toggle)
+      (should (equal (line-number-at-pos) 6)))))
+
 
 (provide 'reconcile-test)
 
