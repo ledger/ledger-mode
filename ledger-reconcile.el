@@ -207,10 +207,6 @@ described above."
 
 (defun ledger-reconcile-get-cleared-or-pending-balance (buffer account)
   "Use BUFFER to Calculate the cleared or pending balance of the ACCOUNT."
-
-  ;; these vars are buffer local, need to hold them for use in the
-  ;; temp buffer below
-
   (with-temp-buffer
     ;; note that in the line below, the --format option is
     ;; separated from the actual format string.  emacs does not
