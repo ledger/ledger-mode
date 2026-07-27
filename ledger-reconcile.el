@@ -294,6 +294,7 @@ do the same if its value is non-nil."
                                   (line-end-position)
                                   (list 'font-lock-face 'ledger-font-reconciler-uncleared-face )))))
     (forward-line (if ledger-reconcile-sort-reversed -1 +1))
+    (beginning-of-line)
     (ledger-display-balance)))
 
 (defun ledger-reconcile-refresh ()
