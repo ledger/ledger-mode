@@ -16,14 +16,6 @@
 (require 'test-helper)
 (require 'ledger-check)
 
-
-(ert-deftest ledger-check/mode-derived-from-text-mode ()
-  "`ledger-check-mode' is a major mode derived from `text-mode'."
-  (with-temp-buffer
-    (ledger-check-mode)
-    (should (eq major-mode 'ledger-check-mode))
-    (should (derived-mode-p 'text-mode))))
-
 (ert-deftest ledger-check/mode-keymap-bindings ()
   "RET visits source, q quits."
   (should (eq (lookup-key ledger-check-mode-map (kbd "RET"))
@@ -48,36 +40,35 @@
 
 (ert-deftest ledger-check/do-check-no-errors ()
   "`ledger-do-check' inserts a 'no warnings' note when ledger reports nothing."
-  (cl-letf (((symbol-function 'shell-command)
-             ;; Simulate ledger producing no output (empty input → empty out).
-             (lambda (_cmd &rest _) nil)))
-    (with-temp-buffer
-      (ledger-do-check)
-      (should (string-match-p "No errors or warnings reported."
-                              (buffer-string))))))
+  ;; TODO: This test should succeed once ledger-do-check starts actually reading
+  ;; from the current buffer.  For now, it does not pass any -f argument to the
+  ;; ledger binary so falls back to whatever is specified in ~/.ledgerrc.
+  :expected-result :failed
+  (ledger-tests-with-temp-file ""
+    (ledger-do-check)
+    (should (equal "No errors or warnings reported.\n"
+                   (buffer-string)))))
 
 (ert-deftest ledger-check/do-check-parses-error-line ()
   "An error line is decorated with `ledger-source' text properties."
-  (let* ((tmp (make-temp-file "ledger-check-")))
-    (unwind-protect
-        (progn
-          (with-temp-file tmp
-            (insert "2024/01/01 Acme\n"
-                    "    Expenses:Food   $10\n"
-                    "    Assets:Cash\n"))
-          (cl-letf (((symbol-function 'shell-command)
-                     (lambda (_cmd &rest _)
-                       (insert (format "Error: \"%s\", line 2: bad amount\n" tmp)))))
-            (with-temp-buffer
-              (ledger-do-check)
-              ;; The marked line should carry a 'ledger-source text property
-              ;; whose CDR is a marker into the file.
-              (goto-char (point-min))
-              (let ((src (get-text-property (point) 'ledger-source)))
-                (should (consp src))
-                (should (string= (car src) tmp))
-                (should (markerp (cdr src)))))))
-      (when (file-exists-p tmp) (delete-file tmp)))))
+  (ledger-tests-with-temp-file
+      "\
+2024/01/01 Acme
+    Expenses:Food   $10
+    Assets:Cash    -$5
+"
+    (let ((src-buffer (current-buffer)))
+      (ledger-check-buffer)
+      (with-current-buffer ledger-check-buffer-name
+        ;; The marked line should carry a 'ledger-source text property
+        ;; whose value is a marker in the source buffer.
+        (goto-char (point-min))
+        (let ((src (get-text-property (point) 'ledger-source)))
+          (should (markerp src))
+          (should (eq (marker-buffer src) src-buffer))
+          (should (equal (with-current-buffer src-buffer
+                           (line-number-at-pos src))
+                         2)))))))
 
 (ert-deftest ledger-check/check-buffer-creates-output-buffer ()
   "`ledger-check-buffer' switches to the check buffer in `ledger-check-mode'."

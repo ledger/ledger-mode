@@ -425,6 +425,23 @@
 (defconst ledger-directive-start-regex
   "[=~;#%|\\*[A-Za-z]")
 
+(defconst ledger-error-regex
+  (rx line-start "While parsing file \"" (group-n 1 (zero-or-more (not ?\"))) ; file, subexp 1
+      "\", line " (group-n 2 (one-or-more num)) ":\n" ; line number, subexp 2
+      (zero-or-more line-start "While " (one-or-more not-newline) "\n" )
+      (minimal-match (zero-or-more line-start (zero-or-more not-newline) "\n"))
+      (group-n 3 "Error: " (one-or-more not-newline) "\n"))) ; message, subexp 3
+
+(defconst ledger-warning-regex
+  (rx line-start "Warning: \""
+      (group-n 1 (zero-or-more (not ?\"))) ;file, subexp 1
+      "\", line "
+      (group-n 2 (one-or-more num)) ": "      ;line number, subexp 2
+      (group-n 3 (one-or-more not-newline)))) ;message, subexp 3
+
+(defconst ledger-error-or-warning-regex
+  (rx (or (regexp ledger-error-regex)
+          (regexp ledger-warning-regex))))
 
 (provide 'ledger-regex)
 
