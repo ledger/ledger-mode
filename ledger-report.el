@@ -473,7 +473,8 @@ This function must be called from a report buffer."
 
 (defun ledger-report--compute-extra-args (report-cmd)
   "Compute extra args to add to REPORT-CMD."
-  `(,@(when (ledger-report--cmd-needs-links-p report-cmd)
+  `("--date-format" ,ledger-default-date-format
+    ,@(when (ledger-report--cmd-needs-links-p report-cmd)
         '("--prepend-format=%(filename):%(beg_line):"))
     ,@(when ledger-report-auto-width
         `("--columns" ,(format "%d" (window-max-chars-per-line))))
