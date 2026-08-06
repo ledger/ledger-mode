@@ -45,26 +45,25 @@ This uses `ledger-occur-xact-face'."
 (defvar ledger-occur-history nil
   "History of previously searched expressions for the prompt.")
 
-(defvar-local ledger-occur-current-regex nil
+(defvar-local ledger-occur-current-regexes nil
   "Pattern currently applied to narrow the buffer.")
 
 (defvar ledger-occur-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-c C-g") #'ledger-occur-refresh)
-    (define-key map (kbd "C-c C-f") #'ledger-occur-mode)
     map)
   "Keymap used by `ledger-occur-mode'.")
 
 (define-minor-mode ledger-occur-mode
-  "A minor mode which display only transactions matching a pattern.
-The pattern is given by `ledger-occur-current-regex'."
+  "A minor mode which display only transactions matching a list of patterns.
+The patterns are given by `ledger-occur-current-regexes'."
   :init-value nil
-  :lighter (:eval (format " Ledger-Narrow(%s)" ledger-occur-current-regex))
-  :keymap ledger-occur-mode-map
-  (if (and ledger-occur-current-regex ledger-occur-mode)
+  :lighter (:eval (format " Ledger-Narrow(%s)" ledger-occur-current-regexes))
+  (if (and ledger-occur-current-regexes ledger-occur-mode)
       (progn (ledger-occur-refresh)
              ;; Clear overlays after revert-buffer and similar commands.
              (add-hook 'change-major-mode-hook #'ledger-occur-remove-overlays nil t))
+    (setq ledger-occur-current-regexes nil)
     (ledger-occur-remove-overlays)
     (message "Showing all transactions")))
 
@@ -72,25 +71,42 @@ The pattern is given by `ledger-occur-current-regex'."
   "Re-apply the current narrowing expression."
   (interactive)
   (let ((matches (ledger-occur-compress-matches
-                  (ledger-occur-find-matches ledger-occur-current-regex))))
-    (if matches
-        (ledger-occur-create-overlays matches)
-      (message "No matches found for '%s'" ledger-occur-current-regex)
-      (ledger-occur-mode -1))))
+                  (ledger-occur-find-matches ledger-occur-current-regexes))))
+    (ledger-occur-create-overlays matches)
+    (unless matches
+      (message "No matches found for:\n%s\n\n%s"
+               (string-join ledger-occur-current-regexes "\n")
+               (substitute-command-keys "Press \\[universal-argument] \\[ledger-occur] to remove the most recent filter.")))))
 
 (defun ledger-occur (regex)
   "Show only transactions in the current buffer which match REGEX.
 
-This command hides all xact in the current buffer except those
-matching REGEX.  If REGEX is nil or empty, turn off any narrowing
-currently active."
+If filtering is already in effect, further filter the shown
+transactions, so that only transactions which match all of the REGEX
+filters specified so far are displayed.
+
+This command hides all xact in the current buffer except those matching
+REGEX.  If REGEX is the symbol `pop', or a prefix argument has been
+provided interactively, remove the most recently-added REGEX filter
+instead.  If REGEX is nil or empty, or with two prefix arguments, turn
+off any narrowing currently active."
   (interactive
-   (list (read-regexp "Regexp" (ledger-occur-prompt) 'ledger-occur-history)))
-  (if (or (null regex)
-          (zerop (length regex)))  ; empty regex, or already have narrowed, clear narrowing
-      (ledger-occur-mode -1)
-    (setq ledger-occur-current-regex regex)
-    (ledger-occur-mode 1)))
+   (cond
+    ((equal current-prefix-arg '(16)) (list nil))
+    (current-prefix-arg (list 'pop))
+    (t (list (read-regexp "Regexp" (ledger-occur-prompt) 'ledger-occur-history)))))
+  (cond
+   ((eq regex 'pop)
+    (pop ledger-occur-current-regexes)
+    (if ledger-occur-current-regexes
+        (ledger-occur-mode 1)
+      (ledger-occur-mode -1)))
+   ((or (null regex)
+        (zerop (length regex)))  ; empty regex, clear narrowing
+    (ledger-occur-mode -1))
+   (t
+    (push regex ledger-occur-current-regexes)
+    (ledger-occur-mode 1))))
 
 (defun ledger-occur-prompt ()
   "Return the default value of the prompt.
@@ -141,23 +157,36 @@ Argument OVL-BOUNDS contains bounds for the transactions to be left visible."
   (remove-overlays (point-min)
                    (point-max) ledger-occur-overlay-property-name t))
 
-(defun ledger-occur-find-matches (regex)
-  "Return a list of bounds for transactions matching REGEX."
+(defun ledger-occur-find-matches (regexes)
+  "Return a list of bounds for transactions matching REGEXES.
+
+REGEXES must be non-nil.
+
+Only transactions whose bodies match all of the regexps in REGEXES are
+included in the return value.  The occurrences may be in any order."
+  ;; Check the regexes in the order that they were specified by the user.  In
+  ;; some edge cases, this may produce different behavior than without reversing
+  ;; `regexes'.
+  (setq regexes (reverse regexes))
   (save-excursion
     (goto-char (point-min))
-    ;; Set initial values for variables
-    (let (lines)
-      ;; Search loop
+    (let (all-bounds)
       (while (not (eobp))
-        ;; if something found
-        (when-let* ((endpoint (re-search-forward regex nil 'end))
+        ;; if something found, check that the remaining regexes all match
+        (when-let* ((endpoint (re-search-forward (car regexes) nil 'end))
                     (bounds (ledger-navigate-find-element-extents endpoint)))
-          (push bounds lines)
-          ;; Move to the end of the xact, no need to search inside it more.
-          ;; Defensive: if extent end is at or before point, advance past the
-          ;; match end so the loop can never wedge.
-          (goto-char (max (cadr bounds) (1+ (match-end 0))))))
-      (nreverse lines))))
+          (when (cl-every
+                 (lambda (regex)
+                   (save-excursion
+                     (goto-char (car bounds))
+                     (re-search-forward regex (cadr bounds) t)))
+                 (cdr regexes))
+            (push bounds all-bounds)
+            ;; Move to the end of the xact, no need to search inside it more.
+            ;; Defensive: if extent end is at or before point, advance past the
+            ;; match end so the loop can never wedge.
+            (goto-char (max (cadr bounds) (1+ (match-end 0)))))))
+      (nreverse all-bounds))))
 
 (defun ledger-occur-compress-matches (buffer-matches)
   "Identify sequential xacts to reduce number of overlays required.
