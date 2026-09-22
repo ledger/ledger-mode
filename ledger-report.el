@@ -503,7 +503,9 @@ This function must be called from a report buffer."
     ,@(when ledger-report-use-native-highlighting
         ledger-report-native-highlighting-arguments)
     ,@(when ledger-report-use-strict
-        '("--strict"))))
+        '("--strict"))
+    ,@(when ledger-exec--args-only
+        '("--args-only"))))
 
 (defun ledger-report-cmd (report-name edit)
   "Get the command line to run the report name REPORT-NAME.
