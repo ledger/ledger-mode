@@ -382,14 +382,36 @@ which is included in some other file."
       (expand-file-name ledger-master-file)
     (buffer-file-name)))
 
+(defvar ledger-report-redo-prompts nil
+  "Non-nil to indicate the report is being regenerated on command.
+
+This is used to avoid re-prompting the user for account or payee or
+similar format specifiers unless they are explicitly redoing the report.
+
+For example, if they are merely changing some other parameter with
+`ledger-report-next-month' or have just saved the ledger file and
+`ledger-report-auto-refresh', used the cached answer from prompts.")
+
+(defmacro ledger-report--read-with-cache (var &rest body)
+  "Read a value by evaluating BODY, with a cache VAR.
+
+If `ledger-report-redo-prompts' is non-nil and VAR is
+non-nil, return VAR.  Otherwise, evaluate BODY."
+  (declare (indent 1))
+  `(or (and (not ledger-report-redo-prompts) ,var)
+       (setq ,var (progn ,@body))))
+
+(defvar-local ledger-report--payee nil)
 (defun ledger-report-payee-format-specifier ()
   "Substitute a payee name.
 
 The user is prompted to enter a payee and that is substituted.
 If point is in an xact, the payee for that xact is used as the
 default."
-  (ledger-read-payee-with-prompt "Payee"))
+  (ledger-report--read-with-cache ledger-report--payee
+    (ledger-read-payee-with-prompt "Payee")))
 
+(defvar-local ledger-report--account nil)
 (defun ledger-report-account-format-specifier ()
   "Substitute an account name.
 
@@ -397,7 +419,8 @@ The user is prompted to enter an account name, which can be any
 regular expression identifying an account.  If point is on an
 account posting line for an xact, the full account name on that
 line is the default."
-  (ledger-read-account-with-prompt "Account"))
+  (ledger-report--read-with-cache ledger-report--account
+    (ledger-read-account-with-prompt "Account")))
 
 (defun ledger-report--current-month ()
   "Return current month as (YEAR . MONTH-INDEX).
@@ -634,7 +657,8 @@ IGNORE-AUTO and NOCONFIRM are for compatibility with
     (user-error "Not in a ledger-mode or ledger-report-mode buffer"))
   (when (get-buffer ledger-report-buffer-name)
     (with-current-buffer ledger-report-buffer-name
-      (revert-buffer))))
+      (let ((ledger-report-redo-prompts t))
+        (revert-buffer)))))
 
 (defun ledger-report-quit ()
   "Quit the ledger report buffer and kill its buffer."
@@ -657,7 +681,8 @@ IGNORE-AUTO and NOCONFIRM are for compatibility with
     (user-error "Not a ledger report buffer"))
   (with-current-buffer ledger-report-buffer-name
     (setq ledger-report-cmd (ledger-report-read-command ledger-report-cmd))
-    (revert-buffer)))
+    (let ((ledger-report-redo-prompts t))
+      (revert-buffer))))
 
 (define-obsolete-function-alias 'ledger-report-select-report #'ledger-report "ledger 4.0.0")
 
