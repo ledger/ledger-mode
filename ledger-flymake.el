@@ -31,6 +31,7 @@
 (require 'cl-lib)
 (require 'flymake)
 (require 'ledger-exec)                  ; for `ledger-binary-path'
+(require 'ledger-regex)
 (require 'ledger-report)                ; for `ledger-master-file'
 
 (defvar-local ledger--flymake-proc nil)
@@ -99,17 +100,8 @@ Flymake calls this with REPORT-FN as needed."
                       ;; messages and locations, collect them in a list
                       ;; of objects, and call `report-fn'.
                       (cl-loop
-                       while (search-forward-regexp
-                              ;; This regex needs to match the whole error.  We
-                              ;; also need a capture group for the error message
-                              ;; (that's group 1 here) and the line number
-                              ;; (group 2).
-                              (rx line-start "While parsing file \"" (one-or-more (not whitespace)) " line " (group-n 2 (one-or-more num)) ":\n"
-                                  (zero-or-more line-start "While " (one-or-more not-newline) "\n" )
-                                  (minimal-match (zero-or-more line-start (zero-or-more not-newline) "\n"))
-                                  (group-n 1 "Error: " (one-or-more not-newline) "\n"))
-                              nil t)
-                       for msg = (match-string 1)
+                       while (search-forward-regexp ledger-error-regex nil t)
+                       for msg = (match-string 3)
                        for region = (flymake-diag-region
                                      source
                                      (string-to-number (match-string 2)))
