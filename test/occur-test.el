@@ -124,6 +124,21 @@ https://github.com/ledger/ledger-mode/issues/54"
 
     ;; no matches
     (ledger-occur "zzzzzz")
+    (should (equal (ledger-test-visible-buffer-string) ""))
+
+    ;; remove last filter
+    (ledger-occur 'pop)
+    (should
+     (equal (ledger-test-visible-buffer-string)
+            "\
+
+2024-03-15 Employer
+  * Assets:Checking           $2000.00
+  Income:Salary
+"))
+
+    ;; turn off filtering entirely
+    (ledger-occur nil)
     (should
      (equal (ledger-test-visible-buffer-string)
             "\
@@ -215,12 +230,40 @@ https://github.com/ledger/ledger-mode/issues/415"
   Expenses:Food:Groceries     $50
   Assets:Checking
 "
-    (cl-letf (((symbol-function 'read-regexp)
-               (lambda (&rest _) "Groceries")))
-      (call-interactively #'ledger-occur)
-      (should ledger-occur-mode)
-      (should (equal "Groceries" ledger-occur-current-regex)))))
+    (let ((user-inputs '("Groceries" "Checking" "Groceries" "Checking")))
+      (cl-letf (((symbol-function 'read-regexp)
+                 (lambda (&rest _) (pop user-inputs))))
+        (call-interactively #'ledger-occur)
+        (should ledger-occur-mode)
+        (should (equal '("Groceries") ledger-occur-current-regexes))
 
+        ;; second call adds a new filter
+        (call-interactively #'ledger-occur)
+        (should ledger-occur-mode)
+        (should (equal '("Checking" "Groceries") ledger-occur-current-regexes))
+
+        ;; with prefix argument, pops a filter
+        (let ((current-prefix-arg '(4)))
+          (call-interactively #'ledger-occur))
+        (should ledger-occur-mode)
+        (should (equal '("Groceries") ledger-occur-current-regexes))
+
+        (let ((current-prefix-arg '(4)))
+          (call-interactively #'ledger-occur))
+        (should-not ledger-occur-mode)
+        (should (null ledger-occur-current-regexes))
+
+        ;; add both filters back
+        (call-interactively #'ledger-occur)
+        (call-interactively #'ledger-occur)
+        (should (equal '("Checking" "Groceries") ledger-occur-current-regexes))
+        (should ledger-occur-mode)
+
+        ;; double prefix argument removes all filtering
+        (let ((current-prefix-arg '(16)))
+          (call-interactively #'ledger-occur))
+        (should-not ledger-occur-mode)
+        (should (null ledger-occur-current-regexes))))))
 
 (ert-deftest ledger-occur/test-prompt-region ()
   "`ledger-occur-prompt' returns active region when single-line."
