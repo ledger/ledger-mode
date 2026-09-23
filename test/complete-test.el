@@ -237,6 +237,23 @@ payee Bar Baz
 
 2019/06/28 Foo Bar"))))
 
+(ert-deftest ledger-complete/test-complete-payee-point-inside ()
+  "Completion boundaries are correct for payees."
+  :tags '(complete regress)
+  (ledger-tests-with-temp-file
+      "payee Foo Bar
+
+2019/06/28 Foo Bar"
+    (goto-char (point-max))
+    (backward-word 1)
+    (let ((inhibit-interaction t))       ;require a unique match
+      (completion-at-point))
+    (should
+     (equal (buffer-string)
+            "payee Foo Bar
+
+2019/06/28 Foo Bar"))))
+
 (ert-deftest ledger-complete/test-find-accounts-in-buffer ()
   :tags '(complete)
   (let ((ledger "*** Expenses
@@ -481,6 +498,24 @@ Regression test for https://github.com/ledger/ledger-mode/pull/455."
                    "    ; transaction comment"))))
 
 
+(ert-deftest ledger-complete/complete-txn-comment-point-inside ()
+  "Completion uses correct boundaries for transaction comments."
+  :tags '(complete regress)
+  (ledger-tests-with-temp-file
+      "\
+; file comment
+
+2025/12/07 Grocery
+    Expenses:Groceries  $10
+    ; transaction comment
+    Liabilities:Credit Card"
+    (search-forward "transaction comment")
+    (backward-word 1)
+    (completion-at-point)
+    (should (equal (buffer-substring (line-beginning-position) (line-end-position))
+                   "    ; transaction comment"))))
+
+
 ;;; -------------------------------------------------------------------
 ;;; Coverage tests for previously uncovered branches
 ;;; -------------------------------------------------------------------
@@ -697,6 +732,73 @@ Covers the `user-error' branch."
     (goto-char (point-min))
     (end-of-line)
     (should-error (ledger-fully-complete-xact) :type 'user-error)))
+
+(ert-deftest ledger-complete/exact-payee-present-in-buffer ()
+  "Completion may include the exact string at point if it is present elsewhere."
+  :tags '(complete regress)
+  (ledger-tests-with-temp-file "\
+2026-01-01 Grocery Store
+    Expenses:Groceries  $10
+    Assets:Cash
+
+2026-01-02 Grocery Store 2
+    Expenses:Groceries  $10
+    Assets:Cash
+
+2026-01-03 Grocery Stor
+    Expenses:Groceries  $10
+    Assets:Cash
+"
+    (goto-char (point-max))
+    (forward-line -3)
+    (end-of-line)
+    ;; uniquely completes to longest common prefix: "Grocery Store"
+    (let ((inhibit-interaction t))
+      (completion-at-point))
+    (should (equal
+             (buffer-substring-no-properties (line-beginning-position) (line-end-position))
+             "2026-01-03 Grocery Store"))
+    ;; Since this is a valid payee somewhere else in the buffer, no need to
+    ;; change it.
+    (let ((inhibit-interaction t))
+      (completion-at-point))
+    (should (equal
+             (buffer-substring-no-properties (line-beginning-position) (line-end-position))
+             "2026-01-03 Grocery Store"))))
+
+(ert-deftest ledger-complete/exact-account-present-in-buffer ()
+  "Completion may include the exact string at point if it is present elsewhere."
+  :tags '(complete regress)
+  (ledger-tests-with-temp-file "\
+2026-01-01 Grocery Store
+    Expenses:Groceries  $10
+    Assets:Cash
+
+2026-01-02 Grocery Store 2
+    Expenses:Groceries:Snacks  $10
+    Assets:Cash
+
+2026-01-03 Grocery Stor
+    Expenses:Groc  $10
+    Assets:Cash
+"
+    (let ((ledger-post-auto-align nil))
+      (goto-char (point-max))
+      (forward-line -2)
+      (forward-word 2)
+      ;; uniquely completes to longest common prefix: "Expenses:Groceries"
+      (let ((inhibit-interaction t))
+        (completion-at-point))
+      (should (equal
+               (buffer-substring-no-properties (line-beginning-position) (line-end-position))
+               "    Expenses:Groceries  $10"))
+      ;; Since this is a valid account somewhere else in the buffer, no need to
+      ;; change it.
+      (let ((inhibit-interaction t))
+        (completion-at-point))
+      (should (equal
+               (buffer-substring-no-properties (line-beginning-position) (line-end-position))
+               "    Expenses:Groceries  $10")))))
 
 (provide 'complete-test)
 

@@ -76,8 +76,7 @@ If nil, full account names are offered for completion."
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward ledger-payee-name-or-directive-regex nil t)
-        (unless (and (>= origin (match-beginning 0))
-                     (< origin (match-end 0)))
+        (unless (<= (match-beginning 0) origin (match-end 0))
           (push (or (match-string-no-properties 1) (match-string-no-properties 2))
                 payees-list))))
     ;; to the list
@@ -108,46 +107,48 @@ Then one of the elements this function returns will be
 \(\"Assets:Checking\"
   (\"default\")
   (\"assert\" . \"commodity == \"$\"\"))"
-  (save-excursion
-    (goto-char (point-min))
-    (let (account-list
-          (seen (make-hash-table :test #'equal :size 1)))
-      ;; First, consider accounts declared with "account" directives, which may or
-      ;; may not have associated data. The data is on the following lines up to a
-      ;; line not starting with whitespace.
-      (while (re-search-forward ledger-account-directive-regex nil t)
-        (let ((account (match-string-no-properties 1))
-              (lines (buffer-substring-no-properties
-                      (point)
-                      (progn (ledger-navigate-next-xact-or-directive)
-                             (point))))
-              data)
-          (dolist (d (split-string lines "\n"))
-            (setq d (string-trim d))
-            (unless (string= d "")
-              (if (string-match " " d)
-                  (push (cons (substring d 0 (match-beginning 0))
-                              (substring d (match-end 0) nil))
-                        data)
-                (push (cons d nil) data))))
-          (push (cons account data) account-list)
-          (puthash account t seen)))
-      ;; Next, gather all accounts declared in postings
-      (unless
-          ;; FIXME: People who have set `ledger-flymake-be-pedantic' to non-nil
-          ;; probably don't want accounts from postings, just those declared
-          ;; with directives.  But the name is a little misleading.  Should we
-          ;; make a ledger-mode-be-pedantic and use that instead?
-          (bound-and-true-p ledger-flymake-be-pedantic)
-        (ledger-xact-iterate-transactions
-         (lambda (_pos _date _state _payee)
-           (let ((end (save-excursion (ledger-navigate-end-of-xact))))
-             (while (re-search-forward ledger-account-any-status-regex end t)
-               (let ((account (match-string-no-properties 1)))
-                 (unless (gethash account seen)
-                   (puthash account t seen)
-                   (push (cons account nil) account-list))))))))
-      (sort account-list (lambda (a b) (string-lessp (car a) (car b)))))))
+  (let ((orig-pos (point)))
+    (save-excursion
+      (goto-char (point-min))
+      (let (account-list
+            (seen (make-hash-table :test #'equal :size 1)))
+        ;; First, consider accounts declared with "account" directives, which may or
+        ;; may not have associated data. The data is on the following lines up to a
+        ;; line not starting with whitespace.
+        (while (re-search-forward ledger-account-directive-regex nil t)
+          (let ((account (match-string-no-properties 1))
+                (lines (buffer-substring-no-properties
+                        (point)
+                        (progn (ledger-navigate-next-xact-or-directive)
+                               (point))))
+                data)
+            (dolist (d (split-string lines "\n"))
+              (setq d (string-trim d))
+              (unless (string= d "")
+                (if (string-match " " d)
+                    (push (cons (substring d 0 (match-beginning 0))
+                                (substring d (match-end 0) nil))
+                          data)
+                  (push (cons d nil) data))))
+            (push (cons account data) account-list)
+            (puthash account t seen)))
+        ;; Next, gather all accounts declared in postings
+        (unless
+            ;; FIXME: People who have set `ledger-flymake-be-pedantic' to non-nil
+            ;; probably don't want accounts from postings, just those declared
+            ;; with directives.  But the name is a little misleading.  Should we
+            ;; make a ledger-mode-be-pedantic and use that instead?
+            (bound-and-true-p ledger-flymake-be-pedantic)
+          (ledger-xact-iterate-transactions
+           (lambda (_pos _date _state _payee)
+             (let ((end (save-excursion (ledger-navigate-end-of-xact))))
+               (while (re-search-forward ledger-account-any-status-regex end t)
+                 (unless (<= (match-beginning 1) orig-pos (match-end 1))
+                   (let ((account (match-string-no-properties 1)))
+                     (unless (gethash account seen)
+                       (puthash account t seen)
+                       (push (cons account nil) account-list)))))))))
+        (sort account-list (lambda (a b) (string-lessp (car a) (car b))))))))
 
 (defun ledger-accounts-list-in-buffer ()
   "Return a list of all known account names in the current buffer as strings.
@@ -308,14 +309,16 @@ an alist (ACCOUNT-ELEMENT . NODE)."
            (eq 'comment (car (cdr (ledger-context-at-point))))
            (save-excursion
              (back-to-indentation)
-             (setq start (point)))
-           (setq collection (cons 'nullary #'ledger-comments-list)))
+             (setq start (point)
+                   end (line-end-position)))
+           (setq collection #'ledger-comments-list))
           (;; Payees
            (eq 'transaction
                (save-excursion
                  (prog1 (ledger-thing-at-point)
                    (setq start (point)))))
-           (setq collection (cons 'nullary #'ledger-payees-list)))
+           (setq end (line-end-position)
+                 collection #'ledger-payees-list))
           (;; Accounts
            (save-excursion
              (back-to-indentation)
@@ -327,37 +330,33 @@ an alist (ACCOUNT-ELEMENT . NODE)."
                                         (line-end-position) t)
                                    (- (match-beginning 0) end)))
                  realign-after t
-                 collection (cons 'nullary
-                                  (if ledger-complete-in-steps
-                                      (lambda ()
-                                        (ledger-complete-account-next-steps start end))
-                                    #'ledger-accounts-list)))))
+                 collection (if ledger-complete-in-steps
+                                (lambda ()
+                                  (ledger-complete-account-next-steps start end))
+                              #'ledger-accounts-list))))
     (when collection
-      (let ((prefix (buffer-substring-no-properties start end)))
-        (list start end
-              (pcase collection
-                ;; `func-arity' isn't available until Emacs 26, so we have to
-                ;; manually track the arity of the functions.
-                (`(nullary . ,f)
-                 ;; a nullary function that returns a completion collection
-                 (completion-table-with-cache
-                  (lambda (_)
-                    (cl-remove-if (apply-partially 'string= prefix) (funcall f)))))
-                ((pred functionp)
-                 ;; a completion table
-                 collection)
-                (_
-                 ;; a static completion collection
-                 collection))
-              :exit-function (lambda (&rest _)
-                               (when delete-suffix
-                                 (delete-char delete-suffix))
-                               (when (and realign-after ledger-post-auto-align)
-                                 (ledger-post-align-postings (line-beginning-position) (line-end-position)))))))))
+      (list start end
+            (cond
+             ((not (functionp collection))
+              ;; a static completion collection
+              collection)
+             ((equal '(0 . 0) (func-arity collection))
+              ;; a nullary function that returns a completion collection
+              (completion-table-with-cache
+               (lambda (_) (funcall collection))))
+             (t
+              ;; a programmed completion table
+              collection))
+            :exit-function (lambda (&rest _)
+                             (when delete-suffix
+                               (delete-char delete-suffix))
+                             (when (and realign-after ledger-post-auto-align)
+                               (ledger-post-align-postings (line-beginning-position) (line-end-position))))))))
 
 (defun ledger-comments-list ()
   "Collect comments from the buffer."
-  (let ((comments '()))
+  (let ((orig-pos (point))
+        (comments '()))
     (save-excursion
       (goto-char (point-min))
       ;; FIXME: This only catches comments at beginning of lines and starting
@@ -366,7 +365,8 @@ an alist (ACCOUNT-ELEMENT . NODE)."
       ;; transactions (the latter should be completed over separately).
       ;; TODO: Unify this regex with `ledger-comment-regex'
       (while (re-search-forward "^[ \t]+\\(?1:;.+\\)$" nil t)
-        (push (match-string-no-properties 1) comments)))
+        (unless (<= (match-beginning 1) orig-pos (match-end 1))
+          (push (match-string-no-properties 1) comments))))
     (sort (delete-dups comments) #'string-lessp)))
 
 (defun ledger-fully-complete-xact ()
