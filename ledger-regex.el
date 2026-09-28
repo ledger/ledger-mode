@@ -329,7 +329,8 @@
 (ledger-define-regexp balance-assertion
   (macroexpand
    `(rx (and ?= (+ blank)
-             (regexp ,ledger-commoditized-amount-regexp))))
+             (or (regexp ,ledger-commoditized-amount-regexp)
+                 (and "0" word-end)))))
   "")
 
 (ledger-define-regexp full-amount
