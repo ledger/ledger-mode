@@ -59,13 +59,41 @@
   (beginning-of-line)
   (insert "\n; Ledger-mode: End sort\n\n"))
 
+(defconst ledger-sort--year-directive-regex
+  "^\\(?:Y\\|year\\)\\s-+\\([0-9]+\\)\\s-*$"
+  "Regex matching a `year NNNN' or `Y NNNN' directive at the start of a line.
+The year number is captured in group 1.")
+
+(defun ledger-sort--preceding-year ()
+  "Return the year from the most recent `year NNNN' or `Y NNNN' directive.
+Searches backward from the start of the current line, ignoring any
+restriction so that directives above a narrowed sort region are still
+consulted.  Returns a number, or nil if no such directive exists."
+  (save-excursion
+    (save-restriction
+      (widen)
+      (beginning-of-line)
+      (when (re-search-backward ledger-sort--year-directive-regex nil t)
+        (string-to-number (match-string 1))))))
+
 (defun ledger-sort-startkey ()
-  "Return a numeric sort key based on the date of the xact beginning at point."
+  "Return a numeric sort key based on the date of the xact beginning at point.
+Dates with a full four-digit year are parsed directly.  Short dates of the
+form M/D or MM/DD are interpreted relative to the most recent `year NNNN'
+directive preceding the current transaction, falling back to the current
+calendar year if no such directive exists."
   ;; Can use `time-convert' to return an integer instead of a floating-point
   ;; number, starting in Emacs 27.
   (float-time
-   (ledger-parse-iso-date
-    (buffer-substring-no-properties (point) (+ 10 (point))))))
+   (cond
+    ((looking-at ledger-iso-date-regexp)
+     (ledger-parse-iso-date (match-string 0)))
+    ((looking-at "\\([0-9]\\{1,2\\}\\)[-/]\\([0-9]\\{1,2\\}\\)\\(?:[^-/0-9]\\|$\\)")
+     (let ((month (string-to-number (match-string 1)))
+           (day   (string-to-number (match-string 2)))
+           (year  (or (ledger-sort--preceding-year)
+                      (nth 5 (decode-time)))))
+       (encode-time 0 0 0 day month year))))))
 
 (defun ledger-sort-region (beg end)
   "Sort the region from BEG to END in chronological order."
