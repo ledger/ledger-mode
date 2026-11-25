@@ -332,8 +332,11 @@ Return the number of uncleared xacts found."
 
 When called interactively, prompt for DATE, then XACT."
   (interactive
-   (list (ledger-read-date "Date: ")
-         (read-string "Transaction: " nil 'ledger-minibuffer-history)))
+   (let* ((date (ledger-read-date "Date: "))
+          (xact-text
+           (with-current-buffer ledger-reconcile-ledger-buf
+             (ledger-read-transaction-text date))))
+     (list date xact-text)))
   (with-current-buffer ledger-reconcile-ledger-buf
     (ledger-add-transaction (concat date " " xact)))
   (ledger-reconcile-refresh))

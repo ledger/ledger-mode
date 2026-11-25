@@ -87,10 +87,11 @@ http://bugs.ledger-cli.org/show_bug.cgi?id=254"
   :tags '(exec)
   (cl-letf (((symbol-function 'ledger-version-greater-p)
              (lambda (_needed) nil)))
-    (let ((ledger-mode-should-check-version t)
-          (ledger-works t))
-      (ledger-check-version)
-      (should (eq nil ledger-works)))))
+    (ledger-tests-with-temp-file ""
+      (let ((ledger-mode-should-check-version t)
+            (ledger-works t))
+        (ledger-check-version)
+        (should (eq nil ledger-works))))))
 
 
 (ert-deftest ledger-exec/test-absolute-binary-path ()
